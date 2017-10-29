@@ -1,10 +1,21 @@
 # Status: Beta
 Please wait a few days while I sort out unit tests, performance and doc.
+<p>
+You can download the latest build [here](/Release/x64/LargeList.NET-4-5-2.x64.dll) (target framework: 4.5.2, Windows 64-bits only)
+<p>
+TODO list:
+- [ ] Integrate unit testing with travis-ci.
+- [ ] Optimize lengthly operations within segments.
+- [ ] Garbage collect segments to reduce memory usage.
+- [ ] Measure operation time in O(n) and compare with List&lt;>.
+- [ ] Customizable segment capacity.
+- [ ] Customizable use of the Large Object Heap.
+- [ ] Code cleanup.
 
 # LargeList
 ![Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=master)
 
-LargeList is an implementation that can hold a number of elements limited only by the available memory, tested up to 8 billions.
+LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 250 millions of reference per collection or list, but LargeList can break this barrier using a partition scheme.
 
 ## Caveats
@@ -17,10 +28,10 @@ The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can 
 
 ## Performance
 This table lists theoretical and observed performance.
-The theoretical performance will never be achieved in practice because of the default partitioning, that make large n to really become large only with memory amount way beyond realistic. However, if you specify custom partitioning (see the customization section) it is conceivable you observe it in practice.
+The theoretical performance will never be achieved in practice because of the default partitioning, that make large <i>n</i> to really become large only with memory amount way beyond realistic. However, if you specify custom partitioning (see the customization section) it is conceivable you observe it in practice.
 The red number means performance degradation: if an operation takes one second with Collection&lt;> or List&lt;>, it takes that many seconds (>1, in red) to complete with LargeList.
 The green number means performance improvement: if an operation takes one second with LargeList, it takes that many seconds (>1, in green) to complete with Collection&lt;> or List&lt;>.
-(TODO)
+<p>(TODO)</p>
 
 ## Backward compatibility
 The implementation, interface and documentation of classes and interfaces in the LargeList namespace is backward compatible as much as possible with the corresponding class or interface in .NET, when it exists. But there are some differences:
@@ -32,4 +43,26 @@ If backward compatibility is an issue, the code can be recompiled in STRICT mode
 
 ## STRICT mode
 To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
+
+# Examples
+To use LargeList:
+* Download [the lastest library](/Release/x64/LargeList.NET-4-5-2.x64.dll) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
+* In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
+* Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
+* Add code similar to this in your project.
+
+```
+using LargeList;
+
+namespace Test
+{
+    public class TestLargeList
+    {
+        public TestLargeList()
+        {
+            LargeList<int> NewList = new LargeList<int>();
+        }
+    }
+}
+```
 
