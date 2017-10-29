@@ -27,3 +27,7 @@ The implementation, interface and documentation of classes and interfaces in the
 * In the case of FindLastIndex, the .NET documentation does not match the implementation. LargeList chooses a consistent choice that often will match the documentation but is not backward compatible with .NET
 
 If backward compatibility is an issue, the code can be recompiled in STRICT mode. In this mode, everything is the same as .NET except the type of indexes. Note that you must recompile yourself, downloaded binaries do <i>not</i> use STRICT mode.
+
+## STRICT mode
+To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
+
