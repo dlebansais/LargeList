@@ -2,7 +2,7 @@
 Please wait a few days while I sort out unit tests, performance and doc.
 
 # LargeList
-[![Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=master)]
+![Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=master)
 
 LargeList is an implementation that can hold a number of elements limited only by the available memory, tested up to 8 billions.
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 250 millions of reference per collection or list, but LargeList can break this barrier using a partition scheme.
