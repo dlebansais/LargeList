@@ -1,8 +1,9 @@
 # Status: Beta
 Please wait a few days while I sort out unit tests, performance and doc.
-<p>
-You can download the latest build [here](/Release/x64/LargeList.NET-4-5-2.x64.dll). Target framework: 4.5.2, Windows 64-bits only.
-<p>
+
+Target framework: 4.5.2, Windows 64-bits only.
+You can download the latest build [here](/Release/x64/LargeList.NET-4-5-2.x64.dll).
+
 TODO list:
 * [ ] Integrate unit testing with travis-ci.
 * [ ] Optimize lengthly operations within segments.
