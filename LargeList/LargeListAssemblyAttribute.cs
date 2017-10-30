@@ -8,7 +8,11 @@ namespace LargeList
     [AttributeUsage(AttributeTargets.Assembly)]
     public class LargeListAssemblyAttribute : Attribute
     {
+#if SMALL_SEGMENTS
         internal const int GlobalDefaultMaxSegmentCapacity = 10;
+#else
+        internal const int GlobalDefaultMaxSegmentCapacity = 0x01000000;
+#endif
 
         /// <summary>
         /// Indicates if the assembly was compiled in STRICT mode.
