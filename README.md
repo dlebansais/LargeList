@@ -1,7 +1,7 @@
 # Status: Beta
 Please wait a few days while I sort out unit tests, performance and doc.
 
-You can download the latest build [here](/Release/x64/LargeList.NET-4-5-2.x64.dll). Target framework: 4.5.2, Windows 64-bits only.
+You can download the latest build [here](https://github.com/dlebansais/LargeList/releases/download/1.0.0.3/LargeList.dll). Target framework: 4.5.2, Windows 64-bits only.
 
 TODO list:
 * [ ] Integrate unit testing with travis-ci.
@@ -28,10 +28,11 @@ The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can 
 
 ## Performance
 This table lists theoretical and observed performance.
-The theoretical performance will never be achieved in practice because of the default partitioning, that make large <i>n</i> to really become large only with memory amount way beyond realistic. However, if you specify custom partitioning (see the customization section) it is conceivable you observe it in practice.
+The theoretical performance will never be achieved in practice because of the default partitioning, that make large *n* to really become large only with memory amount way beyond realistic. However, if you specify custom partitioning (see the customization section) it is conceivable you observe it in practice.
 The red number means performance degradation: if an operation takes one second with Collection&lt;> or List&lt;>, it takes that many seconds (>1, in red) to complete with LargeList.
 The green number means performance improvement: if an operation takes one second with LargeList, it takes that many seconds (>1, in green) to complete with Collection&lt;> or List&lt;>.
-<p>(TODO)</p>
+
+(TODO)
 
 ## Backward compatibility
 The implementation, interface and documentation of classes and interfaces in the LargeList namespace is backward compatible as much as possible with the corresponding class or interface in .NET, when it exists. But there are some differences:
@@ -39,14 +40,14 @@ The implementation, interface and documentation of classes and interfaces in the
 * When the .NET documentation specifies different names for a method parameter between an interface and its implementation, the name is identical. When the .NET actual implementation use a yet different name (this can be seen in exception messages, where the parameter name appears) the LargeList implementation use the same name as documented.
 * In the case of FindLastIndex, the .NET documentation does not match the implementation. LargeList chooses a consistent choice that often will match the documentation but is not backward compatible with .NET
 
-If backward compatibility is an issue, the code can be recompiled in STRICT mode. In this mode, everything is the same as .NET except the type of indexes. Note that you must recompile yourself, downloaded binaries do <i>not</i> use STRICT mode.
+If backward compatibility is an issue, the code can be recompiled in STRICT mode. In this mode, everything is the same as .NET except the type of indexes. Note that you must recompile yourself, downloaded binaries do *not* use STRICT mode.
 
 ## STRICT mode
 To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
 
 # Examples
 To use LargeList:
-* Download [the lastest library](/Release/x64/LargeList.NET-4-5-2.x64.dll) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
+* Download [the lastest release](https://github.com/dlebansais/LargeList/releases/download/1.0.0.3/LargeList.dll) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
 * In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
 * Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
 * Add code similar to this in your project.
