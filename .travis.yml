@@ -1,8 +1,26 @@
 language: csharp
 solution: LargeList.sln
+addons:
+    apt:
+        packages:
+            - libunwind8
+env:
+    global:
+        # Replace framework with core when you want to build a .NET Core project, not a .NET Framework project.
+        - "TRAVIS_MSBUILD_MODE=framework"
+        # If using travis-msbuild as submodule, replace the TRAVIS_MSBUILD path!
+        - "TRAVIS_MSBUILD=."
+        - "TRAVIS_MSBUILD_BIN=$TRAVIS_MSBUILD/bin"
+        # Replace the following path with the path to a copy of the .NET Framework you're depending on, f.e. a pre-built copy of the Mono Framework API.
+        - "TRAVIS_MSBUILD_FRAMEWORK=$TRAVIS_MSBUILD/lib-dotnet"
+        - "PATH=$PATH:$TRAVIS_MSBUILD_BIN"
+before_install:
+    # When pushing from Windows, the bash scripts aren't marked executable.
+    - chmod a+x "$TRAVIS_MSBUILD_BIN"/msbuild-prepare
+    - msbuild-prepare
 install:
 - nuget restore LargeList.sln
 - nuget install NUnit.ConsoleRunner -Version 3.7.0 -OutputDirectory testrunner
 script:
-- msbuild /p:Configuration=Release LargeList.sln
+- msbuild /p:Configuration=Travis LargeList.sln
 - mono ./testrunner/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe ./LargeList/bin/x64/Release/Test-LargeList.dll
