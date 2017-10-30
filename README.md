@@ -44,6 +44,24 @@ If backward compatibility is an issue, the code can be recompiled in STRICT mode
 
 ## STRICT mode
 To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
+To know if the version you use was recompiled in STRICT mode or not, include the following exerpt in your code:
+```
+bool? IsStrict = null;
+
+try
+{
+    Assembly LargeListAssembly = Assembly.Load("LargeList");
+    LargeListAssemblyAttribute Attribute = LargeListAssembly.GetCustomAttribute(typeof(LargeListAssemblyAttribute)) as LargeListAssemblyAttribute;
+    IsStrict = Attribute.IsStrict;
+}
+catch
+{
+    // Handle any exception here.
+}
+```
+
+## Partition default values
+In addition to the STRICT mode, one can read what's the default value for segments in the partition scheme (units on contiguous elements). Just write the same code than above but to get the value of `Attribute.DefaultMaxSegmentCapacity`.
 
 # Examples
 To use LargeList:
@@ -67,3 +85,6 @@ namespace Test
 }
 ```
 
+# Certification
+
+This library is digitally signed with a [CAcert](https://www.cacert.org/) certificate.
