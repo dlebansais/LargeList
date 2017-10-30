@@ -273,7 +273,7 @@ namespace LargeList
         /// <returns>
         /// The maximum capacity allowed for segments.
         /// </returns>
-        protected virtual int MaxSegmentCapacity { get { return 10; } }
+        protected virtual int MaxSegmentCapacity { get { return LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity; } }
 
         /// <summary>
         /// Gets the total number of elements the Partition&lt;T&gt; can hold without resizing.
