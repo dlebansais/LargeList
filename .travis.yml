@@ -1,14 +1,20 @@
 language: csharp
 solution: LargeList.sln
+
 install:
 - nuget restore LargeList.sln
 - nuget install NUnit.ConsoleRunner -Version 3.7.0 -OutputDirectory testrunner
+
 script:
 - msbuild /p:Configuration=Travis LargeList.sln
 #- mono ./testrunner/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe ./LargeList/bin/x64/Release/Test-LargeList.dll
+
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  github_token: $GITHUB_TOKEN
+  local_dir: ./LargeList/bin/x64/Release
+  target_branch: gh-pages
+  email: "github-pages-deploy@travis-ci.org"
   on:
-    branch: gh-pages
+    branch: master
