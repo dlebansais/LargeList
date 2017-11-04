@@ -987,7 +987,7 @@ namespace LargeList
         /// </returns>
         public long IndexOf(T item)
         {
-            return IndexOf(item, 0, Count);
+            return Partition.IndexOf(item, 0, Count);
         }
 
 #if STRICT
@@ -1013,7 +1013,7 @@ namespace LargeList
             if (index >= Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            return IndexOf(item, index, Count - index);
+            return Partition.IndexOf(item, index, Count - index);
         }
 #else
         /// <summary>
@@ -1030,7 +1030,7 @@ namespace LargeList
             if (startIndex < 0 || startIndex >= Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            return IndexOf(item, startIndex, Count - startIndex);
+            return Partition.IndexOf(item, startIndex, Count - startIndex);
         }
 #endif
 
@@ -1167,11 +1167,7 @@ namespace LargeList
         public long LastIndexOf(T item)
         {
             if (Count > 0)
-            {
-                long index = Count - 1;
-                long count = Count;
-                return LastIndexOf(item, index, count);
-            }
+                return Partition.LastIndexOf(item, Count - 1, Count);
             else
                 return -1;
         }
@@ -1191,7 +1187,7 @@ namespace LargeList
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            return LastIndexOf(item, index, index + 1);
+            return Partition.LastIndexOf(item, index, index + 1);
         }
 #else
         /// <summary>
@@ -1208,7 +1204,7 @@ namespace LargeList
             if (startIndex < 0 || startIndex >= Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            return LastIndexOf(item, startIndex, startIndex + 1);
+            return Partition.LastIndexOf(item, startIndex, startIndex + 1);
         }
 #endif
 
@@ -1573,29 +1569,13 @@ namespace LargeList
         /// <param name="index">The zero-based starting index of the range to search.</param>
         /// <param name="count">The length of the range to search.</param>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements, or null to use the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default.</param>
+        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
         /// <returns>
         /// The zero-based index of <paramref name="item"/> in the sorted LargeList&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of LargeList&lt;T&gt;.Count.
         /// </returns>
         private long BinarySearchItem(long index, long count, T item, IComparer<T> comparer)
         {
-            long lower = index;
-            long upper = index + count - 1;
-
-            while (lower <= upper)
-            {
-                long middle = lower + (upper - lower) / 2;
-                ElementPosition p = Partition.PositionOf(middle);
-                long comparisonResult = comparer.Compare(item, Partition.GetItem(p));
-                if (comparisonResult == 0)
-                    return middle;
-                else if (comparisonResult < 0)
-                    upper = middle - 1;
-                else
-                    lower = middle + 1;
-            }
-
-            return -(lower + 1);
+            return Partition.BinarySearch(index, count, item, comparer);
         }
 
         /// <summary>
@@ -1645,13 +1625,13 @@ namespace LargeList
 
         private IPartition<T> Partition;
 
-        #region Contracts
+#region Contracts
         private void AssertInvariant()
         {
             Debug.Assert(Partition.Capacity == Capacity);
             Debug.Assert(Partition.Count == Count);
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Enumerates the elements of a LargeList&lt;T&gt;.
@@ -1710,7 +1690,7 @@ namespace LargeList
                 return true;
             }
 
-            #region Implementation of IDisposable
+#region Implementation of IDisposable
             /// <summary>
             /// Releases all resources used by the LargeEnumerator.
             /// </summary>
@@ -1719,7 +1699,7 @@ namespace LargeList
                 Partition = null;
                 Enumerator = null;
             }
-            #endregion
+#endregion
 
             private IPartition<T> Partition;
             private IPartitionEnumerator<T> Enumerator;

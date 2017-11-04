@@ -176,6 +176,14 @@ namespace LargeList
         /// The number of elements removed from the ISegment&lt;T&gt;.
         /// </returns>
         int RemoveAll(Predicate<T> match);
+
+        /// <summary>
+        /// Sorts the elements in a range of elements in ISegment&lt;T&gt; using the specified comparer.
+        /// </summary>
+        /// <param name="low">The position of the first item in the range.</param>
+        /// <param name="high">The position of the last item in the range.</param>
+        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        void Sort(int low, int high, IComparer<T> comparer);
     }
 
     /// <summary>
@@ -365,7 +373,7 @@ namespace LargeList
             int Result = -1;
 
             for (int l = 0; l < count; l++)
-                if (Content[startIndex - l].Equals(item))
+                if ((item == null && Content[startIndex - l] == null) || (item != null && item.Equals(Content[startIndex - l])))
                 {
                     Result = startIndex - l;
                     break;
@@ -649,6 +657,21 @@ namespace LargeList
             AssertInvariant();
 
             return RemovedCount;
+        }
+
+        /// <summary>
+        /// Sorts the elements in a range of elements in Segment&lt;T&gt; using the specified comparer.
+        /// </summary>
+        /// <param name="low">The position of the first item in the range.</param>
+        /// <param name="high">The position of the last item in the range.</param>
+        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        public void Sort(int low, int high, IComparer<T> comparer)
+        {
+            Debug.Assert(low >= 0 && low < Content.Length);
+            Debug.Assert(high >= 0 && high < Content.Length);
+            Debug.Assert(low <= high);
+
+            Array.Sort(Content, low, high - low + 1, comparer);
         }
         #endregion
 

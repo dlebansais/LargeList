@@ -142,6 +142,18 @@ namespace LargeList
         long LastIndexOf(T item, long startIndex, long count);
 
         /// <summary>
+        /// Searches a range of elements in the sorted IPartition&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range to search.</param>
+        /// <param name="count">The length of the range to search.</param>
+        /// <param name="item">The object to locate. The value can be null for reference types.</param>
+        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <returns>
+        /// The zero-based index of <paramref name="item"/> in the sorted IPartition&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of IPartition&lt;T&gt;.Count.
+        /// </returns>
+        long BinarySearch(long index, long count, T item, IComparer<T> comparer);
+
+        /// <summary>
         /// Removes all elements from the IPartition&lt;T&gt;.
         /// </summary>
         void Clear();
@@ -668,10 +680,125 @@ namespace LargeList
             }
 
             Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || Result >= 0 && Result < Count && GetItem(PositionOf(Result)).Equals(item));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && GetItem(PositionOf(Result)) == null) || (item != null && item.Equals(GetItem(PositionOf(Result)))))));
             AssertInvariant();
 
             return Result;
+        }
+
+        /// <summary>
+        /// Searches a range of elements in the sorted Partition&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range to search.</param>
+        /// <param name="count">The length of the range to search.</param>
+        /// <param name="item">The object to locate. The value can be null for reference types.</param>
+        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <returns>
+        /// The zero-based index of <paramref name="item"/> in the sorted Partition&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of Partition&lt;T&gt;.Count.
+        /// </returns>
+        public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
+        {
+            Debug.Assert(index >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(comparer != null);
+            Debug.Assert(index + count <= Count);
+
+            if (count == 0)
+                return -(index + 1);
+
+            long indexLower = index;
+            long indexUpper = index + count - 1;
+            ElementPosition lower = PositionOf(indexLower);
+            ElementPosition upper = PositionOf(indexUpper);
+
+            while (lower <= upper)
+            {
+                ElementPosition middle;
+                long indexMiddle;
+                GetMiddleOf(lower, indexLower, upper, indexUpper, out middle, out indexMiddle);
+
+                Debug.Assert(lower <= middle);
+                Debug.Assert(indexLower <= indexMiddle);
+                Debug.Assert(upper >= middle);
+                Debug.Assert(indexUpper >= indexMiddle);
+
+                long comparisonResult = comparer.Compare(item, GetItem(middle));
+
+                if (comparisonResult == 0)
+                    return indexMiddle;
+
+                else if (comparisonResult < 0)
+                {
+                    upper = PreviousPosition(middle);
+                    indexUpper = indexMiddle - 1;
+                }
+                else
+                {
+                    lower = NextPosition(middle);
+                    indexLower = indexMiddle + 1;
+                }
+            }
+
+            return -(indexLower + 1);
+        }
+
+        /// <summary>
+        /// Gets the position in the middle of two positions, assuming <paramref name="lower"/> is lesser than or equal to <paramref name="upper"/>.
+        /// </summary>
+        /// <param name="lower">The lower position.</param>
+        /// <param name="indexLower">The virtual index corresponding to <paramref name="lower"/>.</param>
+        /// <param name="upper">The upper position.</param>
+        /// <param name="indexUpper">The virtual index corresponding to <paramref name="upper"/>.</param>
+        /// <param name="middle">The result as position.</param>
+        /// <param name="indexMiddle">The result as virtual index.</param>
+        /// <returns>
+        /// The position in the middle of <paramref name="lower"/> and <paramref name="upper"/>.
+        /// </returns>
+        private void GetMiddleOf(ElementPosition lower, long indexLower, ElementPosition upper, long indexUpper, out ElementPosition  middle, out long indexMiddle)
+        {
+            Debug.Assert(lower <= upper);
+            Debug.Assert(indexLower <= indexUpper);
+
+            while (lower.SegmentIndex < upper.SegmentIndex)
+            {
+                int AboveLower = SegmentTable[lower.SegmentIndex].Count - lower.ElementIndex;
+                int BelowUpper = upper.ElementIndex;
+                int Difference = BelowUpper - AboveLower;
+
+                if (Difference >= 0)
+                {
+                    int SegmentIndex;
+
+                    do
+                        SegmentIndex = lower.SegmentIndex + 1;
+                    while (SegmentIndex < upper.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
+
+                    indexLower += AboveLower;
+                    indexUpper -= AboveLower;
+                    lower = new ElementPosition(SegmentIndex, 0);
+                    upper = new ElementPosition(upper.SegmentIndex, Difference);
+                }
+                else
+                {
+                    int SegmentIndex;
+
+                    do
+                        SegmentIndex = upper.SegmentIndex - 1;
+                    while (SegmentIndex > lower.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
+
+                    indexLower += BelowUpper;
+                    indexUpper -= BelowUpper;
+                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper);
+                    upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1);
+                }
+            }
+
+            int middleElementIndex = lower.ElementIndex + (upper.ElementIndex - lower.ElementIndex) / 2;
+
+            middle = new ElementPosition(lower.SegmentIndex, middleElementIndex);
+            indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
+
+            Debug.Assert(PositionOf(indexMiddle) == middle);
         }
         #endregion
 
@@ -1022,7 +1149,15 @@ namespace LargeList
         {
             Debug.Assert(IsValidPosition(low, false));
             Debug.Assert(IsValidPosition(high, false));
+            Debug.Assert(low <= high);
             Debug.Assert(comparer != null);
+
+            if (low.SegmentIndex == high.SegmentIndex)
+            {
+                ISegment<T> Segment = SegmentTable[low.SegmentIndex];
+                Segment.Sort(low.ElementIndex, high.ElementIndex, comparer);
+                return;
+            }
 
             if (low < high)
             {

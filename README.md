@@ -4,9 +4,8 @@ Please wait a few days while I sort out unit tests, performance and doc.
 You can download the latest build [here](https://github.com/dlebansais/LargeList/releases/download/1.0.0.3/LargeList.dll). Target framework: 4.5.2, Windows 64-bits only.
 
 TODO list:
-* [ ] Integrate unit testing with travis-ci.
-* [ ] Optimize lengthy operations within segments.
-* [ ] Garbage collect segments to reduce memory usage.
+* [X] Integrate unit testing with travis-ci.
+* [X] Optimize lengthy operations within segments.
 * [ ] Measure operation time in O(n) and compare with List&lt;>.
 * [ ] Customizable segment capacity.
 * [ ] Customizable use of the Large Object Heap.
