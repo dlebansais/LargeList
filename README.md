@@ -15,7 +15,7 @@ TODO list:
 ![Build Status](https://travis-ci.org/dlebansais/LargeList.svg?branch=master)
 
 LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
-The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 250 millions of reference per collection or list, but LargeList can break this barrier using a partition scheme.
+The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 250 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
 
 ## Caveats
 * Because LargeList doesn't use a single array to store data, and is not integrated with .NET for optimal performance, it is slower than the standard implementation of List&lt;>. However, this is compensated by optimizations resulting from the partition scheme used, that give better performance for many operations such as Insert(), and negligible overhead for others, as long as the number of elements is large. Therefore, using LargeList is not recommended if the number of elements that will be stored is relatively low (less than 10000), and recommended if it will always be large or if performance when it is low is not a concern.

@@ -713,6 +713,9 @@ namespace LargeList
 
             while (lower <= upper)
             {
+                if (indexLower == 9 && indexUpper == 10)
+                    indexUpper = 10;
+
                 ElementPosition middle;
                 long indexMiddle;
                 GetMiddleOf(lower, indexLower, upper, indexUpper, out middle, out indexMiddle);
@@ -761,32 +764,33 @@ namespace LargeList
 
             while (lower.SegmentIndex < upper.SegmentIndex)
             {
-                int AboveLower = SegmentTable[lower.SegmentIndex].Count - lower.ElementIndex;
+                int AboveLower = SegmentTable[lower.SegmentIndex].Count - lower.ElementIndex - 1;
                 int BelowUpper = upper.ElementIndex;
                 int Difference = BelowUpper - AboveLower;
 
-                if (Difference >= 0)
+                if (Difference > 0)
                 {
                     int SegmentIndex = lower.SegmentIndex;
 
                     do
                         SegmentIndex++;
-                    while (SegmentIndex < upper.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
+                    while (SegmentIndex < upper.SegmentIndex && SegmentTable[SegmentIndex].Count == 0);
 
                     Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
 
-                    indexLower += AboveLower;
-                    indexUpper -= AboveLower;
+                    indexLower += AboveLower + 1;
+                    indexUpper -= AboveLower + 1;
                     lower = new ElementPosition(SegmentIndex, 0);
-                    upper = new ElementPosition(upper.SegmentIndex, Difference);
+                    upper = new ElementPosition(upper.SegmentIndex, Difference - 1);
                 }
-                else
+
+                else if (Difference < 0)
                 {
                     int SegmentIndex = upper.SegmentIndex;
 
                     do
                         SegmentIndex--;
-                    while (SegmentIndex > lower.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
+                    while (SegmentIndex > lower.SegmentIndex && SegmentTable[SegmentIndex].Count == 0);
 
                     Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
 
@@ -795,12 +799,52 @@ namespace LargeList
                     lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper + 1);
                     upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1);
                 }
+
+                else
+                {
+                    int LowerSegmentIndex = lower.SegmentIndex;
+                    int UpperSegmentIndex = upper.SegmentIndex;
+
+                    do
+                        LowerSegmentIndex++;
+                    while (LowerSegmentIndex < upper.SegmentIndex && SegmentTable[LowerSegmentIndex].Count == 0);
+
+                    do
+                        UpperSegmentIndex--;
+                    while (UpperSegmentIndex > lower.SegmentIndex && SegmentTable[UpperSegmentIndex].Count == 0);
+
+                    Debug.Assert(SegmentTable[LowerSegmentIndex].Count > 0);
+                    Debug.Assert(SegmentTable[UpperSegmentIndex].Count > 0);
+
+                    indexLower += BelowUpper + 1;
+                    indexUpper -= BelowUpper + 1;
+                    lower = new ElementPosition(LowerSegmentIndex, 0);
+                    upper = new ElementPosition(UpperSegmentIndex, SegmentTable[UpperSegmentIndex].Count - 1);
+                }
             }
 
-            int middleElementIndex = lower.ElementIndex + (upper.ElementIndex - lower.ElementIndex) / 2;
+            if (lower.SegmentIndex > upper.SegmentIndex)
+            {
+                Debug.Assert(lower.ElementIndex == 0);
+                Debug.Assert(upper.SegmentIndex >= 0 && upper.SegmentIndex < SegmentTable.Count);
+                Debug.Assert(upper.ElementIndex == SegmentTable[upper.SegmentIndex].Count - 1);
+                Debug.Assert(indexUpper + 1 == indexLower);
+                Debug.Assert(PositionOf(indexUpper) == upper);
+                Debug.Assert(PositionOf(indexLower) == lower);
 
-            middle = new ElementPosition(lower.SegmentIndex, middleElementIndex);
-            indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
+                middle = upper;
+                indexMiddle = indexUpper;
+            }
+            else
+            {
+                Debug.Assert(lower.SegmentIndex == upper.SegmentIndex);
+                Debug.Assert(lower.ElementIndex <= upper.ElementIndex);
+
+                int middleElementIndex = lower.ElementIndex + (upper.ElementIndex - lower.ElementIndex) / 2;
+
+                middle = new ElementPosition(lower.SegmentIndex, middleElementIndex);
+                indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
+            }
 
             Debug.Assert(PositionOf(indexMiddle) == middle);
         }
