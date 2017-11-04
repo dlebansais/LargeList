@@ -767,11 +767,13 @@ namespace LargeList
 
                 if (Difference >= 0)
                 {
-                    int SegmentIndex;
+                    int SegmentIndex = lower.SegmentIndex;
 
                     do
-                        SegmentIndex = lower.SegmentIndex + 1;
+                        SegmentIndex++;
                     while (SegmentIndex < upper.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
+
+                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
 
                     indexLower += AboveLower;
                     indexUpper -= AboveLower;
@@ -780,15 +782,17 @@ namespace LargeList
                 }
                 else
                 {
-                    int SegmentIndex;
+                    int SegmentIndex = upper.SegmentIndex;
 
                     do
-                        SegmentIndex = upper.SegmentIndex - 1;
+                        SegmentIndex--;
                     while (SegmentIndex > lower.ElementIndex && SegmentTable[SegmentIndex].Count == 0);
 
-                    indexLower += BelowUpper;
-                    indexUpper -= BelowUpper;
-                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper);
+                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
+
+                    indexLower += BelowUpper + 1;
+                    indexUpper -= BelowUpper + 1;
+                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper + 1);
                     upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1);
                 }
             }
