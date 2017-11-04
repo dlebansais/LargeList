@@ -9,7 +9,7 @@ install:
 script:
 - msbuild /p:Configuration=Travis LargeList.sln
 - cp ./testrunner/NUnit.3.8.1/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Release/
-- mono ./testrunner/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe --trace=Debug ./LargeList/bin/x64/Release/Test-LargeList.dll
+- mono ./testrunner/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Release/Test-LargeList.dll
 
 deploy:
   provider: pages
