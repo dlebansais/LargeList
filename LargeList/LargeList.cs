@@ -164,8 +164,6 @@ namespace LargeList
             Partition = CreatePartition(0, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
 
-            Count = 0;
-
 #if DEBUG
             AssertInvariant();
 #endif
@@ -189,8 +187,6 @@ namespace LargeList
             Initialize();
             Partition = CreatePartition(capacity, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
-
-            Count = 0;
 
 #if DEBUG
             AssertInvariant();
@@ -223,8 +219,6 @@ namespace LargeList
 #endif
 
             Partition.SetItemRange(Partition.Begin, collection);
-
-            Count = CollectionCount;
 
 #if DEBUG
             AssertInvariant();
@@ -264,19 +258,14 @@ namespace LargeList
             Initialize();
 
             if (count >= 0)
-            {
                 Partition = CreatePartition(capacity, count, maxSegmentCapacity);
 
-                Count = count;
-            }
             else
             {
                 long CollectionCount = GetCollectionCount(collection);
 
                 Partition = CreatePartition(capacity, CollectionCount, maxSegmentCapacity);
                 Partition.SetItemRange(Partition.Begin, collection);
-
-                Count = CollectionCount;
             }
 
 #if DEBUG
@@ -339,7 +328,7 @@ namespace LargeList
                     Partition.TrimCapacity(Capacity - value);
 
 #if DEBUG
-            AssertInvariant();
+                AssertInvariant();
 #endif
             }
         }
@@ -350,7 +339,7 @@ namespace LargeList
         /// <returns>
         /// The number of elements contained in the LargeList&lt;T&gt;.
         /// </returns>
-        public long Count { get; private set; }
+        public long Count { get { return Partition.Count; } }
 
         /// <summary>
         /// Adds an object to the end of the LargeList&lt;T&gt;.
@@ -360,14 +349,13 @@ namespace LargeList
         public void Add(T item)
         {
             ElementPosition Position;
+            long Index = Count;
 
-            Position = Partition.PositionOf(Count);
+            Position = Partition.PositionOf(Index);
             Partition.MakeRoom(Position, 1);
 
-            Position = Partition.PositionOf(Count);
+            Position = Partition.PositionOf(Index);
             Partition.SetItem(Position, item);
-
-            Count++;
 
 #if DEBUG
             AssertInvariant();
@@ -375,9 +363,9 @@ namespace LargeList
         }
         long ILargeList.Add(object value)
         {
-            long index = Count;
+            long Index = Count;
             Add((T)value);
-            return index;
+            return Index;
         }
 
         /// <summary>
@@ -393,14 +381,13 @@ namespace LargeList
 
             long CollectionCount = GetCollectionCount(collection);
             ElementPosition Position;
+            long Index = Count;
 
-            Position = Partition.PositionOf(Count);
+            Position = Partition.PositionOf(Index);
             Partition.MakeRoom(Position, CollectionCount);
 
-            Position = Partition.PositionOf(Count);
+            Position = Partition.PositionOf(Index);
             Partition.SetItemRange(Position, collection);
-
-            Count += CollectionCount;
 
 #if DEBUG
             AssertInvariant();
@@ -488,7 +475,6 @@ namespace LargeList
         public void Clear()
         {
             Partition.Clear();
-            Count = 0;
 
 #if DEBUG
             AssertInvariant();
@@ -1167,8 +1153,6 @@ namespace LargeList
             Position = Partition.PositionOf(index);
             Partition.SetItem(Position, item);
 
-            Count++;
-
 #if DEBUG
             AssertInvariant();
 #endif
@@ -1199,9 +1183,7 @@ namespace LargeList
 
             Partition.MakeRoom(Position, CollectionCount);
             Position = Partition.PositionOf(index);
-
             Partition.SetItemRange(Position, collection);
-            Count += CollectionCount;
 
 #if DEBUG
             AssertInvariant();
@@ -1321,10 +1303,7 @@ namespace LargeList
             bool Result = false;
 
             if (Partition.Remove(item))
-            {
-                Count--;
                 Result = true;
-            }
 
 #if DEBUG
             AssertInvariant();
@@ -1351,7 +1330,6 @@ namespace LargeList
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             long RemovedCount = Partition.RemoveAll(match);
-            Count -= RemovedCount;
 
 #if DEBUG
             AssertInvariant();
@@ -1371,7 +1349,6 @@ namespace LargeList
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
             Partition.RemoveRange(Partition.PositionOf(index), 1);
-            Count--;
 
 #if DEBUG
             AssertInvariant();
@@ -1397,7 +1374,6 @@ namespace LargeList
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
             Partition.RemoveRange(Partition.PositionOf(index), count);
-            Count -= count;
 
 #if DEBUG
             AssertInvariant();
@@ -1691,13 +1667,11 @@ namespace LargeList
 
         private IPartition<T> Partition;
 
-#region Contracts
+        #region Contracts
         private void AssertInvariant()
         {
-            Debug.Assert(Partition.Capacity == Capacity);
-            Debug.Assert(Partition.Count == Count);
         }
-#endregion
+        #endregion
 
         /// <summary>
         /// Enumerates the elements of a LargeList&lt;T&gt;.
@@ -1756,7 +1730,7 @@ namespace LargeList
                 return true;
             }
 
-#region Implementation of IDisposable
+            #region Implementation of IDisposable
             /// <summary>
             /// Releases all resources used by the LargeEnumerator.
             /// </summary>
@@ -1765,7 +1739,7 @@ namespace LargeList
                 Partition = null;
                 Enumerator = null;
             }
-#endregion
+            #endregion
 
             private IPartition<T> Partition;
             private IPartitionEnumerator<T> Enumerator;
