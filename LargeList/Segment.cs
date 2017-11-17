@@ -104,7 +104,8 @@ namespace LargeList
         /// Extends the number of stored elements by the ISegment&lt;T&gt; and leave them uninitialized.
         /// </summary>
         /// <param name="extended">The number of elements added to this ISegment&lt;T&gt;.</param>
-        void Extend(int extended);
+        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        void Extend(int extended, out int effectiveExtended);
 
         /// <summary>
         /// Reduces the maximum number of elements this ISegment&lt;T&gt; can store.
@@ -117,7 +118,8 @@ namespace LargeList
         /// </summary>
         /// <param name="index">The zero-based index at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
-        void MakeRoom(int index, int count);
+        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        void MakeRoom(int index, int count, out int effectiveExtended);
 
         /// <summary>
         /// Inserts an element to the ISegment&lt;T&gt; at the specified index.
@@ -426,13 +428,19 @@ namespace LargeList
         /// Extends the number of stored elements by the Segment&lt;T&gt; and leave them uninitialized.
         /// </summary>
         /// <param name="extended">The number of elements added to this Segment&lt;T&gt;.</param>
-        public void Extend(int extended)
+        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        public void Extend(int extended, out int effectiveExtended)
         {
             Debug.Assert(extended >= 0);
             Debug.Assert(Count + extended <= MaxCapacity);
 
             if (Count + extended > Capacity)
+            {
+                effectiveExtended = Count + extended - Capacity;
                 Array.Resize(ref Content, Count + extended);
+            }
+            else
+                effectiveExtended = 0;
 
             AssertInvariant();
         }
@@ -456,13 +464,14 @@ namespace LargeList
         /// </summary>
         /// <param name="index">The zero-based index at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
-        public void MakeRoom(int index, int count)
+        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        public void MakeRoom(int index, int count, out int effectiveExtended)
         {
             Debug.Assert(index >= 0 && index <= Count);
             Debug.Assert(count >= 0);
             Debug.Assert(index + count <= MaxCapacity);
 
-            Extend(count);
+            Extend(count, out effectiveExtended);
             Count += count;
 
             for (long l = Count; l > index + count; l--)
@@ -677,6 +686,19 @@ namespace LargeList
 
         private T[] Content;
         private int MaxCapacity;
+
+        #region Debugging
+        /// <summary>
+        /// Converts this instance to its equivalent string representation.
+        /// </summary>
+        /// <returns>
+        /// The string representation of the value of this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return Count.ToString() + " / " + Capacity.ToString();
+        }
+        #endregion
 
         #region Contracts
         private void AssertInvariant()

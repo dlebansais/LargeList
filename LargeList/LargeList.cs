@@ -161,12 +161,14 @@ namespace LargeList
             Partition = new Partition<T>(0, 0);
 #else
             Initialize();
-            Partition = CreatePartition(0, 0);
+            Partition = CreatePartition(0, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
 
             Count = 0;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -185,40 +187,14 @@ namespace LargeList
             Partition = new Partition<T>(capacity, 0);
 #else
             Initialize();
-            Partition = CreatePartition(capacity, 0);
+            Partition = CreatePartition(capacity, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
 
             Count = 0;
 
+#if DEBUG
             AssertInvariant();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the LargeList&lt;T&gt; class with the specified initial capacity and uninitialized elements.
-        /// </summary>
-        /// <param name="capacity">The number of elements that the new list can initially store.</param>
-        /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0</exception>
-        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
-        internal LargeList(long capacity, long count)
-        {
-            if (capacity < 0)
-                throw new ArgumentOutOfRangeException(nameof(capacity), "Non-negative number required.");
-
-            Debug.Assert(count >= 0);
-            Debug.Assert(count <= capacity);
-
-#if STRICT
-            Partition = new Partition<T>(capacity, count);
-#else
-            Initialize();
-            Partition = CreatePartition(capacity, count);
 #endif
-
-            Count = count;
-
-            AssertInvariant();
         }
 
         /// <summary>
@@ -243,14 +219,69 @@ namespace LargeList
 #if STRICT
             Partition = new Partition<T>(CollectionCount, CollectionCount);
 #else
-            Partition = CreatePartition(CollectionCount, CollectionCount);
+            Partition = CreatePartition(CollectionCount, CollectionCount, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
 
             Partition.SetItemRange(Partition.Begin, collection);
 
             Count = CollectionCount;
 
+#if DEBUG
             AssertInvariant();
+#endif
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the LargeList&lt;T&gt; class with the specified initial capacity, either uninitialized elements or element copied from a collection, and max segment capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
+        /// <param name="maxSegmentCapacity">The maximum size of a segment in the partition.</param>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0</exception>
+        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
+#if STRICT
+        internal 
+#else
+        public
+#endif
+        LargeList(long capacity, long count, int maxSegmentCapacity, IEnumerable<T> collection)
+        {
+            if (capacity < 0)
+                throw new ArgumentOutOfRangeException(nameof(capacity), "Non-negative number required.");
+
+            if (count < 0 && collection == null)
+                throw new ArgumentException(nameof(count) + " must be greater than or equal to zero, or " + nameof(collection) + " must not be null.");
+
+            if (count >= 0 && collection != null)
+                throw new ArgumentException(nameof(count) + " can't be greater than or equal to zero if " + nameof(collection) + " is not null.");
+
+            Debug.Assert((count >= 0 && collection == null) || (count < 0 && collection != null));
+            Debug.Assert(maxSegmentCapacity > 0);
+            Debug.Assert(count <= capacity);
+
+            Initialize();
+
+            if (count >= 0)
+            {
+                Partition = CreatePartition(capacity, count, maxSegmentCapacity);
+
+                Count = count;
+            }
+            else
+            {
+                long CollectionCount = GetCollectionCount(collection);
+
+                Partition = CreatePartition(capacity, CollectionCount, maxSegmentCapacity);
+                Partition.SetItemRange(Partition.Begin, collection);
+
+                Count = CollectionCount;
+            }
+
+#if DEBUG
+            AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -307,7 +338,9 @@ namespace LargeList
                 else if (value < Capacity)
                     Partition.TrimCapacity(Capacity - value);
 
-                AssertInvariant();
+#if DEBUG
+            AssertInvariant();
+#endif
             }
         }
 
@@ -336,7 +369,9 @@ namespace LargeList
 
             Count++;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
         long ILargeList.Add(object value)
         {
@@ -367,7 +402,9 @@ namespace LargeList
 
             Count += CollectionCount;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -453,7 +490,9 @@ namespace LargeList
             Partition.Clear();
             Count = 0;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -487,16 +526,18 @@ namespace LargeList
             if (converter == null)
                 throw new ArgumentNullException(nameof(converter), "Value cannot be null.");
 
-            LargeList<TOutput> Result = new LargeList<TOutput>(Count, Count);
+            LargeList<TOutput> Result = new LargeList<TOutput>(Count, Count, Partition.MaxSegmentCapacity, null);
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 Result[l] = converter(Partition.GetItem(p));
                 p = Partition.NextPosition(p);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -582,14 +623,16 @@ namespace LargeList
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(arrayIndex) + " and length, and the array's lower bounds.");
 #endif
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 array.SetValue(Partition.GetItem(p), l + arrayIndex);
                 p = Partition.NextPosition(p);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -654,7 +697,9 @@ namespace LargeList
                 p = Partition.NextPosition(p);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -670,7 +715,7 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 if (match(Partition.GetItem(p)))
@@ -695,7 +740,7 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 T item = Partition.GetItem(p);
@@ -723,7 +768,7 @@ namespace LargeList
 
             LargeList<T> Result = new LargeList<T>();
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 T item = Partition.GetItem(p);
@@ -820,7 +865,7 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.End;
+            ElementPosition p = Partition.PositionOf(Count);
             for (long l = 0; l < Count; l++)
             {
                 p = Partition.PreviousPosition(p);
@@ -924,14 +969,16 @@ namespace LargeList
                 throw new ArgumentNullException(nameof(action), "Value cannot be null.");
 #endif
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 action(Partition.GetItem(p));
                 p = Partition.NextPosition(p);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1122,7 +1169,9 @@ namespace LargeList
 
             Count++;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
         void ILargeList.Insert(long index, object item)
         {
@@ -1154,7 +1203,9 @@ namespace LargeList
             Partition.SetItemRange(Position, collection);
             Count += CollectionCount;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1275,7 +1326,9 @@ namespace LargeList
                 Result = true;
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -1300,7 +1353,9 @@ namespace LargeList
             long RemovedCount = Partition.RemoveAll(match);
             Count -= RemovedCount;
 
+#if DEBUG
             AssertInvariant();
+#endif
 
             return RemovedCount;
         }
@@ -1318,7 +1373,9 @@ namespace LargeList
             Partition.RemoveRange(Partition.PositionOf(index), 1);
             Count--;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1342,7 +1399,9 @@ namespace LargeList
             Partition.RemoveRange(Partition.PositionOf(index), count);
             Count -= count;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1373,7 +1432,9 @@ namespace LargeList
 
             Partition.Reverse(Partition.PositionOf(index), Partition.PositionOf(index + count), count);
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1472,7 +1533,9 @@ namespace LargeList
             if (Count + 4 < Capacity)
                 Partition.TrimCapacity(Capacity - Count);
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1488,7 +1551,7 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            ElementPosition p = Partition.PositionOf(0);
             for (long l = 0; l < Count; l++)
             {
                 if (!match(Partition.GetItem(p)))
@@ -1554,12 +1617,13 @@ namespace LargeList
         /// </summary>
         /// <param name="capacity">The number of elements that the new partition can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new partition should have.</param>
+        /// <param name="maxSegmentCapacity">The maximum size of a segment in the partition.</param>
         /// <returns>
         /// The partition used to store elements.
         /// </returns>
-        protected IPartition<T> CreatePartition(long capacity, long count)
+        protected IPartition<T> CreatePartition(long capacity, long count, int maxSegmentCapacity)
         {
-            return new Partition<T>(capacity, count);
+            return new Partition<T>(capacity, count, maxSegmentCapacity);
         }
 #endif
 
@@ -1588,7 +1652,9 @@ namespace LargeList
         {
             Partition.Sort(Partition.PositionOf(index), Partition.PositionOf(index + count), count, comparer);
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>

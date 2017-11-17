@@ -24,6 +24,7 @@ The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can 
 * Downcasting a reference to a large collection or list to one of their compatible interface, and then using this interface to access the collection or list has not been tested extensively. It should work, but using the original reference to the object by its class is recommended.
 * Classes of the LargeList namespace offer minimal support for inheritance, for example if one wants to back the data on disk rather than in memory. On the other hand the source code is available to compensate.
 * The code is free and open without restriction whatsoever, but if it goes into production, please credit me somehow. Thank you!
+* The sorting algorithm can give a slightly different result for items that are considered equal by a IComparer but not by System.Object.Equals().
 
 ## Performance
 This table lists theoretical and observed performance.

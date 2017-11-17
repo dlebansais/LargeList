@@ -15,12 +15,14 @@ namespace LargeList
         /// <summary>
         /// Initializes an instance of the ElementPosition class with the specified segment and element indexes.
         /// </summary>
-        /// <param name="segmentIndex"></param>
-        /// <param name="elementIndex"></param>
-        public ElementPosition(int segmentIndex, int elementIndex)
+        /// <param name="segmentIndex">Index of the segment in the segment table containing the item at the position.</param>
+        /// <param name="elementIndex">Index of the element in the segment specified by <paramref name="segmentIndex"/>.</param>
+        /// <param name="cacheIndex">Index of the cache line that was used to obtain this position.</param>
+        public ElementPosition(int segmentIndex, int elementIndex, int cacheIndex)
         {
             SegmentIndex = segmentIndex;
             ElementIndex = elementIndex;
+            CacheIndex = cacheIndex;
         }
 
         /// <summary>
@@ -32,6 +34,11 @@ namespace LargeList
         /// Index of the element in the segment specified by ElementPosition.SegmentIndex.
         /// </summary>
         public int ElementIndex { get; private set; }
+
+        /// <summary>
+        /// Index of the cache line that was used to obtain the position, -1 if not available.
+        /// </summary>
+        public int CacheIndex { get; private set; }
 
         /// <summary>
         /// Compares the position of two elements.
@@ -142,7 +149,7 @@ namespace LargeList
         /// </returns>
         public override string ToString()
         {
-            return SegmentIndex.ToString() + "," + ElementIndex.ToString();
+            return SegmentIndex.ToString() + "," + ElementIndex.ToString() + " (" + CacheIndex + ")";
         }
     }
 }

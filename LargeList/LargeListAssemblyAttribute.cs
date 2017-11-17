@@ -10,8 +10,11 @@ namespace LargeList
     {
 #if SMALL_SEGMENTS
         internal const int GlobalDefaultMaxSegmentCapacity = 10;
+        //internal const int GlobalDefaultMaxSegmentCapacity = 100000;
+        //internal const int GlobalDefaultMaxSegmentCapacity = 1000000;
 #else
         internal const int GlobalDefaultMaxSegmentCapacity = 0x01000000;
+        //internal const int GlobalDefaultMaxSegmentCapacity = 1000000;
 #endif
 
         /// <summary>

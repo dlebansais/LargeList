@@ -16,6 +16,14 @@ namespace LargeList
     interface IPartition<T>
     {
         /// <summary>
+        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given Partition&lt;T&gt;.
+        /// </summary>
+        /// <returns>
+        /// The maximum capacity allowed for segments.
+        /// </returns>
+        int MaxSegmentCapacity { get; }
+
+        /// <summary>
         /// Gets the total number of elements the IPartition&lt;T&gt; can hold without resizing.
         /// </summary>
         /// <returns>
@@ -24,8 +32,11 @@ namespace LargeList
         long Capacity { get; }
 
         /// <summary>
-        /// For debug purpose only.
+        /// Gets the number of elements contained in the IPartition&lt;T&gt;.
         /// </summary>
+        /// <returns>
+        /// The number of elements contained in the IPartition&lt;T&gt;.
+        /// </returns>
         long Count { get; }
 
         /// <summary>
@@ -47,14 +58,6 @@ namespace LargeList
         /// The position of the first element in the IPartition&lt;T&gt;.
         /// </returns>
         ElementPosition Begin { get; }
-
-        /// <summary>
-        /// Gets a position one step beyond the last element in the IPartition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// A position one step beyond the last element in the IPartition&lt;T&gt;.
-        /// </returns>
-        ElementPosition End { get; }
 
         /// <summary>
         /// Gets the position of an element in the IPartition&lt;T&gt; from its virtual index in a linear list.
@@ -239,53 +242,64 @@ namespace LargeList
         /// </summary>
         /// <param name="capacity">The number of elements that the new partition can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new partition contains.</param>
+        /// <param name="maxSegmentCapacity">The maximum size of a segment in the partition.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of Partition<T>.Initialize and Partition<T>.MaxSegmentCapacity")]
-        public Partition(long capacity, long count)
+        public Partition(long capacity, long count, int maxSegmentCapacity)
         {
             Debug.Assert(capacity >= 0);
             Debug.Assert(count >= 0);
+            Debug.Assert(maxSegmentCapacity > 0);
             Debug.Assert(count <= capacity);
 
             Initialize();
 
+            Capacity = capacity;
+            Count = count;
+            MaxSegmentCapacity = maxSegmentCapacity;
             SegmentTable = new List<ISegment<T>>();
-            ISegment<T> NewSegment;
-            long InitialCount = count;
 
-            while (capacity > MaxSegmentCapacity)
+            ISegment<T> NewSegment;
+            long RemainingCapacity = capacity;
+            long RemainingCount = count;
+            int effectiveExtended;
+
+            while (RemainingCapacity > MaxSegmentCapacity)
             {
-                long SegmentCount = count;
+                long SegmentCount = RemainingCount;
                 if (SegmentCount > MaxSegmentCapacity)
                     SegmentCount = MaxSegmentCapacity;
 
                 NewSegment = CreateMaxCapacitySegment();
-                NewSegment.MakeRoom(0, (int)SegmentCount);
+                NewSegment.MakeRoom(0, (int)SegmentCount, out effectiveExtended);
                 SegmentTable.Add(NewSegment);
 
-                capacity -= MaxSegmentCapacity;
-                count -= SegmentCount;
+                RemainingCapacity -= MaxSegmentCapacity;
+                RemainingCount -= SegmentCount;
             }
 
-            NewSegment = CreateSegment((int)capacity);
-            NewSegment.MakeRoom(0, (int)count);
+            NewSegment = CreateSegment((int)RemainingCapacity);
+            NewSegment.MakeRoom(0, (int)RemainingCount, out effectiveExtended);
             SegmentTable.Add(NewSegment);
 
-            Debug.Assert(Capacity >= capacity);
-            long MaxCapacity = (long)SegmentTable.Count * (long)MaxSegmentCapacity;
-            Debug.Assert(Capacity <= MaxCapacity); // Tolerate a higher capacity than requested.
-            Debug.Assert(Count == InitialCount);
+            InitCache();
+
+            Debug.Assert(Capacity == capacity);
+            Debug.Assert(Count == count);
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
         #endregion
 
         #region Properties
         /// <summary>
-        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given Partition&lt;T&gt;.
+        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but remains constant in a given Partition&lt;T&gt;.
         /// </summary>
         /// <returns>
         /// The maximum capacity allowed for segments.
         /// </returns>
-        protected virtual int MaxSegmentCapacity { get { return LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity; } }
+        public int MaxSegmentCapacity { get; private set; }
 
         /// <summary>
         /// Gets the total number of elements the Partition&lt;T&gt; can hold without resizing.
@@ -293,17 +307,15 @@ namespace LargeList
         /// <returns>
         /// The total number of elements the Partition&lt;T&gt; can hold without resizing.
         /// </returns>
-        public long Capacity
-        {
-            get
-            {
-                long Result = 0;
-                foreach (ISegment<T> Segment in SegmentTable)
-                    Result += Segment.Capacity;
+        public long Capacity { get; private set; }
 
-                return Result;
-            }
-        }
+        /// <summary>
+        /// Gets the number of elements contained in the IPartition&lt;T&gt;.
+        /// </summary>
+        /// <returns>
+        /// The number of elements contained in the IPartition&lt;T&gt;.
+        /// </returns>
+        public long Count { get; private set; }
 
         /// <summary>
         /// Gets the position of the first element in the Partition&lt;T&gt;.
@@ -315,41 +327,7 @@ namespace LargeList
         {
             get
             {
-                int SegmentIndex = 0;
-
-                while (SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count == 0)
-                    SegmentIndex++;
-
-                if (SegmentIndex < SegmentTable.Count)
-                    return new ElementPosition(SegmentIndex, 0);
-                else
-                    return new ElementPosition(0, 0);
-            }
-        }
-
-        /// <summary>
-        /// Gets a position immediately after the last element in the Partition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// The position immediately after the last element in the Partition&lt;T&gt;.
-        /// </returns>
-        public ElementPosition End
-        {
-            get { return new ElementPosition(SegmentTable.Count - 1, SegmentTable[SegmentTable.Count - 1].Count); }
-        }
-
-        /// <summary>
-        /// For debug purpose only.
-        /// </summary>
-        public long Count
-        {
-            get
-            {
-                long Result = 0;
-                foreach (ISegment<T> Segment in SegmentTable)
-                    Result += Segment.Count;
-
-                return Result;
+                return new ElementPosition(0, 0, 0);
             }
         }
         #endregion
@@ -366,25 +344,54 @@ namespace LargeList
         {
             Debug.Assert(index >= 0 && index <= Count);
 
+            /*
             int SegmentIndex = 0;
+            long ElementIndex = index;
+
             for(;;)
             {
-                Debug.Assert(index >= 0);
+                Debug.Assert(ElementIndex >= 0);
                 Debug.Assert(SegmentIndex < SegmentTable.Count);
 
                 ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-                if (index < Segment.Count || (SegmentIndex + 1 == SegmentTable.Count && index == Segment.Count))
+                if (ElementIndex < Segment.Count)
                     break;
 
-                index -= Segment.Count;
-                SegmentIndex++;
+                if (Segment.Count > 0)
+                {
+                    if (SegmentIndex + 1 >= SegmentTable.Count)
+                        break;
+
+                    ElementIndex -= Segment.Count;
+                    SegmentIndex++;
+                }
+                else
+                {
+                    int NextSegmentIndex = SegmentIndex + 1;
+                    while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
+                        NextSegmentIndex++;
+
+                    if (NextSegmentIndex >= SegmentTable.Count)
+                        break;
+
+                    SegmentIndex = NextSegmentIndex;
+                }
             }
 
-            ElementPosition Result = new ElementPosition(SegmentIndex, (int)index);
+            ElementPosition SlowResult = new ElementPosition(SegmentIndex, (int)ElementIndex, -1);
+            */
+
+            ElementPosition FastResult = PositionOfFromCache(index);
+            //Debug.Assert(FastResult == SlowResult);
+
+            ElementPosition Result = FastResult;
 
             Debug.Assert(IsValidPosition(Result, true));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -402,7 +409,9 @@ namespace LargeList
 
             T Result = SegmentTable[position.SegmentIndex][position.ElementIndex];
 
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -421,7 +430,10 @@ namespace LargeList
             IPartitionEnumerator<T> Result = CreateEnumerator(position);
 
             Debug.Assert(Result != null);
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -435,15 +447,15 @@ namespace LargeList
         {
             Debug.Assert(IsValidPosition(position, true));
 
-            if (position == End)
-                return new PartitionEnumerator<T>();
-            else
+            if (IsValidPosition(position, false))
             {
                 ISegment<T> segment = SegmentTable[position.SegmentIndex];
                 int index = position.ElementIndex;
 
                 return new PartitionEnumerator<T>(segment, index);
             }
+            else
+                return new PartitionEnumerator<T>();
         }
 
         /// <summary>
@@ -460,7 +472,7 @@ namespace LargeList
             ElementPosition Result;
 
             if (position.ElementIndex > 0)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex - 1);
+                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex - 1, -1);
 
             else
             {
@@ -470,13 +482,16 @@ namespace LargeList
                 while (SegmentIndex >= 0 && SegmentTable[SegmentIndex].Count == 0);
 
                 if (SegmentIndex >= 0)
-                    Result = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1);
+                    Result = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
                 else
-                    Result = new ElementPosition(SegmentIndex, 0);
+                    Result = new ElementPosition(SegmentIndex, 0, -1);
             }
 
             Debug.Assert(IsValidPosition(Result, false) || (Result.SegmentIndex == -1 && Result.ElementIndex == 0));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -495,23 +510,25 @@ namespace LargeList
             ElementPosition Result;
 
             if (position.ElementIndex + 1 < SegmentTable[position.SegmentIndex].Count)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1);
+                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
 
             else
             {
-                int SegmentIndex = position.SegmentIndex;
-                do
-                    SegmentIndex++;
-                while (SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count == 0);
+                int NextSegmentIndex = position.SegmentIndex + 1;
+                while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
+                    NextSegmentIndex++;
 
-                if (SegmentIndex < SegmentTable.Count)
-                    Result = new ElementPosition(SegmentIndex, 0);
+                if (NextSegmentIndex < SegmentTable.Count)
+                    Result = new ElementPosition(NextSegmentIndex, 0, -1);
                 else
-                    Result = End;
+                    Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
             }
 
             Debug.Assert(IsValidPosition(Result, true));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -538,7 +555,10 @@ namespace LargeList
                 Result = null;
 
             Debug.Assert(Result == null || SegmentTable.Contains(Result));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -561,7 +581,9 @@ namespace LargeList
                     break;
                 }
 
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -584,30 +606,47 @@ namespace LargeList
             long Result = -1;
 
             int SegmentIndex = 0;
+            long ElementStartIndex = startIndex;
             long ItemIndex = 0;
-            while (SegmentIndex < SegmentTable.Count)
+
+            for (;;)
             {
-                Debug.Assert(startIndex >= 0);
+                Debug.Assert(ElementStartIndex >= 0);
+                Debug.Assert(SegmentIndex < SegmentTable.Count);
 
                 ISegment<T> Segment = SegmentTable[SegmentIndex];
-                if (startIndex < Segment.Count)
+
+                if (ElementStartIndex < Segment.Count)
                     break;
 
-                startIndex -= Segment.Count;
-                ItemIndex += Segment.Count;
-                SegmentIndex++;
+                if (Segment.Count > 0)
+                {
+                    if (SegmentIndex + 1 >= SegmentTable.Count)
+                        break;
+
+                    ElementStartIndex -= Segment.Count;
+                    ItemIndex += Segment.Count;
+                    SegmentIndex++;
+                }
+                else
+                {
+                    int NextSegmentIndex = SegmentIndex + 1;
+                    while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
+                        NextSegmentIndex++;
+
+                    if (NextSegmentIndex >= SegmentTable.Count)
+                        break;
+
+                    SegmentIndex = NextSegmentIndex;
+                }
             }
-
-            Debug.Assert((SegmentIndex < SegmentTable.Count && startIndex < SegmentTable[SegmentIndex].Count) || (SegmentIndex == SegmentTable.Count && startIndex == 0));
-
-            int ElementStartIndex = (int)startIndex;
 
             while (SegmentIndex < SegmentTable.Count && count > 0)
             {
                 ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-                int CompareCount = (Segment.Count - ElementStartIndex <= count) ? Segment.Count - ElementStartIndex : (int)count;
-                int ElementIndex = Segment.IndexOf(item, ElementStartIndex, CompareCount);
+                int CompareCount = (Segment.Count - (int)ElementStartIndex <= count) ? Segment.Count - (int)ElementStartIndex : (int)count;
+                int ElementIndex = Segment.IndexOf(item, (int)ElementStartIndex, CompareCount);
                 if (ElementIndex >= 0)
                 {
                     Result = ItemIndex + ElementIndex;
@@ -622,7 +661,10 @@ namespace LargeList
 
             Debug.Assert(count >= 0);
             Debug.Assert(Result == -1 || Result >= 0 && Result < Count && GetItem(PositionOf(Result)).Equals(item));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -681,7 +723,10 @@ namespace LargeList
 
             Debug.Assert(count >= 0);
             Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && GetItem(PositionOf(Result)) == null) || (item != null && item.Equals(GetItem(PositionOf(Result)))))));
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -780,8 +825,8 @@ namespace LargeList
 
                     indexLower += AboveLower + 1;
                     indexUpper -= AboveLower + 1;
-                    lower = new ElementPosition(SegmentIndex, 0);
-                    upper = new ElementPosition(upper.SegmentIndex, Difference - 1);
+                    lower = new ElementPosition(SegmentIndex, 0, -1);
+                    upper = new ElementPosition(upper.SegmentIndex, Difference - 1, -1);
                 }
 
                 else if (Difference < 0)
@@ -796,8 +841,8 @@ namespace LargeList
 
                     indexLower += BelowUpper + 1;
                     indexUpper -= BelowUpper + 1;
-                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper + 1);
-                    upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1);
+                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper + 1, -1);
+                    upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
                 }
 
                 else
@@ -818,8 +863,8 @@ namespace LargeList
 
                     indexLower += BelowUpper + 1;
                     indexUpper -= BelowUpper + 1;
-                    lower = new ElementPosition(LowerSegmentIndex, 0);
-                    upper = new ElementPosition(UpperSegmentIndex, SegmentTable[UpperSegmentIndex].Count - 1);
+                    lower = new ElementPosition(LowerSegmentIndex, 0, -1);
+                    upper = new ElementPosition(UpperSegmentIndex, SegmentTable[UpperSegmentIndex].Count - 1, -1);
                 }
             }
 
@@ -842,15 +887,15 @@ namespace LargeList
 
                 int middleElementIndex = lower.ElementIndex + (upper.ElementIndex - lower.ElementIndex) / 2;
 
-                middle = new ElementPosition(lower.SegmentIndex, middleElementIndex);
+                middle = new ElementPosition(lower.SegmentIndex, middleElementIndex, -1);
                 indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
             }
 
             Debug.Assert(PositionOf(indexMiddle) == middle);
         }
-        #endregion
+#endregion
 
-        #region Commands
+#region Commands
         /// <summary>
         /// Removes all elements from the Partition&lt;T&gt;.
         /// </summary>
@@ -859,7 +904,12 @@ namespace LargeList
             foreach (ISegment<T> Segment in SegmentTable)
                 Segment.Clear();
 
+            Count = 0;
+            RebuildCache();
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -870,32 +920,41 @@ namespace LargeList
         {
             Debug.Assert(extended >= 0);
 
+            long RemainingCapacity = extended;
+
             // We first extend the capacity of the last segment in the partition.
             if (SegmentTable[SegmentTable.Count - 1].Capacity < MaxSegmentCapacity)
             {
                 int Extendable = SegmentTable[SegmentTable.Count - 1].Extendable;
-                if (Extendable > extended)
-                    Extendable = (int)extended;
+                if (Extendable > RemainingCapacity)
+                    Extendable = (int)RemainingCapacity;
 
-                SegmentTable[SegmentTable.Count - 1].Extend(Extendable);
-                extended -= Extendable;
+                int effectiveExtended;
+                SegmentTable[SegmentTable.Count - 1].Extend(Extendable, out effectiveExtended);
+                RemainingCapacity -= effectiveExtended;
             }
 
-            Debug.Assert(extended >= 0);
+            Debug.Assert(RemainingCapacity >= 0);
 
             // Then we add as many empty segments as necessary to increase the partition capacity.
-            while (extended > MaxSegmentCapacity)
+            while (RemainingCapacity > MaxSegmentCapacity)
             {
                 SegmentTable.Add(CreateMaxCapacitySegment());
-                extended -= MaxSegmentCapacity;
+                RemainingCapacity -= MaxSegmentCapacity;
             }
 
-            Debug.Assert(extended >= 0 && extended <= MaxSegmentCapacity);
+            Debug.Assert(RemainingCapacity >= 0 && RemainingCapacity <= MaxSegmentCapacity);
 
-            if (extended > 0)
-                SegmentTable.Add(CreateSegment((int)extended));
+            if (RemainingCapacity > 0)
+                SegmentTable.Add(CreateSegment((int)RemainingCapacity));
 
+            Capacity += extended;
+
+            RebuildCache();
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -906,32 +965,54 @@ namespace LargeList
         {
             Debug.Assert(trimed >= 0);
 
+            long RemainingTrim = trimed;
+            int RemoveIndex = SegmentTable.Count;
+            bool EmptySegment = true;
+
             // Starting from the end of the partition, we trim all segments until Capacity reaches the target.
-            for (int i = SegmentTable.Count; i > 0 && trimed > 0; i--)
+            for (int i = SegmentTable.Count; i > 0 && RemainingTrim > 0; i--)
             {
                 ISegment<T> Segment = SegmentTable[i - 1];
                 int Trimmable = Segment.Trimmable;
                 if (Trimmable == 0)
                     continue;
 
-                if (Trimmable > trimed)
-                    Trimmable = (int)trimed;
+                if (Trimmable > RemainingTrim)
+                    Trimmable = (int)RemainingTrim;
 
-                Segment.Trim(Trimmable);
-                trimed -= Trimmable;
+                if (Segment.Count > 0)
+                {
+                    EmptySegment = false;
+                    Segment.Trim(Trimmable);
+                }
+                else
+                {
+                    Debug.Assert(EmptySegment);
+
+                    if (i > 1 && Trimmable == Segment.Capacity)
+                        RemoveIndex = i - 1;
+                    else
+                    {
+                        Debug.Assert(RemainingTrim == Trimmable);
+                        Segment.Trim(Trimmable);
+                    }
+                }
+
+                RemainingTrim -= Trimmable;
             }
 
-            Debug.Assert(trimed == 0);
+            Debug.Assert(RemainingTrim == 0);
 
             // Remove all unused segments
-            int SegmentIndex = 0;
-            while (SegmentIndex < SegmentTable.Count && SegmentTable.Count > 1)
-                if (SegmentTable[SegmentIndex].Capacity == 0)
-                    RemoveSegmentAt(SegmentIndex);
-                else
-                    SegmentIndex++;
+            RemoveSegmentRange(RemoveIndex, SegmentTable.Count - RemoveIndex);
 
+            Capacity -= trimed;
+
+            RebuildCache();
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -946,11 +1027,16 @@ namespace LargeList
 
             int SegmentIndex = position.SegmentIndex;
             int ElementIndex = position.ElementIndex;
+            long RemainingCount = count;
+            int effectiveExtended;
 
             // First we try to make room in just one segment.
             int Extendable = SegmentTable[SegmentIndex].Extendable;
-            if (Extendable >= count)
-                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, (int)count);
+            if (Extendable >= RemainingCount)
+            {
+                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, (int)RemainingCount, out effectiveExtended);
+                Capacity += effectiveExtended;
+            }
 
             else
             {
@@ -959,7 +1045,7 @@ namespace LargeList
                 int NextExtendable = (SegmentIndex + 1 < SegmentTable.Count) ? SegmentTable[SegmentIndex + 1].Extendable : -1;
 
                 Debug.Assert(SegmentEndCount >= 0);
-                Debug.Assert(ElementIndex + SegmentEndCount + count > MaxSegmentCapacity);
+                Debug.Assert(ElementIndex + SegmentEndCount + RemainingCount > MaxSegmentCapacity);
 
                 // If there is room for elements in the next segment, use it.
                 if (SegmentEndCount <= NextExtendable)
@@ -968,14 +1054,16 @@ namespace LargeList
                     Debug.Assert(SegmentIndex + 1 < SegmentTable.Count);
                     Debug.Assert(SegmentTable[SegmentIndex + 1].Count + SegmentEndCount <= MaxSegmentCapacity);
 
-                    SegmentTable[SegmentIndex + 1].MakeRoom(0, SegmentEndCount);
+                    SegmentTable[SegmentIndex + 1].MakeRoom(0, SegmentEndCount, out effectiveExtended);
+                    Capacity += effectiveExtended;
                 }
 
                 // Otherwise, perform a split.
                 else if (SegmentEndCount > 0)
                 {
                     ISegment<T> NewSegment = CreateSegment(SegmentEndCount);
-                    NewSegment.MakeRoom(0, SegmentEndCount);
+                    NewSegment.MakeRoom(0, SegmentEndCount, out effectiveExtended);
+                    Capacity += NewSegment.Capacity;
                     SegmentTable.Insert(SegmentIndex + 1, NewSegment);
                 }
 
@@ -988,45 +1076,59 @@ namespace LargeList
 
                 // Resume making room.
                 Extendable = SegmentTable[SegmentIndex].Extendable;
-                if (Extendable > count)
-                    Extendable = (int)count;
-                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, Extendable);
-                count -= Extendable;
+                if (Extendable > RemainingCount)
+                    Extendable = (int)RemainingCount;
+                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, Extendable, out effectiveExtended);
+                Capacity += effectiveExtended;
+                RemainingCount -= Extendable;
 
-                Debug.Assert(count >= 0);
+                Debug.Assert(RemainingCount >= 0);
 
                 SegmentIndex++;
 
                 if (SegmentIndex < SegmentTable.Count)
                 {
                     Extendable = SegmentTable[SegmentIndex].Extendable;
-                    if (Extendable > count)
-                        Extendable = (int)count;
-                    SegmentTable[SegmentIndex].MakeRoom(0, Extendable);
-                    count -= Extendable;
+                    if (Extendable > RemainingCount)
+                        Extendable = (int)RemainingCount;
+                    SegmentTable[SegmentIndex].MakeRoom(0, Extendable, out effectiveExtended);
+                    Capacity += effectiveExtended;
+                    RemainingCount -= Extendable;
 
-                    Debug.Assert(count >= 0);
+                    Debug.Assert(RemainingCount >= 0);
                 }
 
-                while (count >= MaxSegmentCapacity)
+                while (RemainingCount >= MaxSegmentCapacity)
                 {
                     ISegment<T> NewSegment = CreateMaxCapacitySegment();
-                    NewSegment.MakeRoom(0, MaxSegmentCapacity);
+                    NewSegment.MakeRoom(0, MaxSegmentCapacity, out effectiveExtended);
+                    Capacity += NewSegment.Capacity;
 
                     SegmentTable.Insert(SegmentIndex, NewSegment);
-                    count -= MaxSegmentCapacity;
+                    RemainingCount -= MaxSegmentCapacity;
+
+                    SegmentIndex++;
                 }
 
-                if (count > 0)
+                if (RemainingCount > 0)
                 {
-                    ISegment<T> NewSegment = CreateSegment((int)count);
-                    NewSegment.MakeRoom(0, (int)count);
+                    ISegment<T> NewSegment = CreateSegment((int)RemainingCount);
+                    NewSegment.MakeRoom(0, (int)RemainingCount, out effectiveExtended);
+                    Capacity += NewSegment.Capacity;
 
                     SegmentTable.Insert(SegmentIndex, NewSegment);
                 }
             }
 
+            Count += count;
+            ResizeCache();
+
+            Debug.Assert(position.CacheIndex >= 0);
+            RebuildCacheFrom(position.CacheIndex);
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1040,7 +1142,9 @@ namespace LargeList
 
             SegmentTable[position.SegmentIndex][position.ElementIndex] = item;
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1063,7 +1167,9 @@ namespace LargeList
                 position = NextPosition(position);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1077,8 +1183,9 @@ namespace LargeList
 
             int SegmentIndex = position.SegmentIndex;
             int ElementIndex = position.ElementIndex;
+            long RemainingCount = count;
 
-            while (count > 0)
+            while (RemainingCount > 0)
             {
                 Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count);
 
@@ -1091,18 +1198,34 @@ namespace LargeList
                 Debug.Assert(ElementIndex >= 0 && ElementIndex < SegmentTable[SegmentIndex].Count);
 
                 int Removable = SegmentTable[SegmentIndex].Count - ElementIndex;
-                if (Removable > count)
-                    Removable = (int)count;
+                if (Removable > RemainingCount)
+                    Removable = (int)RemainingCount;
 
-                SegmentTable[SegmentIndex++].RemoveRange(ElementIndex, Removable);
-                
-                count -= Removable;
+                SegmentTable[SegmentIndex].RemoveRange(ElementIndex, Removable);
+
+                if (SegmentTable[SegmentIndex].Count > 0)
+                    SegmentIndex++;
+                else
+                {
+                    ISegment<T> Segment = SegmentTable[SegmentIndex];
+                    SegmentTable.RemoveAt(SegmentIndex);
+                    SegmentTable.Add(Segment);
+                }
+
+                RemainingCount -= Removable;
                 ElementIndex = 0;
             }
 
-            Debug.Assert(count == 0);
+            Debug.Assert(RemainingCount == 0);
 
+            Count -= count;
+
+            Debug.Assert(position.CacheIndex >= 0);
+            RebuildCacheFrom(position.CacheIndex);
+
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1120,10 +1243,21 @@ namespace LargeList
                 if (Segment.Remove(item))
                 {
                     Result = true;
+                    Count--;
+
+                    if (Segment.Count == 0)
+                    {
+                        SegmentTable.Remove(Segment);
+                        SegmentTable.Add(Segment);
+                    }
                     break;
                 }
 
+            RebuildCache();
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return Result;
         }
@@ -1139,10 +1273,30 @@ namespace LargeList
         {
             long RemovedCount = 0;
 
-            foreach (ISegment<T> Segment in SegmentTable)
+            int SegmentCount = SegmentTable.Count;
+            int SegmentIndex = 0;
+            while (SegmentIndex < SegmentCount)
+            {
+                ISegment<T> Segment = SegmentTable[SegmentIndex];
+
                 RemovedCount += Segment.RemoveAll(match);
 
+                if (Segment.Count == 0)
+                {
+                    SegmentTable.RemoveAt(SegmentIndex);
+                    SegmentTable.Add(Segment);
+                    SegmentCount--;
+                }
+                else
+                    SegmentIndex++;
+            }
+
+            Count -= RemovedCount;
+            RebuildCache();
+
+#if DEBUG
             AssertInvariant();
+#endif
 
             return RemovedCount;
         }
@@ -1170,7 +1324,9 @@ namespace LargeList
                 begin = NextPosition(begin);
             }
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -1190,7 +1346,9 @@ namespace LargeList
             if (count > 0)
                 QuickSort(begin, PreviousPosition(end), comparer);
 
+#if DEBUG
             AssertInvariant();
+#endif
         }
 
         private void QuickSort(ElementPosition low, ElementPosition high, IComparer<T> comparer)
@@ -1230,7 +1388,7 @@ namespace LargeList
             {
                 do
                     if (up.SegmentIndex < 0)
-                        up = Begin;
+                        up = PositionOf(0);
                     else
                         up = NextPosition(up);
                 while (comparer.Compare(SegmentTable[up.SegmentIndex][up.ElementIndex], pivot) < 0);
@@ -1278,9 +1436,9 @@ namespace LargeList
             SegmentTable[p1.SegmentIndex][p1.ElementIndex] = SegmentTable[p2.SegmentIndex][p2.ElementIndex];
             SegmentTable[p2.SegmentIndex][p2.ElementIndex] = item;
         }
-        #endregion
+#endregion
 
-        #region Descendants Interface
+#region Descendants Interface
         /// <summary>
         /// <para>Initializes the partition.</para>
         /// <para>This method is called once, from constructors, at the begining, after parameter validation.</para>
@@ -1317,6 +1475,8 @@ namespace LargeList
         /// <param name="segment">The segment to remove.</param>
         protected void RemoveSegment(ISegment<T> segment)
         {
+            Debug.Assert(SegmentTable.Contains(segment));
+
             RemoveSegmentAt(SegmentTable.IndexOf(segment));
         }
 
@@ -1326,20 +1486,212 @@ namespace LargeList
         /// <param name="index">The zero-based index of the segment to remove.</param>
         protected void RemoveSegmentAt(int index)
         {
+            Debug.Assert(index >= 0 && index < SegmentTable.Count);
+
             SegmentTable.RemoveAt(index);
         }
+
+        /// <summary>
+        /// Removes segments starting from the specified index in the Partition&lt;T&gt;.
+        /// </summary>
+        /// <param name="index">The zero-based index of the first segment to remove.</param>
+        /// <param name="count">The number of segments to remove.</param>
+        protected void RemoveSegmentRange(int index, int count)
+        {
+            Debug.Assert(index >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(index + count <= SegmentTable.Count);
+
+            SegmentTable.RemoveRange(index, count);
+        }
+        #endregion
+
+        #region Cache
+        private struct CacheLine
+        {
+            public int SegmentIndex;
+            public long Min;
+
+            public override string ToString()
+            {
+                return SegmentIndex.ToString() + "," + Min;
+            }
+        }
+
+        private void InitCache()
+        {
+            RebuildCache();
+        }
+
+        private void RebuildCache()
+        {
+            Debug.Assert(SegmentTable.Count > 0);
+
+            CacheLineExponent = HighestExponentAbove(MaxSegmentCapacity) - 1;
+            CacheLineLength = 1 << CacheLineExponent;
+
+            ResizeCache();
+
+            Cache[0].SegmentIndex = 0;
+            Cache[0].Min = 0;
+
+            RebuildCacheFrom(0);
+        }
+
+        private void ResizeCache()
+        {
+            CacheLineCount = (int)(Count / CacheLineLength) + 1;
+
+            //int CapacityExponent = HighestExponentAbove(Count);
+            //CacheLineCount = CapacityExponent >= CacheLineExponent ? (1 << (CapacityExponent - CacheLineExponent)) : 1;
+
+            if (Cache == null || CacheLineCount > Cache.Length)
+                Array.Resize(ref Cache, CacheLineCount);
+        }
+
+        private void RebuildCacheFrom(int CacheLine)
+        {
+            Debug.Assert(CacheLine < CacheLineCount);
+
+            int SegmentIndex = Cache[CacheLine].SegmentIndex;
+            long Min = Cache[CacheLine].Min;
+
+            Debug.Assert(SegmentIndex < SegmentTable.Count);
+
+            while (CacheLine + 1 < CacheLineCount)
+            {
+                CacheLine++;
+
+                long CacheIndex = CacheLine * CacheLineLength;
+
+                while (Min + SegmentTable[SegmentIndex].Count < CacheIndex)
+                {
+                    if (SegmentTable[SegmentIndex].Count == 0 || SegmentIndex + 1 == SegmentTable.Count)
+                        break;
+
+                    Min += SegmentTable[SegmentIndex].Count;
+                    SegmentIndex++;
+                }
+
+                Debug.Assert(SegmentIndex < SegmentTable.Count);
+
+                Cache[CacheLine].SegmentIndex = SegmentIndex;
+                Cache[CacheLine].Min = Min;
+            }
+        }
+
+        private int HighestExponentAbove(long n)
+        {
+            Debug.Assert(n >= 0);
+
+            int Exponent = 0;
+            long i = n;
+
+            while (i > 0)
+            {
+                Exponent++;
+                i >>= 1;
+            }
+
+            Debug.Assert((1 << Exponent) >= n);
+
+            return Exponent;
+        }
+
+        private ElementPosition PositionOfFromCache(long index)
+        {
+            int CacheIndex = (int)(index >> CacheLineExponent);
+
+            if (CacheIndex >= CacheLineCount)
+                return new ElementPosition(SegmentTable.Count - 1, SegmentTable[SegmentTable.Count - 1].Count, CacheLineCount - 1);
+
+            Debug.Assert(CacheIndex < CacheLineCount);
+
+            int SegmentIndex = Cache[CacheIndex].SegmentIndex;
+            long ElementIndex = index - Cache[CacheIndex].Min;
+
+            while (((ElementIndex > SegmentTable[SegmentIndex].Count) || (ElementIndex == SegmentTable[SegmentIndex].Count && index < Count)) && SegmentTable[SegmentIndex].Count > 0 && SegmentIndex + 1 < SegmentTable.Count)
+            {
+                ElementIndex -= SegmentTable[SegmentIndex].Count;
+                SegmentIndex++;
+            }
+
+            Debug.Assert(ElementIndex <= SegmentTable[SegmentIndex].Capacity);
+
+            if (ElementIndex == SegmentTable[SegmentIndex].Capacity && SegmentTable[SegmentIndex].Capacity > 0)
+            {
+                Debug.Assert(SegmentTable[SegmentIndex].Count == SegmentTable[SegmentIndex].Capacity);
+
+                if (SegmentTable[SegmentIndex].Capacity == MaxSegmentCapacity && SegmentIndex + 1 < SegmentTable.Count)
+                {
+                    ElementIndex -= SegmentTable[SegmentIndex].Count;
+                    SegmentIndex++;
+                    Debug.Assert(ElementIndex == 0);
+                }
+            }
+
+            return new ElementPosition(SegmentIndex, (int)ElementIndex, CacheIndex);
+        }
+
+        private CacheLine[] Cache;
+        private int CacheLineExponent;
+        private int CacheLineLength;
+        private int CacheLineCount;
         #endregion
 
         private List<ISegment<T>> SegmentTable;
 
-        #region Contracts
+#region Contracts
         private void AssertInvariant()
         {
             Debug.Assert(SegmentTable.Count > 0);
+            Debug.Assert(Capacity <= SegmentTable.Count * (long)MaxSegmentCapacity);
             Debug.Assert(Count <= Capacity);
 
-            foreach (ISegment<T> segment in SegmentTable)
-                Debug.Assert(segment.Count <= segment.Capacity);
+            long TotalCapacity = 0;
+            long TotalCount = 0;
+            bool IsPreviousSegmentVoid = false;
+            bool IsPreviousSegmentEmpty = false;
+            foreach (ISegment<T> Segment in SegmentTable)
+            {
+                if (Segment.Capacity == 0)
+                    IsPreviousSegmentVoid = true;
+                else
+                {
+                    Debug.Assert(!IsPreviousSegmentVoid);
+                    TotalCapacity += Segment.Capacity;
+                }
+
+                if (Segment.Count == 0)
+                    IsPreviousSegmentEmpty = true;
+                else
+                {
+                    Debug.Assert(!IsPreviousSegmentVoid);
+                    Debug.Assert(!IsPreviousSegmentEmpty);
+                    TotalCount += Segment.Count;
+                }
+            }
+
+            Debug.Assert(Capacity == TotalCapacity);
+            Debug.Assert(Count == TotalCount);
+
+            Debug.Assert(Cache[0].SegmentIndex == 0);
+            Debug.Assert(Cache[0].Min == 0);
+
+            int n = 0;
+            while (n < Count)
+            {
+                ElementPosition p = PositionOfFromCache(n);
+
+                TotalCount = 0;
+                for (int s = 0; s < p.SegmentIndex; s++)
+                    TotalCount += SegmentTable[s].Count;
+
+                TotalCount += p.ElementIndex;
+                Debug.Assert(TotalCount == n);
+
+                n += CacheLineLength;
+            }
         }
 
         private bool IsValidPosition(ElementPosition position, bool AllowEnd)
@@ -1363,6 +1715,6 @@ namespace LargeList
 
             return false;
         }
-        #endregion
+#endregion
     }
 }
