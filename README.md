@@ -34,6 +34,8 @@ The green number means performance improvement: if an operation takes one second
 
 (TODO)
 
+Graphs of measured performance can be found [here](https://github.com/dlebansais/LargeList/Performance/performance.md).
+
 ## Backward compatibility
 The implementation, interface and documentation of classes and interfaces in the LargeList namespace is backward compatible as much as possible with the corresponding class or interface in .NET, when it exists. But there are some differences:
 * Indexes are long (64-bits values), not int.
