@@ -1,13 +1,13 @@
 # Status: Beta
 Please wait a few days while I sort out unit tests, performance and doc.
 
-You can download the latest build [here](https://github.com/dlebansais/LargeList/releases/download/1.0.0.3/LargeList.dll). Target framework: 4.5.2, Windows 64-bits only.
+You can download the latest build [here](https://github.com/dlebansais/LargeList/releases). Target framework: 4.5.2, Windows 64-bits only.
 
 TODO list:
 * [X] Integrate unit testing with travis-ci.
 * [X] Optimize lengthy operations within segments.
-* [ ] Measure operation time in O(n) and compare with List&lt;>.
-* [ ] Customizable segment capacity.
+* [X] Measure operation time in O(n) and compare with List&lt;>.
+* [X] Customizable segment capacity.
 * [ ] Customizable use of the Large Object Heap.
 * [ ] Code cleanup.
 
@@ -34,7 +34,7 @@ The green number means performance improvement: if an operation takes one second
 
 (TODO)
 
-Graphs of measured performance can be found [here](https://github.com/dlebansais/LargeList/Performance/performance.md).
+Graphs of measured performance can be found [here](/Performance/performance.md).
 
 ## Backward compatibility
 The implementation, interface and documentation of classes and interfaces in the LargeList namespace is backward compatible as much as possible with the corresponding class or interface in .NET, when it exists. But there are some differences:
@@ -67,7 +67,7 @@ In addition to the STRICT mode, one can read what's the default value for segmen
 
 # Examples
 To use LargeList:
-* Download [the lastest release](https://github.com/dlebansais/LargeList/releases/download/1.0.0.3/LargeList.dll) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
+* Download [the lastest release](https://github.com/dlebansais/LargeList/releases) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
 * In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
 * Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
 * Add code similar to this in your project.
