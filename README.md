@@ -15,7 +15,7 @@ TODO list:
 ![Build Status](https://travis-ci.org/dlebansais/LargeList.svg?branch=master)
 
 LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
-The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 250 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
+The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 268 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
 
 ## Caveats
 * Because LargeList doesn't use a single array to store data, and is not integrated with .NET for optimal performance, it is slower than the standard implementation of List&lt;>. However, this is compensated by optimizations resulting from the partition scheme used, that give better performance for many operations such as Insert(), and negligible overhead for others, as long as the number of elements is large. Therefore, using LargeList is not recommended if the number of elements that will be stored is relatively low (less than 10000), and recommended if it will always be large or if performance when it is low is not a concern.
@@ -23,16 +23,56 @@ The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can 
 * .NET has a ReadOnlyCollection&lt;> class, but no ReadOnlyList&lt;> class, and therefore doesn't provides a safe way to expose features such as FindLastIndex on a read-only list. The LargeList namespace includes a new class to do this.
 * Downcasting a reference to a large collection or list to one of their compatible interface, and then using this interface to access the collection or list has not been tested extensively. It should work, but using the original reference to the object by its class is recommended.
 * Classes of the LargeList namespace offer minimal support for inheritance, for example if one wants to back the data on disk rather than in memory. On the other hand the source code is available to compensate.
-* The code is free and open without restriction whatsoever, but if it goes into production, please credit me somehow. Thank you!
 * The sorting algorithm can give a slightly different result for items that are considered equal by a IComparer but not by System.Object.Equals().
+* The code is free and open without restriction whatsoever, but if it goes into production, please credit me somehow. Thank you!
 
 ## Performance
 This table lists theoretical and observed performance.
 The theoretical performance will never be achieved in practice because of the default partitioning, that make large *n* to really become large only with memory amount way beyond realistic. However, if you specify custom partitioning (see the customization section) it is conceivable you observe it in practice.
-The red number means performance degradation: if an operation takes one second with Collection&lt;> or List&lt;>, it takes that many seconds (>1, in red) to complete with LargeList.
-The green number means performance improvement: if an operation takes one second with LargeList, it takes that many seconds (>1, in green) to complete with Collection&lt;> or List&lt;>.
 
-(TODO)
+Method | List<> | LargeList<>
+------ | ------ | -----------
+Add (within capacity) | O(1) | 
+AsReadOnly | O(1) | 
+Capacity | O(1) | 
+Count | O(1) | 
+get | O(1) | 
+GetEnumerator | O(1) | 
+Insert (at end) | O(1) | 
+set | O(1) | 
+TrimExcess | O(1) | O(n)
+BinarySearch | O(log(n)) | 
+Add (extending capacity) | O(n) | O(1)
+AddRange | O(n) | 
+Clear | O(n) | 
+Contains | O(n) | 
+ConvertAll | O(n) | 
+CopyTo (at begining) | O(n) | 
+CopyTo (at end) | O(n) | 
+Exists | O(n) | 
+Find | O(n) | 
+FindAll | O(n) | 
+FindIndex | O(n) | 
+FindLastIndex | O(n) | 
+ForEach | O(n) | 
+GetRange (at begining) | O(n) | 
+GetRange (at end) | O(n) | 
+IndexOf | O(n) | 
+Insert (at begining) | O(n) | O(1)
+LastIndexOf | O(n) | 
+Remove (at begining) | O(n) | O(1)
+Remove (at end) | O(n) | 
+RemoveAt | O(n) | O(1)
+RemoveRange (at begining) | O(n) | O(1)
+RemoveRange (at end) | O(n) | 
+Reverse | O(n) | 
+ToArray | O(n) | 
+TrueForAll | O(n) | 
+AddRange (extending capacity) | O(n+m) | 
+InsertRange (at begining) | O(n+m) | 
+InsertRangeLast | O(n+m) | 
+Sort (optimal case) | O(n.log(n)) | 
+Sort (random items) | O(n.log(n)) | 
 
 Graphs of measured performance can be found [here](/Performance/performance.md).
 
@@ -47,7 +87,8 @@ If backward compatibility is an issue, the code can be recompiled in STRICT mode
 ## STRICT mode
 To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
 To know if the version you use was recompiled in STRICT mode or not, include the following excerpt in your code:
-```
+
+```csharp
 bool? IsStrict = null;
 
 try
@@ -65,6 +106,15 @@ catch
 ## Partition default values
 In addition to the STRICT mode, one can read what's the default value for segments in the partition scheme (units on contiguous elements). Just write the same code than above but to get the value of `Attribute.DefaultMaxSegmentCapacity`.
 
+## Customization
+LargeList<> has one additional constructor that takes the following arguments:
+```csharp
+LargeList(long capacity, long count, int maxSegmentCapacity, IEnumerable<T> collection)
+```
+
+`capacity` is the usual initial capacity of the list. You can either create the list with `count` unintialized elements or with element copied from `collection`. These two options are mutually exclusive: if `count` is greater than or equal to zero, `collection` must be null. If `collection` is not null, `count` must be negative.
+`maxSegmentCapacity` is the maximum size of one segment in the partition scheme. Note that it's a number of elements, not bytes.
+
 # Examples
 To use LargeList:
 * Download [the lastest release](https://github.com/dlebansais/LargeList/releases) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
@@ -72,7 +122,7 @@ To use LargeList:
 * Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
 * Add code similar to this in your project.
 
-```
+```csharp
 using LargeList;
 
 namespace Test
