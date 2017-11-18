@@ -32,47 +32,47 @@ The theoretical performance will never be achieved in practice because of the de
 
 Method | List<> | LargeList<>
 ------ | ------ | -----------
-Add (within capacity) | O(1) | 
-AsReadOnly | O(1) | 
-Capacity | O(1) | 
-Count | O(1) | 
-get | O(1) | 
-GetEnumerator | O(1) | 
-Insert (at end) | O(1) | 
-set | O(1) | 
+Add (within capacity) | O(1) | O(1)
+AsReadOnly | O(1) | O(1)
+Capacity | O(1) | O(1)
+Count | O(1) | O(1)
+get | O(1) | O(1)
+GetEnumerator | O(1) | O(1)
+Insert (at end) | O(1) | O(1)
+set | O(1) | O(1)
 TrimExcess | O(1) | __O(n)__
-BinarySearch | O(log(n)) | 
-Add (extending capacity) | O(n) | O(1)
-AddRange | O(n) | 
-Clear | O(n) | 
-Contains | O(n) | 
-ConvertAll | O(n) | 
-CopyTo (at begining) | O(n) | 
-CopyTo (at end) | O(n) | 
-Exists | O(n) | 
-Find | O(n) | 
-FindAll | O(n) | 
-FindIndex | O(n) | 
-FindLastIndex | O(n) | 
-ForEach | O(n) | 
-GetRange (at begining) | O(n) | 
-GetRange (at end) | O(n) | 
-IndexOf | O(n) | 
-Insert (at begining) | O(n) | O(1)
-LastIndexOf | O(n) | 
-Remove (at begining) | O(n) | O(1)
-Remove (at end) | O(n) | 
-RemoveAt | O(n) | O(1)
-RemoveRange (at begining) | O(n) | O(1)
-RemoveRange (at end) | O(n) | 
-Reverse | O(n) | 
-ToArray | O(n) | 
-TrueForAll | O(n) | 
-AddRange (extending capacity) | O(n+m) | 
-InsertRange (at begining) | O(n+m) | 
-InsertRangeLast | O(n+m) | 
-Sort (optimal case) | O(n.log(n)) | 
-Sort (random items) | O(n.log(n)) | 
+BinarySearch | O(log(n)) | O(log(n))
+Add (extending capacity) | O(n) | __O(1)__
+AddRange | O(n) | O(n)
+Clear | O(n) | O(n)
+Contains | O(n) | O(n)
+ConvertAll | O(n) | O(n)
+CopyTo (at begining) | O(n) | O(n)
+CopyTo (at end) | O(n) | O(n)
+Exists | O(n) | O(n)
+Find | O(n) | O(n)
+FindAll | O(n) | O(n)
+FindIndex | O(n) | O(n)
+FindLastIndex | O(n) | O(n)
+ForEach | O(n) | O(n)
+GetRange (at begining) | O(n) | O(n)
+GetRange (at end) | O(n) | O(n)
+IndexOf | O(n) | O(n)
+Insert (at begining) | O(n) | __O(1)__
+LastIndexOf | O(n) | O(n)
+Remove (at begining) | O(n) | __O(1)__
+Remove (at end) | O(n) | O(n)
+RemoveAt | O(n) | __O(1)__
+RemoveRange (at begining) | O(n) | __O(1)__
+RemoveRange (at end) | O(n) | O(n)
+Reverse | O(n) | O(n)
+ToArray | O(n) | O(n)
+TrueForAll | O(n) | O(n)
+AddRange (extending capacity) | O(n+m) | O(n+m)
+InsertRange (at begining) | O(n+m) | O(n+m)
+InsertRangeLast | O(n+m) | O(n+m)
+Sort (optimal case) | O(n.log(n)) | O(n.log(n))
+Sort (random items) | O(n.log(n)) | O(n.log(n))
 
 Graphs of measured performance can be found [here](/Performance/performance.md).
 
