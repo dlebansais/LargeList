@@ -40,7 +40,7 @@ get | O(1) |
 GetEnumerator | O(1) | 
 Insert (at end) | O(1) | 
 set | O(1) | 
-TrimExcess | O(1) | O(n)
+TrimExcess | O(1) | __O(n)__
 BinarySearch | O(log(n)) | 
 Add (extending capacity) | O(n) | O(1)
 AddRange | O(n) | 
