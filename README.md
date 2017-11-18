@@ -8,7 +8,7 @@ TODO list:
 * [X] Optimize lengthy operations within segments.
 * [X] Measure operation time in O(n) and compare with List&lt;>.
 * [X] Customizable segment capacity.
-* [ ] Customizable use of the Large Object Heap.
+* [ ] Optimization.
 * [ ] Code cleanup.
 
 # LargeList
