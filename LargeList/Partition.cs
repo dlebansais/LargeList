@@ -344,48 +344,7 @@ namespace LargeList
         {
             Debug.Assert(index >= 0 && index <= Count);
 
-            /*
-            int SegmentIndex = 0;
-            long ElementIndex = index;
-
-            for(;;)
-            {
-                Debug.Assert(ElementIndex >= 0);
-                Debug.Assert(SegmentIndex < SegmentTable.Count);
-
-                ISegment<T> Segment = SegmentTable[SegmentIndex];
-
-                if (ElementIndex < Segment.Count)
-                    break;
-
-                if (Segment.Count > 0)
-                {
-                    if (SegmentIndex + 1 >= SegmentTable.Count)
-                        break;
-
-                    ElementIndex -= Segment.Count;
-                    SegmentIndex++;
-                }
-                else
-                {
-                    int NextSegmentIndex = SegmentIndex + 1;
-                    while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
-                        NextSegmentIndex++;
-
-                    if (NextSegmentIndex >= SegmentTable.Count)
-                        break;
-
-                    SegmentIndex = NextSegmentIndex;
-                }
-            }
-
-            ElementPosition SlowResult = new ElementPosition(SegmentIndex, (int)ElementIndex, -1);
-            */
-
-            ElementPosition FastResult = PositionOfFromCache(index);
-            //Debug.Assert(FastResult == SlowResult);
-
-            ElementPosition Result = FastResult;
+            ElementPosition Result = PositionOfFromCache(index);
 
             Debug.Assert(IsValidPosition(Result, true));
 
@@ -895,7 +854,7 @@ namespace LargeList
         }
 #endregion
 
-#region Commands
+        #region Commands
         /// <summary>
         /// Removes all elements from the Partition&lt;T&gt;.
         /// </summary>
@@ -1344,32 +1303,59 @@ namespace LargeList
             Debug.Assert(comparer != null);
 
             if (count > 0)
-                QuickSort(begin, PreviousPosition(end), comparer);
+            {
+                Debug.Assert(QuickSortStack.Count == 0);
+
+                QuickSortRange Range = new QuickSortRange() { FirstElement = begin, LastElement = PreviousPosition(end) };
+                QuickSortStack.Push(Range);
+
+                while (QuickSortStack.Count > 0)
+                    QuickSort(comparer);
+
+                Debug.Assert(QuickSortStack.Count == 0);
+            }
 
 #if DEBUG
             AssertInvariant();
 #endif
         }
 
-        private void QuickSort(ElementPosition low, ElementPosition high, IComparer<T> comparer)
+        private Stack<QuickSortRange> QuickSortStack = new Stack<QuickSortRange>();
+        #endregion
+
+        #region Sorting
+        private struct QuickSortRange
         {
+            public ElementPosition FirstElement;
+            public ElementPosition LastElement;
+        }
+
+        private void QuickSort(IComparer<T> comparer)
+        {
+            Debug.Assert(comparer != null);
+
+            QuickSortRange Range = QuickSortStack.Pop();
+            ElementPosition low = Range.FirstElement;
+            ElementPosition high = Range.LastElement;
+
             Debug.Assert(IsValidPosition(low, false));
             Debug.Assert(IsValidPosition(high, false));
             Debug.Assert(low <= high);
-            Debug.Assert(comparer != null);
 
             if (low.SegmentIndex == high.SegmentIndex)
             {
                 ISegment<T> Segment = SegmentTable[low.SegmentIndex];
                 Segment.Sort(low.ElementIndex, high.ElementIndex, comparer);
-                return;
             }
-
-            if (low < high)
+            else if (low < high)
             {
                 ElementPosition middle = SplitSortInterval(low, high, comparer);
-                QuickSort(low, middle, comparer);
-                QuickSort(NextPosition(middle), high, comparer);
+
+                QuickSortRange RangeLow = new QuickSortRange() { FirstElement = low, LastElement = middle };
+                QuickSortRange RangeHigh = new QuickSortRange() { FirstElement = NextPosition(middle), LastElement = high };
+
+                QuickSortStack.Push(RangeLow);
+                QuickSortStack.Push(RangeHigh);
             }
         }
 
@@ -1436,9 +1422,9 @@ namespace LargeList
             SegmentTable[p1.SegmentIndex][p1.ElementIndex] = SegmentTable[p2.SegmentIndex][p2.ElementIndex];
             SegmentTable[p2.SegmentIndex][p2.ElementIndex] = item;
         }
-#endregion
+        #endregion
 
-#region Descendants Interface
+        #region Descendants Interface
         /// <summary>
         /// <para>Initializes the partition.</para>
         /// <para>This method is called once, from constructors, at the begining, after parameter validation.</para>
@@ -1542,9 +1528,6 @@ namespace LargeList
         {
             CacheLineCount = (int)(Count / CacheLineLength) + 1;
 
-            //int CapacityExponent = HighestExponentAbove(Count);
-            //CacheLineCount = CapacityExponent >= CacheLineExponent ? (1 << (CapacityExponent - CacheLineExponent)) : 1;
-
             if (Cache == null || CacheLineCount > Cache.Length)
                 Array.Resize(ref Cache, CacheLineCount);
         }
@@ -1641,7 +1624,7 @@ namespace LargeList
 
         private List<ISegment<T>> SegmentTable;
 
-#region Contracts
+        #region Contracts
         private void AssertInvariant()
         {
             Debug.Assert(SegmentTable.Count > 0);
@@ -1715,6 +1698,6 @@ namespace LargeList
 
             return false;
         }
-#endregion
+        #endregion
     }
 }
