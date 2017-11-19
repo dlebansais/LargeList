@@ -218,7 +218,7 @@ namespace LargeList
             Partition = CreatePartition(CollectionCount, CollectionCount, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
 
-            Partition.SetItemRange(Partition.Begin, collection);
+            Partition.SetItemRange(0, 0, collection);
 
 #if DEBUG
             AssertInvariant();
@@ -265,7 +265,7 @@ namespace LargeList
                 long CollectionCount = GetCollectionCount(collection);
 
                 Partition = CreatePartition(capacity, CollectionCount, maxSegmentCapacity);
-                Partition.SetItemRange(Partition.Begin, collection);
+                Partition.SetItemRange(0, 0, collection);
             }
 
 #if DEBUG
@@ -288,16 +288,22 @@ namespace LargeList
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-                ElementPosition position = Partition.PositionAt(index);
-                return Partition.GetItem(position);
+                int SegmentIndex;
+                int ElementIndex;
+                int CacheIndex;
+                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+                return Partition.GetItem(SegmentIndex, ElementIndex);
             }
             set
             {
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-                ElementPosition position = Partition.PositionAt(index);
-                Partition.SetItem(position, value);
+                int SegmentIndex;
+                int ElementIndex;
+                int CacheIndex;
+                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+                Partition.SetItem(SegmentIndex, ElementIndex, value);
             }
         }
         object ILargeList.this[long index]
@@ -348,14 +354,17 @@ namespace LargeList
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void Add(T item)
         {
-            ElementPosition Position;
             long Index = Count;
 
-            Position = Partition.PositionAt(Index);
-            Partition.MakeRoom(Position, 1);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
-            Position = Partition.PositionAt(Index);
-            Partition.SetItem(Position, item);
+            Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, 1);
+
+            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.SetItem(SegmentIndex, ElementIndex, item);
 
 #if DEBUG
             AssertInvariant();
@@ -380,14 +389,17 @@ namespace LargeList
                 throw new ArgumentNullException(nameof(collection), "Value cannot be null.");
 
             long CollectionCount = GetCollectionCount(collection);
-            ElementPosition Position;
             long Index = Count;
 
-            Position = Partition.PositionAt(Index);
-            Partition.MakeRoom(Position, CollectionCount);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
-            Position = Partition.PositionAt(Index);
-            Partition.SetItemRange(Position, collection);
+            Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, CollectionCount);
+
+            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.SetItemRange(SegmentIndex, ElementIndex, collection);
 
 #if DEBUG
             AssertInvariant();
@@ -514,11 +526,12 @@ namespace LargeList
 
             LargeList<TOutput> Result = new LargeList<TOutput>(Count, Count, Partition.MaxSegmentCapacity, null);
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                Result[l] = converter(Partition.GetItem(p));
-                p = Partition.NextPosition(p);
+                Result[l] = converter(Partition.GetItem(SegmentIndex, ElementIndex));
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
 #if DEBUG
@@ -609,11 +622,12 @@ namespace LargeList
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(arrayIndex) + " and length, and the array's lower bounds.");
 #endif
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                array.SetValue(Partition.GetItem(p), l + arrayIndex);
-                p = Partition.NextPosition(p);
+                array.SetValue(Partition.GetItem(SegmentIndex, ElementIndex), l + arrayIndex);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
 #if DEBUG
@@ -676,11 +690,15 @@ namespace LargeList
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(index) + " and " + nameof(count) + ", and the array's lower bounds.");
 #endif
 
-            ElementPosition p = Partition.PositionAt(index);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
             for (long l = 0; l < count; l++)
             {
-                array[l + arrayIndex] = Partition.GetItem(p);
-                p = Partition.NextPosition(p);
+                array[l + arrayIndex] = Partition.GetItem(SegmentIndex, ElementIndex);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
 #if DEBUG
@@ -701,13 +719,14 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                if (match(Partition.GetItem(p)))
+                if (match(Partition.GetItem(SegmentIndex, ElementIndex)))
                     return true;
 
-                p = Partition.NextPosition(p);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return false;
@@ -726,14 +745,15 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                T item = Partition.GetItem(p);
+                T item = Partition.GetItem(SegmentIndex, ElementIndex);
                 if (match(item))
                     return item;
 
-                p = Partition.NextPosition(p);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return default(T);
@@ -754,14 +774,15 @@ namespace LargeList
 
             LargeList<T> Result = new LargeList<T>();
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                T item = Partition.GetItem(p);
+                T item = Partition.GetItem(SegmentIndex, ElementIndex);
                 if (match(item))
                     Result.Add(item);
 
-                p = Partition.NextPosition(p);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return Result;
@@ -826,13 +847,17 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.PositionAt(startIndex);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
+
             for (long l = 0; l < count; l++)
             {
-                if (match(Partition.GetItem(p)))
+                if (match(Partition.GetItem(SegmentIndex, ElementIndex)))
                     return l + startIndex;
 
-                p = Partition.NextPosition(p);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return -1;
@@ -851,11 +876,15 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.End;
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetEnd(out SegmentIndex, out ElementIndex, out CacheIndex);
+
             for (long l = 0; l < Count; l++)
             {
-                p = Partition.PreviousPosition(p);
-                T item = Partition.GetItem(p);
+                Partition.DecrementPosition(ref SegmentIndex, ref ElementIndex);
+                T item = Partition.GetItem(SegmentIndex, ElementIndex);
                 if (match(item))
                     return item;
             }
@@ -928,13 +957,17 @@ namespace LargeList
             if (startIndex + 1 < count)
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
-            ElementPosition p = Partition.PositionAt(startIndex);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
+
             for (long l = 0; l < count; l++)
             {
-                if (match(Partition.GetItem(p)))
+                if (match(Partition.GetItem(SegmentIndex, ElementIndex)))
                     return startIndex - l;
 
-                p = Partition.PreviousPosition(p);
+                Partition.DecrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return -1;
@@ -955,11 +988,12 @@ namespace LargeList
                 throw new ArgumentNullException(nameof(action), "Value cannot be null.");
 #endif
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                action(Partition.GetItem(p));
-                p = Partition.NextPosition(p);
+                action(Partition.GetItem(SegmentIndex, ElementIndex));
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
 #if DEBUG
@@ -1145,13 +1179,15 @@ namespace LargeList
             if (index < 0 || index > Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the bounds of the List.");
 
-            ElementPosition Position;
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
-            Position = Partition.PositionAt(index);
-            Partition.MakeRoom(Position, 1);
+            Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, 1);
 
-            Position = Partition.PositionAt(index);
-            Partition.SetItem(Position, item);
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.SetItem(SegmentIndex, ElementIndex, item);
 
 #if DEBUG
             AssertInvariant();
@@ -1178,12 +1214,17 @@ namespace LargeList
             if (index < 0 || index > Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            ElementPosition Position = Partition.PositionAt(index);
             long CollectionCount = GetCollectionCount(collection);
 
-            Partition.MakeRoom(Position, CollectionCount);
-            Position = Partition.PositionAt(index);
-            Partition.SetItemRange(Position, collection);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, CollectionCount);
+
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.SetItemRange(SegmentIndex, ElementIndex, collection);
 
 #if DEBUG
             AssertInvariant();
@@ -1348,7 +1389,12 @@ namespace LargeList
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            Partition.RemoveRange(Partition.PositionAt(index), 1);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            Partition.RemoveRange(SegmentIndex, ElementIndex, CacheIndex, 1);
 
 #if DEBUG
             AssertInvariant();
@@ -1373,7 +1419,12 @@ namespace LargeList
             if (index + count > Count)
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
-            Partition.RemoveRange(Partition.PositionAt(index), count);
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            Partition.RemoveRange(SegmentIndex, ElementIndex, CacheIndex, count);
 
 #if DEBUG
             AssertInvariant();
@@ -1406,7 +1457,17 @@ namespace LargeList
             if (index + count > Count)
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
-            Partition.Reverse(Partition.PositionAt(index), Partition.PositionAt(index + count), count);
+            int SegmentIndexBegin;
+            int ElementIndexBegin;
+            int CacheIndexBegin;
+            Partition.GetPositionAt(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
+
+            int SegmentIndexEnd;
+            int ElementIndexEnd;
+            int CacheIndexEnd;
+            Partition.GetPositionAt(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
+
+            Partition.Reverse(SegmentIndexBegin, ElementIndexBegin, SegmentIndexEnd, ElementIndexEnd, count);
 
 #if DEBUG
             AssertInvariant();
@@ -1527,13 +1588,14 @@ namespace LargeList
             if (match == null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
-            ElementPosition p = Partition.Begin;
+            int SegmentIndex = 0;
+            int ElementIndex = 0;
             for (long l = 0; l < Count; l++)
             {
-                if (!match(Partition.GetItem(p)))
+                if (!match(Partition.GetItem(SegmentIndex, ElementIndex)))
                     return false;
 
-                p = Partition.NextPosition(p);
+                Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
             return true;
@@ -1626,7 +1688,17 @@ namespace LargeList
         /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
         private void SortItems(long index, long count, IComparer<T> comparer)
         {
-            Partition.Sort(Partition.PositionAt(index), Partition.PositionAt(index + count), count, comparer);
+            int SegmentIndexBegin;
+            int ElementIndexBegin;
+            int CacheIndexBegin;
+            Partition.GetPositionAt(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
+
+            int SegmentIndexEnd;
+            int ElementIndexEnd;
+            int CacheIndexEnd;
+            Partition.GetPositionAt(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
+
+            Partition.Sort(SegmentIndexBegin, ElementIndexBegin, SegmentIndexEnd, ElementIndexEnd, count, comparer);
 
 #if DEBUG
             AssertInvariant();
@@ -1687,7 +1759,13 @@ namespace LargeList
             internal LargeEnumerator(IPartition<T> partition, long index, long count)
             {
                 Partition = partition;
-                Enumerator = Partition.GetEnumerator(Partition.PositionAt(index));
+
+                int SegmentIndex;
+                int ElementIndex;
+                int CacheIndex;
+                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+                Enumerator = Partition.GetEnumerator(SegmentIndex, ElementIndex);
                 Count = count;
             }
 

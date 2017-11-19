@@ -52,14 +52,14 @@ namespace LargeList
         /// </summary>
         /// <param name="partition">The enumerated partition.</param>
         /// <param name="position">The position in <paramref name="partition"/> of the first element to enumerate.</param>
-        public PartitionEnumerator(IPartition<T> partition, ElementPosition position)
+        public PartitionEnumerator(IPartition<T> partition, int segmentIndex, int elementIndex)
         {
-            Debug.Assert(partition.IsValidPosition(position, false));
+            Debug.Assert(partition.IsValidPosition(segmentIndex, elementIndex, false));
 
             Partition = partition;
-            Position = position;
+            SegmentIndex = segmentIndex;
 
-            Enumerator = partition.GetSegmentEnumerator(position, out SegmentCount);
+            Enumerator = partition.GetSegmentEnumerator(segmentIndex, elementIndex, out SegmentCount);
         }
 
         /// <summary>
@@ -86,15 +86,14 @@ namespace LargeList
                 return;
             }
 
-            int SegmentIndex = partition.NextSegmentIndex(Position.SegmentIndex);
+            SegmentIndex = partition.NextSegmentIndex(SegmentIndex);
             if (SegmentIndex < 0)
             {
                 Enumerator = null;
                 return;
             }
 
-            Position = new ElementPosition(SegmentIndex, 0, -1);
-            Enumerator = partition.GetSegmentEnumerator(Position, out SegmentCount);
+            Enumerator = partition.GetSegmentEnumerator(SegmentIndex, 0, out SegmentCount);
             Enumerator.MoveNext();
 
             Debug.Assert(SegmentCount > 0);
@@ -128,7 +127,7 @@ namespace LargeList
         #endregion
 
         private IPartition<T> Partition;
-        private ElementPosition Position;
+        private int SegmentIndex;
         private IEnumerator<T> Enumerator;
         private int SegmentCount;
     }

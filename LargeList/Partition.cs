@@ -45,7 +45,7 @@ namespace LargeList
         /// <returns>
         /// The position of the first element in the IPartition&lt;T&gt;.
         /// </returns>
-        ElementPosition Begin { get; }
+        void GetBegin(out int segmentIndex, out int elementIndex, out int cacheIndex);
 
         /// <summary>
         /// Gets the position after the last element in the IPartition&lt;T&gt;.
@@ -53,7 +53,7 @@ namespace LargeList
         /// <returns>
         /// The position after the last element in the IPartition&lt;T&gt;.
         /// </returns>
-        ElementPosition End { get; }
+        void GetEnd(out int segmentIndex, out int elementIndex, out int cacheIndex);
 
         /// <summary>
         /// Gets the position of an element in the IPartition&lt;T&gt; from its virtual index in a linear list.
@@ -62,7 +62,7 @@ namespace LargeList
         /// <returns>
         /// The position of the element in the IPartition&lt;T&gt;.
         /// </returns>
-        ElementPosition PositionAt(long index);
+        void GetPositionAt(long index, out int segmentIndex, out int elementIndex, out int cacheIndex);
 
         /// <summary>
         /// Check that the specified position in the IPartition&lt;T&gt; is valid.
@@ -72,7 +72,7 @@ namespace LargeList
         /// <returns>
         /// True if the position in the IPartition&lt;T&gt; specified by <paramref name="position"/> is valid.
         /// </returns>
-        bool IsValidPosition(ElementPosition position, bool allowEnd);
+        bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd);
 
         /// <summary>
         /// Gets the previous position in the IPartition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
@@ -81,7 +81,7 @@ namespace LargeList
         /// <returns>
         /// The position in the IPartition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding IPartition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
         /// </returns>
-        ElementPosition PreviousPosition(ElementPosition position);
+        void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious);
 
         /// <summary>
         /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
@@ -90,7 +90,25 @@ namespace LargeList
         /// <returns>
         /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
         /// </returns>
-        ElementPosition NextPosition(ElementPosition position);
+        void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext);
+
+        /// <summary>
+        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
+        /// </returns>
+        void IncrementPosition(ref int segmentIndex, ref int elementIndex);
+
+        /// <summary>
+        /// Gets the previous position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the IPartition&lt;T&gt; before <paramref name="position"/>.
+        /// </returns>
+        void DecrementPosition(ref int segmentIndex, ref int elementIndex);
 
         /// <summary>
         /// Gets the element in the IPartition&lt;T&gt; at the specified position.
@@ -99,7 +117,7 @@ namespace LargeList
         /// <returns>
         /// The element in the IPartition&lt;T&gt; specified by <paramref name="position"/>.
         /// </returns>
-        T GetItem(ElementPosition position);
+        T GetItem(int segmentIndex, int elementIndex);
 
         /// <summary>
         /// Returns an enumerator for the IPartition&lt;T&gt;, starting from the specified position.
@@ -108,7 +126,7 @@ namespace LargeList
         /// <returns>
         /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
         /// </returns>
-        IPartitionEnumerator<T> GetEnumerator(ElementPosition position);
+        IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex);
 
         /// <summary>
         /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
@@ -118,7 +136,7 @@ namespace LargeList
         /// <returns>
         /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
-        IEnumerator<T> GetSegmentEnumerator(ElementPosition position, out int remainingCount);
+        IEnumerator<T> GetSegmentEnumerator(int segmentIndex, int elementIndex, out int remainingCount);
 
         /// <summary>
         /// Gets the next segment in the IPartition&lt;T&gt;.
@@ -194,21 +212,21 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
-        void MakeRoom(ElementPosition position, long count);
+        void MakeRoom(int segmentIndex, int elementIndex, int cacheIndex, long count);
 
         /// <summary>
         /// Replaces the element at the specified position with a new item.
         /// </summary>
         /// <param name="position">The position of the replaced element.</param>
         /// <param name="item">The item to set.</param>
-        void SetItem(ElementPosition position, T item);
+        void SetItem(int segmentIndex, int elementIndex, T item);
 
         /// <summary>
         /// Replaces a range of elements at the specified position with new items from a collection.
         /// </summary>
         /// <param name="position">The position of replaced elements.</param>
         /// <param name="collection">The collection containing items to set.</param>
-        void SetItemRange(ElementPosition position, IEnumerable<T> collection);
+        void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection);
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the IPartition&lt;T&gt;.
@@ -224,7 +242,7 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position of the first element to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
-        void RemoveRange(ElementPosition position, long count);
+        void RemoveRange(int segmentIndex, int elementIndex, int cacheIndex, long count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -241,7 +259,7 @@ namespace LargeList
         /// <param name="begin">The position of the first item in the range.</param>
         /// <param name="end">The position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
-        void Reverse(ElementPosition begin, ElementPosition end, long count);
+        void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count);
 
         /// <summary>
         /// Sorts the elements in a range of elements in IPartition&lt;T&gt; using the specified comparer.
@@ -250,7 +268,7 @@ namespace LargeList
         /// <param name="end">The position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
-        void Sort(ElementPosition begin, ElementPosition end, long count, IComparer<T> comparer);
+        void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer);
     }
 
     /// <summary>
@@ -351,7 +369,12 @@ namespace LargeList
         /// <returns>
         /// The position of the first element in the Partition&lt;T&gt;.
         /// </returns>
-        public ElementPosition Begin { get { return new ElementPosition(0, 0, 0); } }
+        public void GetBegin(out int segmentIndex, out int elementIndex, out int cacheIndex)
+        {
+            segmentIndex = 0;
+            elementIndex = 0;
+            cacheIndex = 0;
+        }
 
         /// <summary>
         /// Gets the position after the last element in the Partition&lt;T&gt;.
@@ -359,7 +382,10 @@ namespace LargeList
         /// <returns>
         /// The position after the last element in the Partition&lt;T&gt;.
         /// </returns>
-        public ElementPosition End { get { return PositionAt(Count); } }
+        public void GetEnd(out int segmentIndex, out int elementIndex, out int cacheIndex)
+        {
+            GetPositionAt(Count, out segmentIndex, out elementIndex, out cacheIndex);
+        }
         #endregion
 
         #region Queries
@@ -370,19 +396,17 @@ namespace LargeList
         /// <returns>
         /// The position of the element in the Partition&lt;T&gt;.
         /// </returns>
-        public ElementPosition PositionAt(long index)
+        public void GetPositionAt(long index, out int segmentIndex, out int elementIndex, out int cacheIndex)
         {
             Debug.Assert(index >= 0 && index <= Count);
 
-            ElementPosition Result = PositionFromCache(index);
+            PositionFromCache(index, out segmentIndex, out elementIndex, out cacheIndex);
 
-            Debug.Assert(IsValidPosition(Result, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
 #if DEBUG
             AssertInvariant();
 #endif
-
-            return Result;
         }
 
         /// <summary>
@@ -393,28 +417,20 @@ namespace LargeList
         /// <returns>
         /// True if the position in the Partition&lt;T&gt; specified by <paramref name="position"/> is valid.
         /// </returns>
-        public bool IsValidPosition(ElementPosition position, bool allowEnd)
+        public bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd)
         {
-#if DEBUG
-#else
-            Debugger.Break(); // This method should not be called in release mode.
-#endif
+            BreakIfNotDebugging();
 
-            if (position.SegmentIndex < 0 || position.SegmentIndex >= SegmentTable.Count)
+            if (segmentIndex < 0 || segmentIndex >= SegmentTable.Count)
                 return false;
 
-            if (position.ElementIndex < SegmentTable[position.SegmentIndex].Count)
+            if (elementIndex < SegmentTable[segmentIndex].Count)
                 return true;
 
             if (!allowEnd)
                 return false;
 
-            int SegmentIndex = position.SegmentIndex;
-            while (SegmentIndex + 1 < SegmentTable.Count)
-                if (SegmentTable[++SegmentIndex].Count != 0)
-                    return false;
-
-            if (position.ElementIndex == SegmentTable[position.SegmentIndex].Count)
+            if (elementIndex == SegmentTable[segmentIndex].Count)
                 return true;
 
             return false;
@@ -427,35 +443,38 @@ namespace LargeList
         /// <returns>
         /// The position in the Partition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding Partition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
         /// </returns>
-        public ElementPosition PreviousPosition(ElementPosition position)
+        public void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious)
         {
-            Debug.Assert(IsValidPosition(position, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
-            ElementPosition Result;
-
-            if (position.ElementIndex > 0)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex - 1, -1);
+            if (elementIndex > 0)
+            {
+                segmentIndexPrevious = segmentIndex;
+                elementIndexPrevious = elementIndex - 1;
+            }
 
             else
             {
-                int SegmentIndex = position.SegmentIndex - 1;
+                segmentIndex--;
 
-                if (SegmentIndex >= 0)
+                if (segmentIndex >= 0)
                 {
-                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
-                    Result = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
+                    Debug.Assert(SegmentTable[segmentIndex].Count > 0);
+                    segmentIndexPrevious = segmentIndex;
+                    elementIndexPrevious = SegmentTable[segmentIndex].Count - 1;
                 }
                 else
-                    Result = new ElementPosition(SegmentIndex, 0, -1);
+                {
+                    segmentIndexPrevious = segmentIndex;
+                    elementIndexPrevious = 0;
+                }
             }
 
-            Debug.Assert(IsValidPosition(Result, false) || (Result.SegmentIndex == -1 && Result.ElementIndex == 0));
+            Debug.Assert(IsValidPosition(segmentIndexPrevious, elementIndexPrevious, false) || (segmentIndexPrevious == -1 && elementIndexPrevious == 0));
 
 #if DEBUG
             AssertInvariant();
 #endif
-
-            return Result;
         }
 
         /// <summary>
@@ -465,32 +484,88 @@ namespace LargeList
         /// <returns>
         /// The position in the Partition&lt;T&gt; that follows <paramref name="position"/>.
         /// </returns>
-        public ElementPosition NextPosition(ElementPosition position)
+        public void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext)
         {
-            Debug.Assert(IsValidPosition(position, false));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
-            ElementPosition Result;
-
-            if (position.ElementIndex + 1 < SegmentTable[position.SegmentIndex].Count)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
+            if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+            {
+                segmentIndexNext = segmentIndex;
+                elementIndexNext = elementIndex + 1;
+            }
 
             else
             {
-                int SegmentIndex = position.SegmentIndex + 1;
-
-                if (SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count > 0)
-                    Result = new ElementPosition(SegmentIndex, 0, -1);
-                else
-                    Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
+                segmentIndexNext = segmentIndex + 1;
+                elementIndexNext = 0;
             }
 
-            Debug.Assert(IsValidPosition(Result, true));
+            Debug.Assert(IsValidPosition(segmentIndexNext, elementIndexNext, true));
 
 #if DEBUG
             AssertInvariant();
 #endif
+        }
 
-            return Result;
+        /// <summary>
+        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
+        /// </returns>
+        public void IncrementPosition(ref int segmentIndex, ref int elementIndex)
+        {
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
+
+            if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+                elementIndex++;
+
+            else
+            {
+                segmentIndex++;
+                elementIndex = 0;
+            }
+
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
+
+#if DEBUG
+            AssertInvariant();
+#endif
+        }
+
+        /// <summary>
+        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
+        /// </returns>
+        public void DecrementPosition(ref int segmentIndex, ref int elementIndex)
+        {
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
+
+            if (elementIndex > 0)
+                elementIndex--;
+
+            else
+            {
+                segmentIndex--;
+
+                if (segmentIndex >= 0)
+                {
+                    Debug.Assert(SegmentTable[segmentIndex].Count > 0);
+                    elementIndex = SegmentTable[segmentIndex].Count - 1;
+                }
+                else
+                    elementIndex = 0;
+            }
+
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false) || (segmentIndex == -1 && elementIndex == 0));
+
+#if DEBUG
+            AssertInvariant();
+#endif
         }
 
         /// <summary>
@@ -500,11 +575,11 @@ namespace LargeList
         /// <returns>
         /// The element in the Partition&lt;T&gt; specified by <paramref name="position"/>.
         /// </returns>
-        public T GetItem(ElementPosition position)
+        public T GetItem(int segmentIndex, int elementIndex)
         {
-            Debug.Assert(IsValidPosition(position, false));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
-            T Result = SegmentTable[position.SegmentIndex][position.ElementIndex];
+            T Result = SegmentTable[segmentIndex][elementIndex];
 
 #if DEBUG
             AssertInvariant();
@@ -520,11 +595,11 @@ namespace LargeList
         /// <returns>
         /// An enumerator that can iterate through the Partition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
         /// </returns>
-        public IPartitionEnumerator<T> GetEnumerator(ElementPosition position)
+        public IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex)
         {
-            Debug.Assert(IsValidPosition(position, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
-            IPartitionEnumerator<T> Result = CreateEnumerator(position);
+            IPartitionEnumerator<T> Result = CreateEnumerator(segmentIndex, elementIndex);
 
             Debug.Assert(Result != null);
 
@@ -543,16 +618,16 @@ namespace LargeList
         /// <returns>
         /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
-        public IEnumerator<T> GetSegmentEnumerator(ElementPosition position, out int remainingCount)
+        public IEnumerator<T> GetSegmentEnumerator(int segmentIndex, int elementIndex, out int remainingCount)
         {
-            Debug.Assert(IsValidPosition(position, false));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
-            ISegment<T> Segment = SegmentTable[position.SegmentIndex];
+            ISegment<T> Segment = SegmentTable[segmentIndex];
 
-            remainingCount = Segment.Count - position.ElementIndex;
+            remainingCount = Segment.Count - elementIndex;
             Debug.Assert(remainingCount > 0);
 
-            return Segment.GetEnumerator(position.ElementIndex);
+            return Segment.GetEnumerator(elementIndex);
         }
 
         /// <summary>
@@ -623,44 +698,13 @@ namespace LargeList
 
             long Result = -1;
 
-            ElementPosition startPosition = PositionAt(startIndex);
-            int SegmentIndex = startPosition.SegmentIndex;
-            long ElementStartIndex = startPosition.ElementIndex;
+            int SegmentIndex;
+            int ElementStartIndex;
+            int CacheIndex;
+            GetPositionAt(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+
             long ItemIndex = startIndex - ElementStartIndex;
             long RemainingCount = count;
-
-            /*
-            for (;;)
-            {
-                Debug.Assert(ElementStartIndex >= 0);
-                Debug.Assert(SegmentIndex < SegmentTable.Count);
-
-                ISegment<T> Segment = SegmentTable[SegmentIndex];
-
-                if (ElementStartIndex < Segment.Count)
-                    break;
-
-                if (Segment.Count > 0)
-                {
-                    if (SegmentIndex + 1 >= SegmentTable.Count)
-                        break;
-
-                    ElementStartIndex -= Segment.Count;
-                    ItemIndex += Segment.Count;
-                    SegmentIndex++;
-                }
-                else
-                {
-                    int NextSegmentIndex = SegmentIndex + 1;
-                    while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
-                        NextSegmentIndex++;
-
-                    if (NextSegmentIndex >= SegmentTable.Count)
-                        break;
-
-                    SegmentIndex = NextSegmentIndex;
-                }
-            }*/
 
             while (SegmentIndex < SegmentTable.Count && RemainingCount > 0)
             {
@@ -668,8 +712,8 @@ namespace LargeList
                 if (Segment.Count == 0)
                     break;
 
-                int CompareCount = (Segment.Count - (int)ElementStartIndex <= RemainingCount) ? Segment.Count - (int)ElementStartIndex : (int)RemainingCount;
-                int ElementIndex = Segment.IndexOf(item, (int)ElementStartIndex, CompareCount);
+                int CompareCount = (Segment.Count - ElementStartIndex <= RemainingCount) ? Segment.Count - ElementStartIndex : (int)RemainingCount;
+                int ElementIndex = Segment.IndexOf(item, ElementStartIndex, CompareCount);
                 if (ElementIndex >= 0)
                 {
                     Result = ItemIndex + ElementIndex;
@@ -683,7 +727,7 @@ namespace LargeList
             }
 
             Debug.Assert(RemainingCount >= 0);
-            Debug.Assert(Result == -1 || (Result >= startIndex && Result < startIndex + count && GetItem(PositionAt(Result)).Equals(item)));
+            Debug.Assert(Result == -1 || (Result >= startIndex && Result < startIndex + count && IsItemEqual(Result, item)));
 
 #if DEBUG
             AssertInvariant();
@@ -709,9 +753,11 @@ namespace LargeList
 
             long Result = -1;
 
-            ElementPosition position = PositionAt(startIndex);
-            int SegmentIndex = position.SegmentIndex;
-            int ElementStartIndex = position.ElementIndex;
+            int SegmentIndex;
+            int ElementStartIndex;
+            int CacheIndex;
+            GetPositionAt(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
 
@@ -743,7 +789,7 @@ namespace LargeList
             }
 
             Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && GetItem(PositionAt(Result)) == null) || (item != null && item.Equals(GetItem(PositionAt(Result)))))));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && IsItemNull(Result)) || (item != null && IsItemEqual(Result, item)))));
 
 #if DEBUG
             AssertInvariant();
@@ -773,34 +819,42 @@ namespace LargeList
                 return -(index + 1);
 
             long indexLower = index;
+            int SegmentIndexLower;
+            int ElementIndexLower;
+            int CacheIndexLower;
+            GetPositionAt(indexLower, out SegmentIndexLower, out ElementIndexLower, out CacheIndexLower);
+
             long indexUpper = index + count - 1;
-            ElementPosition lower = PositionAt(indexLower);
-            ElementPosition upper = PositionAt(indexUpper);
+            int SegmentIndexUpper;
+            int ElementIndexUpper;
+            int CacheIndexUpper;
+            GetPositionAt(indexUpper, out SegmentIndexUpper, out ElementIndexUpper, out CacheIndexUpper);
 
-            while (lower <= upper)
+            while (SegmentIndexLower < SegmentIndexUpper || (SegmentIndexLower == SegmentIndexUpper && ElementIndexLower <= ElementIndexUpper))
             {
-                ElementPosition middle;
                 long indexMiddle;
-                GetMiddleOf(lower, indexLower, upper, indexUpper, out middle, out indexMiddle);
+                int SegmentIndexMiddle;
+                int ElementIndexMiddle;
+                GetMiddleOf(SegmentIndexLower, ElementIndexLower, indexLower, SegmentIndexUpper, ElementIndexUpper, indexUpper, out SegmentIndexMiddle, out ElementIndexMiddle, out indexMiddle);
 
-                Debug.Assert(lower <= middle);
+                Debug.Assert(SegmentIndexLower < SegmentIndexMiddle || (SegmentIndexLower == SegmentIndexMiddle && ElementIndexLower <= ElementIndexMiddle));
                 Debug.Assert(indexLower <= indexMiddle);
-                Debug.Assert(upper >= middle);
+                Debug.Assert(SegmentIndexUpper > SegmentIndexMiddle || (SegmentIndexUpper == SegmentIndexMiddle && ElementIndexUpper >= ElementIndexMiddle));
                 Debug.Assert(indexUpper >= indexMiddle);
 
-                long comparisonResult = comparer.Compare(item, GetItem(middle));
+                long comparisonResult = comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
 
                 if (comparisonResult == 0)
                     return indexMiddle;
 
                 else if (comparisonResult < 0)
                 {
-                    upper = PreviousPosition(middle);
+                    GetPreviousPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexUpper, out ElementIndexUpper);
                     indexUpper = indexMiddle - 1;
                 }
                 else
                 {
-                    lower = NextPosition(middle);
+                    GetNextPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexLower, out ElementIndexLower);
                     indexLower = indexMiddle + 1;
                 }
             }
@@ -820,80 +874,82 @@ namespace LargeList
         /// <returns>
         /// The position in the middle of <paramref name="lower"/> and <paramref name="upper"/>.
         /// </returns>
-        private void GetMiddleOf(ElementPosition lower, long indexLower, ElementPosition upper, long indexUpper, out ElementPosition  middle, out long indexMiddle)
+        private void GetMiddleOf(int segmentIndexLower, int elementIndexLower, long indexLower, int segmentIndexUpper, int elementIndexUpper, long indexUpper, out int segmentIndexMiddle, out int elementIndexMiddle, out long indexMiddle)
         {
-            Debug.Assert(lower <= upper);
+            Debug.Assert(segmentIndexLower < segmentIndexUpper || (segmentIndexLower == segmentIndexUpper && elementIndexLower <= elementIndexUpper));
             Debug.Assert(indexLower <= indexUpper);
 
-            while (lower.SegmentIndex < upper.SegmentIndex)
+            while (segmentIndexLower < segmentIndexUpper)
             {
-                int AboveLower = SegmentTable[lower.SegmentIndex].Count - lower.ElementIndex - 1;
-                int BelowUpper = upper.ElementIndex;
+                int AboveLower = SegmentTable[segmentIndexLower].Count - elementIndexLower - 1;
+                int BelowUpper = elementIndexUpper;
                 int Difference = BelowUpper - AboveLower;
 
                 if (Difference > 0)
                 {
-                    int SegmentIndex = lower.SegmentIndex + 1;
-
-                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
+                    Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
 
                     indexLower += AboveLower + 1;
                     indexUpper -= AboveLower + 1;
-                    lower = new ElementPosition(SegmentIndex, 0, -1);
-                    upper = new ElementPosition(upper.SegmentIndex, Difference - 1, -1);
+                    segmentIndexLower++;
+                    elementIndexLower = 0;
+                    elementIndexUpper = Difference - 1;
                 }
 
                 else if (Difference < 0)
                 {
-                    int SegmentIndex = upper.SegmentIndex - 1;
-
-                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
+                    Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
 
                     indexLower += BelowUpper + 1;
                     indexUpper -= BelowUpper + 1;
-                    lower = new ElementPosition(lower.SegmentIndex, lower.ElementIndex + BelowUpper + 1, -1);
-                    upper = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
+                    elementIndexLower += BelowUpper + 1;
+                    segmentIndexUpper--;
+                    elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
                 }
 
                 else
                 {
-                    int LowerSegmentIndex = lower.SegmentIndex + 1;
-                    int UpperSegmentIndex = upper.SegmentIndex - 1;
+                    int LowerSegmentIndex = segmentIndexLower + 1;
+                    int UpperSegmentIndex = segmentIndexUpper - 1;
 
-                    Debug.Assert(SegmentTable[LowerSegmentIndex].Count > 0);
-                    Debug.Assert(SegmentTable[UpperSegmentIndex].Count > 0);
+                    Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
+                    Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
 
                     indexLower += BelowUpper + 1;
                     indexUpper -= BelowUpper + 1;
-                    lower = new ElementPosition(LowerSegmentIndex, 0, -1);
-                    upper = new ElementPosition(UpperSegmentIndex, SegmentTable[UpperSegmentIndex].Count - 1, -1);
+                    segmentIndexLower++;
+                    elementIndexLower = 0;
+                    segmentIndexUpper--;
+                    elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
                 }
             }
 
-            if (lower.SegmentIndex > upper.SegmentIndex)
+            if (segmentIndexLower > segmentIndexUpper)
             {
-                Debug.Assert(lower.ElementIndex == 0);
-                Debug.Assert(upper.SegmentIndex >= 0 && upper.SegmentIndex < SegmentTable.Count);
-                Debug.Assert(upper.ElementIndex == SegmentTable[upper.SegmentIndex].Count - 1);
+                Debug.Assert(elementIndexLower == 0);
+                Debug.Assert(segmentIndexUpper >= 0 && segmentIndexUpper < SegmentTable.Count);
+                Debug.Assert(elementIndexUpper == SegmentTable[segmentIndexUpper].Count - 1);
                 Debug.Assert(indexUpper + 1 == indexLower);
-                Debug.Assert(PositionAt(indexUpper) == upper);
-                Debug.Assert(PositionAt(indexLower) == lower);
+                Debug.Assert(IsPositionEqual(indexUpper, segmentIndexUpper, elementIndexUpper));
+                Debug.Assert(IsPositionEqual(indexLower, segmentIndexLower, elementIndexLower));
 
-                middle = upper;
+                segmentIndexMiddle = segmentIndexUpper;
+                elementIndexMiddle = elementIndexUpper;
                 indexMiddle = indexUpper;
             }
             else
             {
-                Debug.Assert(lower.SegmentIndex == upper.SegmentIndex);
-                Debug.Assert(lower.ElementIndex <= upper.ElementIndex);
+                Debug.Assert(segmentIndexLower == segmentIndexUpper);
+                Debug.Assert(elementIndexLower <= elementIndexUpper);
 
-                int middleElementIndex = lower.ElementIndex + (upper.ElementIndex - lower.ElementIndex) / 2;
+                int Middle = elementIndexLower + (elementIndexUpper - elementIndexLower) / 2;
 
-                middle = new ElementPosition(lower.SegmentIndex, middleElementIndex, -1);
-                indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
+                segmentIndexMiddle = segmentIndexLower;
+                elementIndexMiddle = Middle;
+                indexMiddle = indexLower - elementIndexLower + Middle;
             }
 
-            Debug.Assert(PositionAt(indexMiddle) == middle);
+            Debug.Assert(IsPositionEqual(indexMiddle, segmentIndexMiddle, elementIndexMiddle));
         }
 #endregion
 
@@ -1022,41 +1078,40 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
-        public void MakeRoom(ElementPosition position, long count)
+        public void MakeRoom(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
-            Debug.Assert(IsValidPosition(position, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
+            Debug.Assert(cacheIndex >= 0);
             Debug.Assert(count >= 0);
 
-            int SegmentIndex = position.SegmentIndex;
-            int ElementIndex = position.ElementIndex;
             long RemainingCount = count;
             int effectiveExtended;
 
             // First we try to make room in just one segment.
-            int Extendable = SegmentTable[SegmentIndex].Extendable;
+            int Extendable = SegmentTable[segmentIndex].Extendable;
             if (Extendable >= RemainingCount)
             {
-                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, (int)RemainingCount, out effectiveExtended);
+                SegmentTable[segmentIndex].MakeRoom(elementIndex, (int)RemainingCount, out effectiveExtended);
                 Capacity += effectiveExtended;
             }
 
             else
             {
                 // Otherwise, we're going to need to move elements upward.
-                int SegmentEndCount = SegmentTable[SegmentIndex].Count - ElementIndex;
-                int NextExtendable = (SegmentIndex + 1 < SegmentTable.Count) ? SegmentTable[SegmentIndex + 1].Extendable : -1;
+                int SegmentEndCount = SegmentTable[segmentIndex].Count - elementIndex;
+                int NextExtendable = (segmentIndex + 1 < SegmentTable.Count) ? SegmentTable[segmentIndex + 1].Extendable : -1;
 
                 Debug.Assert(SegmentEndCount >= 0);
-                Debug.Assert(ElementIndex + SegmentEndCount + RemainingCount > MaxSegmentCapacity);
+                Debug.Assert(elementIndex + SegmentEndCount + RemainingCount > MaxSegmentCapacity);
 
                 // If there is room for elements in the next segment, use it.
                 if (SegmentEndCount <= NextExtendable)
                 {
                     Debug.Assert(NextExtendable >= 0);
-                    Debug.Assert(SegmentIndex + 1 < SegmentTable.Count);
-                    Debug.Assert(SegmentTable[SegmentIndex + 1].Count + SegmentEndCount <= MaxSegmentCapacity);
+                    Debug.Assert(segmentIndex + 1 < SegmentTable.Count);
+                    Debug.Assert(SegmentTable[segmentIndex + 1].Count + SegmentEndCount <= MaxSegmentCapacity);
 
-                    SegmentTable[SegmentIndex + 1].MakeRoom(0, SegmentEndCount, out effectiveExtended);
+                    SegmentTable[segmentIndex + 1].MakeRoom(0, SegmentEndCount, out effectiveExtended);
                     Capacity += effectiveExtended;
                 }
 
@@ -1066,34 +1121,34 @@ namespace LargeList
                     ISegment<T> NewSegment = CreateSegment(SegmentEndCount);
                     NewSegment.MakeRoom(0, SegmentEndCount, out effectiveExtended);
                     Capacity += NewSegment.Capacity;
-                    SegmentTable.Insert(SegmentIndex + 1, NewSegment);
+                    SegmentTable.Insert(segmentIndex + 1, NewSegment);
                 }
 
                 // Move the end of the current segment to the new one.
                 if (SegmentEndCount > 0)
-                    SegmentTable[SegmentIndex].MoveTo(SegmentTable[SegmentIndex + 1], 0, ElementIndex, SegmentEndCount);
+                    SegmentTable[segmentIndex].MoveTo(SegmentTable[segmentIndex + 1], 0, elementIndex, SegmentEndCount);
 
                 // Check that we didn't do all this for nothing.
-                Debug.Assert(ElementIndex == SegmentTable[SegmentIndex].Count);
+                Debug.Assert(elementIndex == SegmentTable[segmentIndex].Count);
 
                 // Resume making room.
-                Extendable = SegmentTable[SegmentIndex].Extendable;
+                Extendable = SegmentTable[segmentIndex].Extendable;
                 if (Extendable > RemainingCount)
                     Extendable = (int)RemainingCount;
-                SegmentTable[SegmentIndex].MakeRoom(ElementIndex, Extendable, out effectiveExtended);
+                SegmentTable[segmentIndex].MakeRoom(elementIndex, Extendable, out effectiveExtended);
                 Capacity += effectiveExtended;
                 RemainingCount -= Extendable;
 
                 Debug.Assert(RemainingCount >= 0);
 
-                SegmentIndex++;
+                segmentIndex++;
 
-                if (SegmentIndex < SegmentTable.Count)
+                if (segmentIndex < SegmentTable.Count)
                 {
-                    Extendable = SegmentTable[SegmentIndex].Extendable;
+                    Extendable = SegmentTable[segmentIndex].Extendable;
                     if (Extendable > RemainingCount)
                         Extendable = (int)RemainingCount;
-                    SegmentTable[SegmentIndex].MakeRoom(0, Extendable, out effectiveExtended);
+                    SegmentTable[segmentIndex].MakeRoom(0, Extendable, out effectiveExtended);
                     Capacity += effectiveExtended;
                     RemainingCount -= Extendable;
 
@@ -1106,10 +1161,10 @@ namespace LargeList
                     NewSegment.MakeRoom(0, MaxSegmentCapacity, out effectiveExtended);
                     Capacity += NewSegment.Capacity;
 
-                    SegmentTable.Insert(SegmentIndex, NewSegment);
+                    SegmentTable.Insert(segmentIndex, NewSegment);
                     RemainingCount -= MaxSegmentCapacity;
 
-                    SegmentIndex++;
+                    segmentIndex++;
                 }
 
                 if (RemainingCount > 0)
@@ -1118,15 +1173,14 @@ namespace LargeList
                     NewSegment.MakeRoom(0, (int)RemainingCount, out effectiveExtended);
                     Capacity += NewSegment.Capacity;
 
-                    SegmentTable.Insert(SegmentIndex, NewSegment);
+                    SegmentTable.Insert(segmentIndex, NewSegment);
                 }
             }
 
             Count += count;
             ResizeCache();
 
-            Debug.Assert(position.CacheIndex >= 0);
-            RebuildCacheFrom(position.CacheIndex);
+            RebuildCacheFrom(cacheIndex);
 
 #if DEBUG
             AssertInvariant();
@@ -1138,11 +1192,11 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position of the replaced element.</param>
         /// <param name="item">The item to set.</param>
-        public void SetItem(ElementPosition position, T item)
+        public void SetItem(int segmentIndex, int elementIndex, T item)
         {
-            Debug.Assert(IsValidPosition(position, false));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
-            SegmentTable[position.SegmentIndex][position.ElementIndex] = item;
+            SegmentTable[segmentIndex][elementIndex] = item;
 
 #if DEBUG
             AssertInvariant();
@@ -1154,19 +1208,23 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position of replaced elements.</param>
         /// <param name="collection">The collection containing items to set.</param>
-        public void SetItemRange(ElementPosition position, IEnumerable<T> collection)
+        public void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection)
         {
-            Debug.Assert(IsValidPosition(position, true));
-
-            int SegmentIndex = position.SegmentIndex;
-            int ElementIndex = position.ElementIndex;
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
             foreach (T item in collection)
             {
-                Debug.Assert(IsValidPosition(position, false));
+                Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
-                SegmentTable[position.SegmentIndex][position.ElementIndex] = item;
-                position = NextPosition(position);
+                SegmentTable[segmentIndex][elementIndex] = item;
+
+                if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+                    elementIndex++;
+                else
+                {
+                    segmentIndex++;
+                    elementIndex = 0;
+                }
             }
 
 #if DEBUG
@@ -1213,52 +1271,42 @@ namespace LargeList
         /// </summary>
         /// <param name="position">The position of the first element to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
-        public void RemoveRange(ElementPosition position, long count)
+        public void RemoveRange(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
-            Debug.Assert(IsValidPosition(position, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
+            Debug.Assert(cacheIndex >= 0);
 
-            int SegmentIndex = position.SegmentIndex;
-            int ElementIndex = position.ElementIndex;
             long RemainingCount = count;
 
             while (RemainingCount > 0)
             {
-                Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count > 0);
+                Debug.Assert(segmentIndex >= 0 && segmentIndex < SegmentTable.Count);
+                Debug.Assert(elementIndex >= 0 && elementIndex < SegmentTable[segmentIndex].Count);
 
-                /*
-                if (SegmentTable[SegmentIndex].Count == 0)
-                {
-                    SegmentIndex++;
-                    continue;
-                }*/
-
-                Debug.Assert(ElementIndex >= 0 && ElementIndex < SegmentTable[SegmentIndex].Count);
-
-                int Removable = SegmentTable[SegmentIndex].Count - ElementIndex;
+                int Removable = SegmentTable[segmentIndex].Count - elementIndex;
                 if (Removable > RemainingCount)
                     Removable = (int)RemainingCount;
 
-                SegmentTable[SegmentIndex].RemoveRange(ElementIndex, Removable);
+                SegmentTable[segmentIndex].RemoveRange(elementIndex, Removable);
 
-                if (SegmentTable[SegmentIndex].Count > 0)
-                    SegmentIndex++;
+                if (SegmentTable[segmentIndex].Count > 0)
+                    segmentIndex++;
                 else
                 {
-                    ISegment<T> Segment = SegmentTable[SegmentIndex];
-                    SegmentTable.RemoveAt(SegmentIndex);
+                    ISegment<T> Segment = SegmentTable[segmentIndex];
+                    SegmentTable.RemoveAt(segmentIndex);
                     SegmentTable.Add(Segment);
                 }
 
                 RemainingCount -= Removable;
-                ElementIndex = 0;
+                elementIndex = 0;
             }
 
             Debug.Assert(RemainingCount == 0);
 
             Count -= count;
 
-            Debug.Assert(position.CacheIndex >= 0);
-            RebuildCacheFrom(position.CacheIndex);
+            RebuildCacheFrom(cacheIndex);
 
 #if DEBUG
             AssertInvariant();
@@ -1310,21 +1358,38 @@ namespace LargeList
         /// <param name="begin">The position of the first item in the range.</param>
         /// <param name="end">The position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
-        public void Reverse(ElementPosition begin, ElementPosition end, long count)
+        public void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count)
         {
-            Debug.Assert(IsValidPosition(begin, true));
-            Debug.Assert(IsValidPosition(end, true));
+            Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
+            Debug.Assert(IsValidPosition(segmentIndexEnd, elementIndexEnd, true));
             Debug.Assert(count >= 0);
-            Debug.Assert((count == 0 && begin == end) || (count > 0 && begin < end));
+            Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
 
             for (long l = 0; l < count / 2; l++)
             {
-                end = PreviousPosition(end);
+                if (elementIndexEnd > 0)
+                    elementIndexEnd--;
+                else
+                {
+                    segmentIndexEnd--;
+                    Debug.Assert(segmentIndexEnd >= 0 && SegmentTable[segmentIndexEnd].Count > 0);
+                    elementIndexEnd = SegmentTable[segmentIndexEnd].Count - 1;
+                }
 
-                Debug.Assert(begin < end);
+                Debug.Assert(segmentIndexBegin < segmentIndexEnd || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd));
 
-                SwapItem(begin, end);
-                begin = NextPosition(begin);
+                T item = SegmentTable[segmentIndexBegin][elementIndexBegin];
+                SegmentTable[segmentIndexBegin][elementIndexBegin] = SegmentTable[segmentIndexEnd][elementIndexEnd];
+                SegmentTable[segmentIndexEnd][elementIndexEnd] = item;
+
+                if (elementIndexBegin + 1 < SegmentTable[segmentIndexBegin].Count)
+                    elementIndexBegin++;
+                else
+                {
+                    segmentIndexBegin++;
+                    Debug.Assert(segmentIndexBegin < SegmentTable.Count && SegmentTable[segmentIndexBegin].Count > 0);
+                    elementIndexBegin = 0;
+                }
             }
 
 #if DEBUG
@@ -1339,18 +1404,27 @@ namespace LargeList
         /// <param name="end">The position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
-        public void Sort(ElementPosition begin, ElementPosition end, long count, IComparer<T> comparer)
+        public void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer)
         {
-            Debug.Assert(IsValidPosition(begin, true));
-            Debug.Assert(IsValidPosition(end, true));
-            Debug.Assert((count == 0 && begin == end) || (count > 0 && begin < end));
+            Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
+            Debug.Assert(IsValidPosition(segmentIndexEnd, elementIndexEnd, true));
+            Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
             Debug.Assert(comparer != null);
 
             if (count > 0)
             {
                 Debug.Assert(QuickSortStack.Count == 0);
 
-                QuickSortRange Range = new QuickSortRange() { FirstElement = begin, LastElement = PreviousPosition(end) };
+                if (elementIndexEnd > 0)
+                    elementIndexEnd--;
+                else
+                {
+                    segmentIndexEnd--;
+                    Debug.Assert(segmentIndexEnd >= 0 && SegmentTable[segmentIndexEnd].Count > 0);
+                    elementIndexEnd = SegmentTable[segmentIndexEnd].Count - 1;
+                }
+
+                QuickSortRange Range = new QuickSortRange() { SegmentIndexFirst = segmentIndexBegin, ElementIndexFirst = elementIndexBegin, SegmentIndexLast = segmentIndexEnd, ElementIndexLast = elementIndexEnd };
                 QuickSortStack.Push(Range);
 
                 while (QuickSortStack.Count > 0)
@@ -1370,8 +1444,10 @@ namespace LargeList
         #region Sorting
         private struct QuickSortRange
         {
-            public ElementPosition FirstElement;
-            public ElementPosition LastElement;
+            public int SegmentIndexFirst;
+            public int ElementIndexFirst;
+            public int SegmentIndexLast;
+            public int ElementIndexLast;
         }
 
         private void QuickSort(IComparer<T> comparer)
@@ -1379,92 +1455,133 @@ namespace LargeList
             Debug.Assert(comparer != null);
 
             QuickSortRange Range = QuickSortStack.Pop();
-            ElementPosition low = Range.FirstElement;
-            ElementPosition high = Range.LastElement;
+            int SegmentIndexLow = Range.SegmentIndexFirst;
+            int ElementIndexLow = Range.ElementIndexFirst;
+            int SegmentIndexHigh = Range.SegmentIndexLast;
+            int ElementIndexHigh = Range.ElementIndexLast;
 
-            Debug.Assert(IsValidPosition(low, false));
-            Debug.Assert(IsValidPosition(high, false));
-            Debug.Assert(low <= high);
+            Debug.Assert(IsValidPosition(SegmentIndexLow, ElementIndexLow, false));
+            Debug.Assert(IsValidPosition(SegmentIndexHigh, ElementIndexHigh, false));
+            Debug.Assert(SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow <= ElementIndexHigh));
 
-            if (low.SegmentIndex == high.SegmentIndex)
+            if (SegmentIndexLow == SegmentIndexHigh)
             {
-                ISegment<T> Segment = SegmentTable[low.SegmentIndex];
-                Segment.Sort(low.ElementIndex, high.ElementIndex, comparer);
+                ISegment<T> Segment = SegmentTable[SegmentIndexLow];
+                Segment.Sort(ElementIndexLow, ElementIndexHigh, comparer);
             }
-            else if (low < high)
+            else if (SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow < ElementIndexHigh))
             {
-                ElementPosition middle = SplitSortInterval(low, high, comparer);
+                int SegmentIndexMiddle;
+                int ElementIndexMiddle;
+                SplitSortInterval(SegmentIndexLow, ElementIndexLow, SegmentIndexHigh, ElementIndexHigh, comparer, out SegmentIndexMiddle, out ElementIndexMiddle);
 
-                QuickSortRange RangeLow = new QuickSortRange() { FirstElement = low, LastElement = middle };
-                QuickSortRange RangeHigh = new QuickSortRange() { FirstElement = NextPosition(middle), LastElement = high };
+                QuickSortRange RangeLow = new QuickSortRange() { SegmentIndexFirst = SegmentIndexLow, ElementIndexFirst = ElementIndexLow, SegmentIndexLast = SegmentIndexMiddle, ElementIndexLast = ElementIndexMiddle };
+
+                if (ElementIndexMiddle + 1 < SegmentTable[SegmentIndexMiddle].Count)
+                    ElementIndexMiddle++;
+
+                else
+                {
+                    SegmentIndexMiddle++;
+                    Debug.Assert(SegmentIndexMiddle < SegmentTable.Count && SegmentTable[SegmentIndexMiddle].Count > 0);
+                    ElementIndexMiddle = 0;
+                }
+
+                QuickSortRange RangeHigh = new QuickSortRange() { SegmentIndexFirst = SegmentIndexMiddle, ElementIndexFirst = ElementIndexMiddle, SegmentIndexLast = SegmentIndexHigh, ElementIndexLast = ElementIndexHigh };
 
                 QuickSortStack.Push(RangeLow);
                 QuickSortStack.Push(RangeHigh);
             }
         }
 
-        private ElementPosition SplitSortInterval(ElementPosition low, ElementPosition high, IComparer<T> comparer)
+        private void SplitSortInterval(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh, IComparer<T> comparer, out int segmentIndexMiddle, out int elementIndexMiddle)
         {
-            Debug.Assert(IsValidPosition(low, false));
-            Debug.Assert(IsValidPosition(high, false));
+            Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
+            Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
             Debug.Assert(comparer != null);
-            Debug.Assert(low < high);
+            Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
 
-            T pivot = SelectPivot(low, high);
-            ElementPosition up = PreviousPosition(low);
-            ElementPosition down = NextPosition(high);
+            T pivot = SelectPivot(segmentIndexLow, elementIndexLow, segmentIndexHigh, elementIndexHigh);
+
+            int SegmentIndexUp;
+            int ElementIndexUp;
+            int SegmentIndexDown;
+            int ElementIndexDown;
+
+            GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
+            GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
 
             for (;;)
             {
                 do
-                    if (up.SegmentIndex < 0)
-                        up = Begin;
+                    if (SegmentIndexUp < 0)
+                    {
+                        SegmentIndexUp = 0;
+                        ElementIndexUp = 0;
+                    }
                     else
-                        up = NextPosition(up);
-                while (comparer.Compare(SegmentTable[up.SegmentIndex][up.ElementIndex], pivot) < 0);
+                    {
+                        if (ElementIndexUp + 1 < SegmentTable[SegmentIndexUp].Count)
+                            ElementIndexUp++;
+
+                        else
+                        {
+                            SegmentIndexUp++;
+                            Debug.Assert(SegmentIndexUp < SegmentTable.Count && SegmentTable[SegmentIndexUp].Count > 0);
+                            ElementIndexUp = 0;
+                        }
+                    }
+                while (comparer.Compare(SegmentTable[SegmentIndexUp][ElementIndexUp], pivot) < 0);
 
                 do
-                    down = PreviousPosition(down);
-                while (comparer.Compare(SegmentTable[down.SegmentIndex][down.ElementIndex], pivot) > 0);
+                {
+                    if (ElementIndexDown > 0)
+                        ElementIndexDown--;
 
-                if (up >= down)
-                    return down;
+                    else
+                    {
+                        SegmentIndexDown--;
+                        Debug.Assert(SegmentIndexDown >= 0 && SegmentTable[SegmentIndexDown].Count > 0);
+                        ElementIndexDown = SegmentTable[SegmentIndexDown].Count -  1;
+                    }
+                }
+                while (comparer.Compare(SegmentTable[SegmentIndexDown][ElementIndexDown], pivot) > 0);
 
-                SwapItem(up, down);
+                if (SegmentIndexUp > SegmentIndexDown || (SegmentIndexUp == SegmentIndexDown && ElementIndexUp >= ElementIndexDown))
+                {
+                    segmentIndexMiddle = SegmentIndexDown;
+                    elementIndexMiddle = ElementIndexDown;
+                    return;
+                }
+
+                T item = SegmentTable[SegmentIndexUp][ElementIndexUp];
+                SegmentTable[SegmentIndexUp][ElementIndexUp] = SegmentTable[SegmentIndexDown][ElementIndexDown];
+                SegmentTable[SegmentIndexDown][ElementIndexDown] = item;
             }
         }
 
-        private T SelectPivot(ElementPosition low, ElementPosition high)
+        private T SelectPivot(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh)
         {
-            Debug.Assert(IsValidPosition(low, false));
-            Debug.Assert(IsValidPosition(high, false));
-            Debug.Assert(low < high);
+            Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
+            Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
+            Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
 
-            int PivotSegmentIndex = (low.SegmentIndex + high.SegmentIndex) / 2;
-            while (PivotSegmentIndex > low.SegmentIndex && SegmentTable[PivotSegmentIndex].Count == 0)
-                PivotSegmentIndex--;
-            while (PivotSegmentIndex < high.SegmentIndex && SegmentTable[PivotSegmentIndex].Count == 0)
-                PivotSegmentIndex++;
+            int PivotSegmentIndex = (segmentIndexLow + segmentIndexHigh) / 2;
+            Debug.Assert(PivotSegmentIndex >= segmentIndexLow && PivotSegmentIndex <= segmentIndexHigh && SegmentTable[PivotSegmentIndex].Count > 0);
 
-            Debug.Assert(PivotSegmentIndex >= low.SegmentIndex && PivotSegmentIndex <= high.SegmentIndex && SegmentTable[PivotSegmentIndex].Count > 0);
+            int PivotElementIndex;
 
-            int PivotElementIndex = (low.ElementIndex + high.ElementIndex) / 2;
-            if (PivotSegmentIndex == low.SegmentIndex && PivotElementIndex < low.ElementIndex)
-                PivotElementIndex = low.ElementIndex;
-            if (PivotElementIndex >= SegmentTable[PivotSegmentIndex].Count)
+            if (PivotSegmentIndex == segmentIndexLow && PivotSegmentIndex < segmentIndexHigh)
                 PivotElementIndex = SegmentTable[PivotSegmentIndex].Count - 1;
+            else if (PivotSegmentIndex == segmentIndexHigh && PivotSegmentIndex > segmentIndexLow)
+                PivotElementIndex = 0;
+            else
+            {
+                Debug.Assert((PivotSegmentIndex > segmentIndexLow && PivotSegmentIndex < segmentIndexHigh) || (segmentIndexLow == segmentIndexHigh));
+                PivotElementIndex = SegmentTable[PivotSegmentIndex].Count / 2;
+            }
 
             return SegmentTable[PivotSegmentIndex][PivotElementIndex];
-        }
-
-        private void SwapItem(ElementPosition p1, ElementPosition p2)
-        {
-            Debug.Assert(IsValidPosition(p1, false));
-            Debug.Assert(IsValidPosition(p2, false));
-
-            T item = SegmentTable[p1.SegmentIndex][p1.ElementIndex];
-            SegmentTable[p1.SegmentIndex][p1.ElementIndex] = SegmentTable[p2.SegmentIndex][p2.ElementIndex];
-            SegmentTable[p2.SegmentIndex][p2.ElementIndex] = item;
         }
         #endregion
 
@@ -1504,16 +1621,16 @@ namespace LargeList
         /// </summary>
         /// <param name="position">Position of the first element to enumerate.</param>
         /// <returns></returns>
-        protected IPartitionEnumerator<T> CreateEnumerator(ElementPosition position)
+        protected IPartitionEnumerator<T> CreateEnumerator(int segmentIndex, int elementIndex)
         {
-            Debug.Assert(IsValidPosition(position, true));
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
-            if (position == End)
+            if (elementIndex >= SegmentTable[segmentIndex].Count)
                 return new PartitionEnumerator<T>();
             else
             {
-                Debug.Assert(IsValidPosition(position, false));
-                return new PartitionEnumerator<T>(this, position);
+                Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
+                return new PartitionEnumerator<T>(this, segmentIndex, elementIndex);
             }
         }
 
@@ -1643,39 +1760,44 @@ namespace LargeList
             return Exponent;
         }
 
-        private ElementPosition PositionFromCache(long index)
+        private void PositionFromCache(long index, out int segmentIndex, out int elementIndex, out int cacheIndex)
         {
-            int CacheIndex = (int)(index >> CacheLineExponent);
+            cacheIndex = (int)(index >> CacheLineExponent);
 
-            if (CacheIndex >= CacheLineCount)
-                return new ElementPosition(SegmentTable.Count - 1, SegmentTable[SegmentTable.Count - 1].Count, CacheLineCount - 1);
-
-            Debug.Assert(CacheIndex < CacheLineCount);
-
-            int SegmentIndex = Cache[CacheIndex].SegmentIndex;
-            long ElementIndex = index - Cache[CacheIndex].Min;
-
-            while (((ElementIndex > SegmentTable[SegmentIndex].Count) || (ElementIndex == SegmentTable[SegmentIndex].Count && index < Count)) && SegmentTable[SegmentIndex].Count > 0 && SegmentIndex + 1 < SegmentTable.Count)
+            if (cacheIndex >= CacheLineCount)
             {
-                ElementIndex -= SegmentTable[SegmentIndex].Count;
-                SegmentIndex++;
+                segmentIndex = SegmentTable.Count - 1;
+                elementIndex = SegmentTable[SegmentTable.Count - 1].Count;
+                cacheIndex = CacheLineCount - 1;
+                return;
             }
 
-            Debug.Assert(ElementIndex <= SegmentTable[SegmentIndex].Capacity);
+            Debug.Assert(cacheIndex < CacheLineCount);
 
-            if (ElementIndex == SegmentTable[SegmentIndex].Capacity && SegmentTable[SegmentIndex].Capacity > 0)
+            segmentIndex = Cache[cacheIndex].SegmentIndex;
+            long LongElementIndex = index - Cache[cacheIndex].Min;
+
+            while (((LongElementIndex > SegmentTable[segmentIndex].Count) || (LongElementIndex == SegmentTable[segmentIndex].Count && index < Count)) && SegmentTable[segmentIndex].Count > 0 && segmentIndex + 1 < SegmentTable.Count)
             {
-                Debug.Assert(SegmentTable[SegmentIndex].Count == SegmentTable[SegmentIndex].Capacity);
+                LongElementIndex -= SegmentTable[segmentIndex].Count;
+                segmentIndex++;
+            }
 
-                if (SegmentTable[SegmentIndex].Capacity == MaxSegmentCapacity && SegmentIndex + 1 < SegmentTable.Count)
+            Debug.Assert(LongElementIndex <= SegmentTable[segmentIndex].Capacity);
+
+            if (LongElementIndex == SegmentTable[segmentIndex].Capacity && SegmentTable[segmentIndex].Capacity > 0)
+            {
+                Debug.Assert(SegmentTable[segmentIndex].Count == SegmentTable[segmentIndex].Capacity);
+
+                if (SegmentTable[segmentIndex].Capacity == MaxSegmentCapacity && segmentIndex + 1 < SegmentTable.Count)
                 {
-                    ElementIndex -= SegmentTable[SegmentIndex].Count;
-                    SegmentIndex++;
-                    Debug.Assert(ElementIndex == 0);
+                    LongElementIndex -= SegmentTable[segmentIndex].Count;
+                    segmentIndex++;
+                    Debug.Assert(LongElementIndex == 0);
                 }
             }
 
-            return new ElementPosition(SegmentIndex, (int)ElementIndex, CacheIndex);
+            elementIndex = (int)LongElementIndex;
         }
 
         private CacheLine[] Cache;
@@ -1692,6 +1814,8 @@ namespace LargeList
             Debug.Assert(SegmentTable.Count > 0);
             Debug.Assert(Capacity <= SegmentTable.Count * (long)MaxSegmentCapacity);
             Debug.Assert(Count <= Capacity);
+
+            BreakIfNotDebugging();
 
             long TotalCapacity = 0;
             long TotalCount = 0;
@@ -1726,17 +1850,64 @@ namespace LargeList
             int n = 0;
             while (n < Count)
             {
-                ElementPosition p = PositionFromCache(n);
+                int SegmentIndex;
+                int ElementIndex;
+                int CacheIndex;
+                PositionFromCache(n, out SegmentIndex, out ElementIndex, out CacheIndex);
 
                 TotalCount = 0;
-                for (int s = 0; s < p.SegmentIndex; s++)
+                for (int s = 0; s < SegmentIndex; s++)
                     TotalCount += SegmentTable[s].Count;
 
-                TotalCount += p.ElementIndex;
+                TotalCount += ElementIndex;
                 Debug.Assert(TotalCount == n);
 
                 n += CacheLineLength;
             }
+        }
+
+        private bool IsItemEqual(long index, T item)
+        {
+            BreakIfNotDebugging();
+
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            return GetItem(SegmentIndex, ElementIndex).Equals(item);
+        }
+
+        private bool IsItemNull(long index)
+        {
+            BreakIfNotDebugging();
+
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            return GetItem(SegmentIndex, ElementIndex) == null;
+        }
+
+        private bool IsPositionEqual(long index, int segmentIndex, int elementIndex)
+        {
+            BreakIfNotDebugging();
+
+            int SegmentIndex;
+            int ElementIndex;
+            int CacheIndex;
+            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+
+            return SegmentIndex == segmentIndex && ElementIndex == elementIndex;
+        }
+
+        private void BreakIfNotDebugging()
+        {
+#if DEBUG
+#else
+            Debugger.Break(); // This method should not be called in release mode.
+#endif
         }
         #endregion
     }
