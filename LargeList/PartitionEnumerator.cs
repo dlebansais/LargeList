@@ -43,24 +43,23 @@ namespace LargeList
         /// </summary>
         public PartitionEnumerator()
         {
-            Segment = null;
+            Partition = null;
             Enumerator = null;
-            SegmentCount = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the PartitionEnumerator&lt;T&gt; class that enumerates objects starting at a given element in a given segment.
+        /// Initializes a new instance of the PartitionEnumerator&lt;T&gt; class that enumerates objects starting at the specified position in IPartition&lt;T&gt;.
         /// </summary>
-        /// <param name="segment">The segment iteration is starting from.</param>
-        /// <param name="index">The index in <paramref name="segment"/> of the first element to enumerate.</param>
-        public PartitionEnumerator(ISegment<T> segment, int index)
+        /// <param name="partition">The enumerated partition.</param>
+        /// <param name="position">The position in <paramref name="partition"/> of the first element to enumerate.</param>
+        public PartitionEnumerator(IPartition<T> partition, ElementPosition position)
         {
-            Debug.Assert(segment != null);
-            Debug.Assert(index >= 0 && index < segment.Count);
+            Debug.Assert(partition.IsValidPosition(position, false));
 
-            Segment = segment;
-            Enumerator = Segment.GetEnumerator(index);
-            SegmentCount = segment.Count - index;
+            Partition = partition;
+            Position = position;
+
+            Enumerator = partition.GetSegmentEnumerator(position, out SegmentCount);
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace LargeList
         /// <param name="partition">The IPartition&lt;T&gt; object over which this enumerator is iterating.</param>
         public void MoveNext(IPartition<T> partition)
         {
-            if (Segment == null || Enumerator == null)
+            if (partition == null || Enumerator == null)
                 return;
 
             if (SegmentCount > 0)
@@ -87,20 +86,19 @@ namespace LargeList
                 return;
             }
 
-            do
+            int SegmentIndex = partition.NextSegmentIndex(Position.SegmentIndex);
+            if (SegmentIndex < 0)
             {
-                Segment = partition.NextSegment(Segment);
-                if (Segment == null)
-                {
-                    Enumerator = null;
-                    return;
-                }
+                Enumerator = null;
+                return;
             }
-            while (Segment.Count == 0);
 
-            Enumerator = Segment.GetEnumerator(0);
+            Position = new ElementPosition(SegmentIndex, 0, -1);
+            Enumerator = partition.GetSegmentEnumerator(Position, out SegmentCount);
             Enumerator.MoveNext();
-            SegmentCount = Segment.Count - 1;
+
+            Debug.Assert(SegmentCount > 0);
+            SegmentCount--;
         }
 
         #region Implementation of IDisposable
@@ -124,12 +122,13 @@ namespace LargeList
 
         private void DisposeNow()
         {
-            Segment = null;
+            Partition = null;
             Enumerator = null;
         }
         #endregion
 
-        private ISegment<T> Segment;
+        private IPartition<T> Partition;
+        private ElementPosition Position;
         private IEnumerator<T> Enumerator;
         private int SegmentCount;
     }

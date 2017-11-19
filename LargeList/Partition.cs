@@ -16,7 +16,7 @@ namespace LargeList
     interface IPartition<T>
     {
         /// <summary>
-        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given Partition&lt;T&gt;.
+        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given IPartition&lt;T&gt;.
         /// </summary>
         /// <returns>
         /// The maximum capacity allowed for segments.
@@ -40,18 +40,6 @@ namespace LargeList
         long Count { get; }
 
         /// <summary>
-        /// Increases the IPartition&lt;T&gt;.Capacity by the given amount.
-        /// </summary>
-        /// <param name="extended">The number of elements added to the IPartition&lt;T&gt;.Capacity.</param>
-        void ExtendCapacity(long extended);
-
-        /// <summary>
-        /// Decreases the IPartition&lt;T&gt;.Capacity by the given amount.
-        /// </summary>
-        /// <param name="trimed">The number of elements substracted to the IPartition&lt;T&gt;.Capacity.</param>
-        void TrimCapacity(long trimed);
-
-        /// <summary>
         /// Gets the position of the first element in the IPartition&lt;T&gt;.
         /// </summary>
         /// <returns>
@@ -60,22 +48,31 @@ namespace LargeList
         ElementPosition Begin { get; }
 
         /// <summary>
+        /// Gets the position after the last element in the IPartition&lt;T&gt;.
+        /// </summary>
+        /// <returns>
+        /// The position after the last element in the IPartition&lt;T&gt;.
+        /// </returns>
+        ElementPosition End { get; }
+
+        /// <summary>
         /// Gets the position of an element in the IPartition&lt;T&gt; from its virtual index in a linear list.
         /// </summary>
         /// <param name="index">The virtual index of the element.</param>
         /// <returns>
         /// The position of the element in the IPartition&lt;T&gt;.
         /// </returns>
-        ElementPosition PositionOf(long index);
+        ElementPosition PositionAt(long index);
 
         /// <summary>
-        /// Returns an enumerator for the IPartition&lt;T&gt;, starting from the specified position.
+        /// Check that the specified position in the IPartition&lt;T&gt; is valid.
         /// </summary>
-        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <param name="position">The position to check.</param>
+        /// <param name="allowEnd">True to allow the IPartition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
         /// <returns>
-        /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
+        /// True if the position in the IPartition&lt;T&gt; specified by <paramref name="position"/> is valid.
         /// </returns>
-        IPartitionEnumerator<T> GetEnumerator(ElementPosition position);
+        bool IsValidPosition(ElementPosition position, bool allowEnd);
 
         /// <summary>
         /// Gets the previous position in the IPartition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
@@ -96,15 +93,6 @@ namespace LargeList
         ElementPosition NextPosition(ElementPosition position);
 
         /// <summary>
-        /// Gets the next segment in the IPartition&lt;T&gt;.
-        /// </summary>
-        /// <param name="segment">The segment used as starting point.</param>
-        /// <returns>
-        /// The segment in the IPartition&lt;T&gt; that follows <paramref name="segment"/>, null if <paramref name="segment"/> was the last one in the IPartition&lt;T&gt;.
-        /// </returns>
-        ISegment<T> NextSegment(ISegment<T> segment);
-
-        /// <summary>
         /// Gets the element in the IPartition&lt;T&gt; at the specified position.
         /// </summary>
         /// <param name="position">The position of the element.</param>
@@ -112,6 +100,34 @@ namespace LargeList
         /// The element in the IPartition&lt;T&gt; specified by <paramref name="position"/>.
         /// </returns>
         T GetItem(ElementPosition position);
+
+        /// <summary>
+        /// Returns an enumerator for the IPartition&lt;T&gt;, starting from the specified position.
+        /// </summary>
+        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <returns>
+        /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
+        /// </returns>
+        IPartitionEnumerator<T> GetEnumerator(ElementPosition position);
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
+        /// </summary>
+        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <param name="remainingCount">The remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
+        /// <returns>
+        /// An enumerator for the ISegment&lt;T&gt;.
+        /// </returns>
+        IEnumerator<T> GetSegmentEnumerator(ElementPosition position, out int remainingCount);
+
+        /// <summary>
+        /// Gets the next segment in the IPartition&lt;T&gt;.
+        /// </summary>
+        /// <param name="segmentIndex">Index of the segment used as starting point.</param>
+        /// <returns>
+        /// The index of the segment in the IPartition&lt;T&gt; that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the IPartition&lt;T&gt;.
+        /// </returns>
+        int NextSegmentIndex(int segmentIndex);
 
         /// <summary>
         /// Determines whether an element is in the IPartition&lt;T&gt;.
@@ -162,6 +178,18 @@ namespace LargeList
         void Clear();
 
         /// <summary>
+        /// Increases the IPartition&lt;T&gt;.Capacity by the given amount.
+        /// </summary>
+        /// <param name="extended">The number of elements added to the IPartition&lt;T&gt;.Capacity.</param>
+        void ExtendCapacity(long extended);
+
+        /// <summary>
+        /// Decreases the IPartition&lt;T&gt;.Capacity by the given amount.
+        /// </summary>
+        /// <param name="trimed">The number of elements substracted to the IPartition&lt;T&gt;.Capacity.</param>
+        void TrimCapacity(long trimed);
+
+        /// <summary>
         /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the IPartition&lt;T&gt;.
         /// </summary>
         /// <param name="position">The position at which uninitialized elements should be inserted.</param>
@@ -192,6 +220,13 @@ namespace LargeList
         bool Remove(T item);
 
         /// <summary>
+        /// Removes a range of elements from the IPartition&lt;T&gt;.
+        /// </summary>
+        /// <param name="position">The position of the first element to remove.</param>
+        /// <param name="count">The number of elements to remove.</param>
+        void RemoveRange(ElementPosition position, long count);
+
+        /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
         /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
@@ -199,13 +234,6 @@ namespace LargeList
         /// The number of elements removed from the IPartition&lt;T&gt;.
         /// </returns>
         long RemoveAll(Predicate<T> match);
-
-        /// <summary>
-        /// Removes a range of elements from the IPartition&lt;T&gt;.
-        /// </summary>
-        /// <param name="position">The position of the first element to remove.</param>
-        /// <param name="count">The number of elements to remove.</param>
-        void RemoveRange(ElementPosition position, long count);
 
         /// <summary>
         /// Reverses the order of the elements in the specified range of the IPartition&lt;T&gt;.
@@ -310,10 +338,10 @@ namespace LargeList
         public long Capacity { get; private set; }
 
         /// <summary>
-        /// Gets the number of elements contained in the IPartition&lt;T&gt;.
+        /// Gets the number of elements contained in the Partition&lt;T&gt;.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the IPartition&lt;T&gt;.
+        /// The number of elements contained in the Partition&lt;T&gt;.
         /// </returns>
         public long Count { get; private set; }
 
@@ -323,13 +351,15 @@ namespace LargeList
         /// <returns>
         /// The position of the first element in the Partition&lt;T&gt;.
         /// </returns>
-        public ElementPosition Begin
-        {
-            get
-            {
-                return new ElementPosition(0, 0, 0);
-            }
-        }
+        public ElementPosition Begin { get { return new ElementPosition(0, 0, 0); } }
+
+        /// <summary>
+        /// Gets the position after the last element in the Partition&lt;T&gt;.
+        /// </summary>
+        /// <returns>
+        /// The position after the last element in the Partition&lt;T&gt;.
+        /// </returns>
+        public ElementPosition End { get { return PositionAt(Count); } }
         #endregion
 
         #region Queries
@@ -340,11 +370,119 @@ namespace LargeList
         /// <returns>
         /// The position of the element in the Partition&lt;T&gt;.
         /// </returns>
-        public ElementPosition PositionOf(long index)
+        public ElementPosition PositionAt(long index)
         {
             Debug.Assert(index >= 0 && index <= Count);
 
-            ElementPosition Result = PositionOfFromCache(index);
+            ElementPosition Result = PositionFromCache(index);
+
+            Debug.Assert(IsValidPosition(Result, true));
+
+#if DEBUG
+            AssertInvariant();
+#endif
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Check that the specified position in the Partition&lt;T&gt; is valid.
+        /// </summary>
+        /// <param name="position">The position to check.</param>
+        /// <param name="allowEnd">True to allow the Partition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
+        /// <returns>
+        /// True if the position in the Partition&lt;T&gt; specified by <paramref name="position"/> is valid.
+        /// </returns>
+        public bool IsValidPosition(ElementPosition position, bool allowEnd)
+        {
+#if DEBUG
+#else
+            Debugger.Break(); // This method should not be called in release mode.
+#endif
+
+            if (position.SegmentIndex < 0 || position.SegmentIndex >= SegmentTable.Count)
+                return false;
+
+            if (position.ElementIndex < SegmentTable[position.SegmentIndex].Count)
+                return true;
+
+            if (!allowEnd)
+                return false;
+
+            int SegmentIndex = position.SegmentIndex;
+            while (SegmentIndex + 1 < SegmentTable.Count)
+                if (SegmentTable[++SegmentIndex].Count != 0)
+                    return false;
+
+            if (position.ElementIndex == SegmentTable[position.SegmentIndex].Count)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the previous position in the Partition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this class.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the Partition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding Partition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
+        /// </returns>
+        public ElementPosition PreviousPosition(ElementPosition position)
+        {
+            Debug.Assert(IsValidPosition(position, true));
+
+            ElementPosition Result;
+
+            if (position.ElementIndex > 0)
+                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex - 1, -1);
+
+            else
+            {
+                int SegmentIndex = position.SegmentIndex - 1;
+
+                if (SegmentIndex >= 0)
+                {
+                    Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
+                    Result = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
+                }
+                else
+                    Result = new ElementPosition(SegmentIndex, 0, -1);
+            }
+
+            Debug.Assert(IsValidPosition(Result, false) || (Result.SegmentIndex == -1 && Result.ElementIndex == 0));
+
+#if DEBUG
+            AssertInvariant();
+#endif
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Gets the next position in the Partition&lt;T&gt;. <paramref name="position"/> must not be Partition&lt;T&gt;.End.
+        /// </summary>
+        /// <param name="position">The position used as starting point.</param>
+        /// <returns>
+        /// The position in the Partition&lt;T&gt; that follows <paramref name="position"/>.
+        /// </returns>
+        public ElementPosition NextPosition(ElementPosition position)
+        {
+            Debug.Assert(IsValidPosition(position, false));
+
+            ElementPosition Result;
+
+            if (position.ElementIndex + 1 < SegmentTable[position.SegmentIndex].Count)
+                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
+
+            else
+            {
+                int SegmentIndex = position.SegmentIndex + 1;
+
+                if (SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count > 0)
+                    Result = new ElementPosition(SegmentIndex, 0, -1);
+                else
+                    Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
+            }
 
             Debug.Assert(IsValidPosition(Result, true));
 
@@ -398,122 +536,43 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Creates an enumerator to iterate through the Partition&lt;T&gt; starting at the specified position.
+        /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
         /// </summary>
-        /// <param name="position">Position of the first element to enumerate.</param>
-        /// <returns></returns>
-        protected IPartitionEnumerator<T> CreateEnumerator(ElementPosition position)
-        {
-            Debug.Assert(IsValidPosition(position, true));
-
-            if (IsValidPosition(position, false))
-            {
-                ISegment<T> segment = SegmentTable[position.SegmentIndex];
-                int index = position.ElementIndex;
-
-                return new PartitionEnumerator<T>(segment, index);
-            }
-            else
-                return new PartitionEnumerator<T>();
-        }
-
-        /// <summary>
-        /// Gets the previous position in the Partition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this class.
-        /// </summary>
-        /// <param name="position">The position used as starting point.</param>
+        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <param name="remainingCount">The remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
         /// <returns>
-        /// The position in the Partition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding Partition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
+        /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
-        public ElementPosition PreviousPosition(ElementPosition position)
-        {
-            Debug.Assert(IsValidPosition(position, true));
-
-            ElementPosition Result;
-
-            if (position.ElementIndex > 0)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex - 1, -1);
-
-            else
-            {
-                int SegmentIndex = position.SegmentIndex;
-                do
-                    SegmentIndex--;
-                while (SegmentIndex >= 0 && SegmentTable[SegmentIndex].Count == 0);
-
-                if (SegmentIndex >= 0)
-                    Result = new ElementPosition(SegmentIndex, SegmentTable[SegmentIndex].Count - 1, -1);
-                else
-                    Result = new ElementPosition(SegmentIndex, 0, -1);
-            }
-
-            Debug.Assert(IsValidPosition(Result, false) || (Result.SegmentIndex == -1 && Result.ElementIndex == 0));
-
-#if DEBUG
-            AssertInvariant();
-#endif
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Gets the next position in the Partition&lt;T&gt;. <paramref name="position"/> must not be Partition&lt;T&gt;.End.
-        /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the Partition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
-        public ElementPosition NextPosition(ElementPosition position)
+        public IEnumerator<T> GetSegmentEnumerator(ElementPosition position, out int remainingCount)
         {
             Debug.Assert(IsValidPosition(position, false));
 
-            ElementPosition Result;
+            ISegment<T> Segment = SegmentTable[position.SegmentIndex];
 
-            if (position.ElementIndex + 1 < SegmentTable[position.SegmentIndex].Count)
-                Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
+            remainingCount = Segment.Count - position.ElementIndex;
+            Debug.Assert(remainingCount > 0);
 
-            else
-            {
-                int NextSegmentIndex = position.SegmentIndex + 1;
-                while (NextSegmentIndex < SegmentTable.Count && SegmentTable[NextSegmentIndex].Count == 0)
-                    NextSegmentIndex++;
-
-                if (NextSegmentIndex < SegmentTable.Count)
-                    Result = new ElementPosition(NextSegmentIndex, 0, -1);
-                else
-                    Result = new ElementPosition(position.SegmentIndex, position.ElementIndex + 1, -1);
-            }
-
-            Debug.Assert(IsValidPosition(Result, true));
-
-#if DEBUG
-            AssertInvariant();
-#endif
-
-            return Result;
+            return Segment.GetEnumerator(position.ElementIndex);
         }
 
         /// <summary>
         /// Gets the next segment in the Partition&lt;T&gt;.
         /// </summary>
-        /// <param name="segment">The segment used as starting point.</param>
+        /// <param name="segmentIndex">Index of the segment used as starting point.</param>
         /// <returns>
-        /// The segment in the Partition&lt;T&gt; that follows <paramref name="segment"/>, null if <paramref name="segment"/> was the last one in the Partition&lt;T&gt;.
+        /// The index of the segment in the Partition&lt;T&gt; that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the Partition&lt;T&gt;.
         /// </returns>
-        public ISegment<T> NextSegment(ISegment<T> segment)
+        public int NextSegmentIndex(int segmentIndex)
         {
-            Debug.Assert(SegmentTable.Contains(segment));
+            Debug.Assert(segmentIndex >= 0 && segmentIndex < SegmentTable.Count);
 
-            ISegment<T> Result;
-
-            int NextContentIndex = SegmentTable.IndexOf(segment) + 1;
-            Debug.Assert(NextContentIndex >= 0 && NextContentIndex <= SegmentTable.Count);
-
-            if (NextContentIndex < SegmentTable.Count)
-                Result = SegmentTable[NextContentIndex];
+            int Result;
+            if (segmentIndex + 1 < SegmentTable.Count)
+                Result = segmentIndex + 1;
             else
-                Result = null;
+                Result = -1;
 
-            Debug.Assert(Result == null || SegmentTable.Contains(Result));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < SegmentTable.Count));
 
 #if DEBUG
             AssertInvariant();
@@ -564,10 +623,13 @@ namespace LargeList
 
             long Result = -1;
 
-            int SegmentIndex = 0;
-            long ElementStartIndex = startIndex;
-            long ItemIndex = 0;
+            ElementPosition startPosition = PositionAt(startIndex);
+            int SegmentIndex = startPosition.SegmentIndex;
+            long ElementStartIndex = startPosition.ElementIndex;
+            long ItemIndex = startIndex - ElementStartIndex;
+            long RemainingCount = count;
 
+            /*
             for (;;)
             {
                 Debug.Assert(ElementStartIndex >= 0);
@@ -598,13 +660,15 @@ namespace LargeList
 
                     SegmentIndex = NextSegmentIndex;
                 }
-            }
+            }*/
 
-            while (SegmentIndex < SegmentTable.Count && count > 0)
+            while (SegmentIndex < SegmentTable.Count && RemainingCount > 0)
             {
                 ISegment<T> Segment = SegmentTable[SegmentIndex];
+                if (Segment.Count == 0)
+                    break;
 
-                int CompareCount = (Segment.Count - (int)ElementStartIndex <= count) ? Segment.Count - (int)ElementStartIndex : (int)count;
+                int CompareCount = (Segment.Count - (int)ElementStartIndex <= RemainingCount) ? Segment.Count - (int)ElementStartIndex : (int)RemainingCount;
                 int ElementIndex = Segment.IndexOf(item, (int)ElementStartIndex, CompareCount);
                 if (ElementIndex >= 0)
                 {
@@ -613,13 +677,13 @@ namespace LargeList
                 }
 
                 ElementStartIndex = 0;
-                count -= CompareCount;
+                RemainingCount -= CompareCount;
                 ItemIndex += Segment.Count;
                 SegmentIndex++;
             }
 
-            Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || Result >= 0 && Result < Count && GetItem(PositionOf(Result)).Equals(item));
+            Debug.Assert(RemainingCount >= 0);
+            Debug.Assert(Result == -1 || (Result >= startIndex && Result < startIndex + count && GetItem(PositionAt(Result)).Equals(item)));
 
 #if DEBUG
             AssertInvariant();
@@ -645,7 +709,7 @@ namespace LargeList
 
             long Result = -1;
 
-            ElementPosition position = PositionOf(startIndex);
+            ElementPosition position = PositionAt(startIndex);
             int SegmentIndex = position.SegmentIndex;
             int ElementStartIndex = position.ElementIndex;
             long ItemIndex = startIndex;
@@ -667,11 +731,9 @@ namespace LargeList
 
                 count -= CompareCount;
                 ItemIndex -= CompareCount;
-                Segment = null;
+                SegmentIndex--;
 
-                do
-                    SegmentIndex--;
-                while (SegmentIndex >= 0 && SegmentTable[SegmentIndex].Count == 0);
+                Debug.Assert(SegmentIndex < 0 || SegmentTable[SegmentIndex].Count > 0);
 
                 if (SegmentIndex < 0 || count == 0)
                     break;
@@ -681,7 +743,7 @@ namespace LargeList
             }
 
             Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && GetItem(PositionOf(Result)) == null) || (item != null && item.Equals(GetItem(PositionOf(Result)))))));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && GetItem(PositionAt(Result)) == null) || (item != null && item.Equals(GetItem(PositionAt(Result)))))));
 
 #if DEBUG
             AssertInvariant();
@@ -712,14 +774,11 @@ namespace LargeList
 
             long indexLower = index;
             long indexUpper = index + count - 1;
-            ElementPosition lower = PositionOf(indexLower);
-            ElementPosition upper = PositionOf(indexUpper);
+            ElementPosition lower = PositionAt(indexLower);
+            ElementPosition upper = PositionAt(indexUpper);
 
             while (lower <= upper)
             {
-                if (indexLower == 9 && indexUpper == 10)
-                    indexUpper = 10;
-
                 ElementPosition middle;
                 long indexMiddle;
                 GetMiddleOf(lower, indexLower, upper, indexUpper, out middle, out indexMiddle);
@@ -774,11 +833,7 @@ namespace LargeList
 
                 if (Difference > 0)
                 {
-                    int SegmentIndex = lower.SegmentIndex;
-
-                    do
-                        SegmentIndex++;
-                    while (SegmentIndex < upper.SegmentIndex && SegmentTable[SegmentIndex].Count == 0);
+                    int SegmentIndex = lower.SegmentIndex + 1;
 
                     Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
 
@@ -790,11 +845,7 @@ namespace LargeList
 
                 else if (Difference < 0)
                 {
-                    int SegmentIndex = upper.SegmentIndex;
-
-                    do
-                        SegmentIndex--;
-                    while (SegmentIndex > lower.SegmentIndex && SegmentTable[SegmentIndex].Count == 0);
+                    int SegmentIndex = upper.SegmentIndex - 1;
 
                     Debug.Assert(SegmentTable[SegmentIndex].Count > 0);
 
@@ -806,16 +857,8 @@ namespace LargeList
 
                 else
                 {
-                    int LowerSegmentIndex = lower.SegmentIndex;
-                    int UpperSegmentIndex = upper.SegmentIndex;
-
-                    do
-                        LowerSegmentIndex++;
-                    while (LowerSegmentIndex < upper.SegmentIndex && SegmentTable[LowerSegmentIndex].Count == 0);
-
-                    do
-                        UpperSegmentIndex--;
-                    while (UpperSegmentIndex > lower.SegmentIndex && SegmentTable[UpperSegmentIndex].Count == 0);
+                    int LowerSegmentIndex = lower.SegmentIndex + 1;
+                    int UpperSegmentIndex = upper.SegmentIndex - 1;
 
                     Debug.Assert(SegmentTable[LowerSegmentIndex].Count > 0);
                     Debug.Assert(SegmentTable[UpperSegmentIndex].Count > 0);
@@ -833,8 +876,8 @@ namespace LargeList
                 Debug.Assert(upper.SegmentIndex >= 0 && upper.SegmentIndex < SegmentTable.Count);
                 Debug.Assert(upper.ElementIndex == SegmentTable[upper.SegmentIndex].Count - 1);
                 Debug.Assert(indexUpper + 1 == indexLower);
-                Debug.Assert(PositionOf(indexUpper) == upper);
-                Debug.Assert(PositionOf(indexLower) == lower);
+                Debug.Assert(PositionAt(indexUpper) == upper);
+                Debug.Assert(PositionAt(indexLower) == lower);
 
                 middle = upper;
                 indexMiddle = indexUpper;
@@ -850,7 +893,7 @@ namespace LargeList
                 indexMiddle = indexLower - lower.ElementIndex + middleElementIndex;
             }
 
-            Debug.Assert(PositionOf(indexMiddle) == middle);
+            Debug.Assert(PositionAt(indexMiddle) == middle);
         }
 #endregion
 
@@ -1132,6 +1175,40 @@ namespace LargeList
         }
 
         /// <summary>
+        /// Removes the first occurrence of a specific object from the Partition&lt;T&gt;.
+        /// </summary>
+        /// <param name="item">The object to remove from the Partition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the Partition&lt;T&gt;.
+        /// </returns>
+        public bool Remove(T item)
+        {
+            bool Result = false;
+
+            foreach (ISegment<T> Segment in SegmentTable)
+                if (Segment.Remove(item))
+                {
+                    Result = true;
+                    Count--;
+
+                    if (Segment.Count == 0)
+                    {
+                        SegmentTable.Remove(Segment);
+                        SegmentTable.Add(Segment);
+                    }
+                    break;
+                }
+
+            RebuildCache();
+
+#if DEBUG
+            AssertInvariant();
+#endif
+
+            return Result;
+        }
+
+        /// <summary>
         /// Removes a range of elements from the Partition&lt;T&gt;.
         /// </summary>
         /// <param name="position">The position of the first element to remove.</param>
@@ -1146,13 +1223,14 @@ namespace LargeList
 
             while (RemainingCount > 0)
             {
-                Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count);
+                Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && SegmentTable[SegmentIndex].Count > 0);
 
+                /*
                 if (SegmentTable[SegmentIndex].Count == 0)
                 {
                     SegmentIndex++;
                     continue;
-                }
+                }*/
 
                 Debug.Assert(ElementIndex >= 0 && ElementIndex < SegmentTable[SegmentIndex].Count);
 
@@ -1185,40 +1263,6 @@ namespace LargeList
 #if DEBUG
             AssertInvariant();
 #endif
-        }
-
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the Partition&lt;T&gt;.
-        /// </summary>
-        /// <param name="item">The object to remove from the Partition&lt;T&gt;. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the Partition&lt;T&gt;.
-        /// </returns>
-        public bool Remove(T item)
-        {
-            bool Result = false;
-
-            foreach (ISegment<T> Segment in SegmentTable)
-                if (Segment.Remove(item))
-                {
-                    Result = true;
-                    Count--;
-
-                    if (Segment.Count == 0)
-                    {
-                        SegmentTable.Remove(Segment);
-                        SegmentTable.Add(Segment);
-                    }
-                    break;
-                }
-
-            RebuildCache();
-
-#if DEBUG
-            AssertInvariant();
-#endif
-
-            return Result;
         }
 
         /// <summary>
@@ -1374,7 +1418,7 @@ namespace LargeList
             {
                 do
                     if (up.SegmentIndex < 0)
-                        up = PositionOf(0);
+                        up = Begin;
                     else
                         up = NextPosition(up);
                 while (comparer.Compare(SegmentTable[up.SegmentIndex][up.ElementIndex], pivot) < 0);
@@ -1453,6 +1497,24 @@ namespace LargeList
         protected ISegment<T> CreateSegment(int initialCapacity)
         {
             return new Segment<T>(initialCapacity, MaxSegmentCapacity);
+        }
+
+        /// <summary>
+        /// Creates an enumerator to iterate through the Partition&lt;T&gt; starting at the specified position.
+        /// </summary>
+        /// <param name="position">Position of the first element to enumerate.</param>
+        /// <returns></returns>
+        protected IPartitionEnumerator<T> CreateEnumerator(ElementPosition position)
+        {
+            Debug.Assert(IsValidPosition(position, true));
+
+            if (position == End)
+                return new PartitionEnumerator<T>();
+            else
+            {
+                Debug.Assert(IsValidPosition(position, false));
+                return new PartitionEnumerator<T>(this, position);
+            }
         }
 
         /// <summary>
@@ -1581,7 +1643,7 @@ namespace LargeList
             return Exponent;
         }
 
-        private ElementPosition PositionOfFromCache(long index)
+        private ElementPosition PositionFromCache(long index)
         {
             int CacheIndex = (int)(index >> CacheLineExponent);
 
@@ -1664,7 +1726,7 @@ namespace LargeList
             int n = 0;
             while (n < Count)
             {
-                ElementPosition p = PositionOfFromCache(n);
+                ElementPosition p = PositionFromCache(n);
 
                 TotalCount = 0;
                 for (int s = 0; s < p.SegmentIndex; s++)
@@ -1675,28 +1737,6 @@ namespace LargeList
 
                 n += CacheLineLength;
             }
-        }
-
-        private bool IsValidPosition(ElementPosition position, bool AllowEnd)
-        {
-            if (position.SegmentIndex < 0 || position.SegmentIndex >= SegmentTable.Count)
-                return false;
-
-            if (position.ElementIndex < SegmentTable[position.SegmentIndex].Count)
-                return true;
-
-            if (!AllowEnd)
-                return false;
-
-            int SegmentIndex = position.SegmentIndex;
-            while (SegmentIndex  + 1 < SegmentTable.Count)
-                if (SegmentTable[++SegmentIndex].Count != 0)
-                    return false;
-
-            if (position.ElementIndex == SegmentTable[position.SegmentIndex].Count)
-                return true;
-
-            return false;
         }
         #endregion
     }
