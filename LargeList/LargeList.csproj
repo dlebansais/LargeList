@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElementPosition.cs" />
     <Compile Include="EnumerableSegmentTable.cs" />
     <Compile Include="LargeCollection.cs" />
     <Compile Include="LargeCollectionDebugView.cs" />

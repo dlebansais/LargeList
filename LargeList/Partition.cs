@@ -40,99 +40,83 @@ namespace LargeList
         long Count { get; }
 
         /// <summary>
-        /// Gets the position of the first element in the IPartition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// The position of the first element in the IPartition&lt;T&gt;.
-        /// </returns>
-        void GetBegin(out int segmentIndex, out int elementIndex, out int cacheIndex);
-
-        /// <summary>
-        /// Gets the position after the last element in the IPartition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// The position after the last element in the IPartition&lt;T&gt;.
-        /// </returns>
-        void GetEnd(out int segmentIndex, out int elementIndex, out int cacheIndex);
-
-        /// <summary>
         /// Gets the position of an element in the IPartition&lt;T&gt; from its virtual index in a linear list.
         /// </summary>
         /// <param name="index">The virtual index of the element.</param>
-        /// <returns>
-        /// The position of the element in the IPartition&lt;T&gt;.
-        /// </returns>
-        void GetPositionAt(long index, out int segmentIndex, out int elementIndex, out int cacheIndex);
+        /// <param name="segmentIndex">Upon return, the segment index of the element.</param>
+        /// <param name="elementIndex">Upon return, the element index of the element.</param>
+        /// <param name="cacheIndex">Upon return, the cache index of the element.</param>
+        void GetPosition(long index, out int segmentIndex, out int elementIndex, out int cacheIndex);
 
         /// <summary>
-        /// Check that the specified position in the IPartition&lt;T&gt; is valid.
+        /// Check that the specified position in the IPartition&lt;T&gt; is valid. Calling this method is reserved to debugging.
         /// </summary>
-        /// <param name="position">The position to check.</param>
+        /// <param name="segmentIndex">The segment index of the position to check.</param>
+        /// <param name="elementIndex">The element index of the position to check.</param>
         /// <param name="allowEnd">True to allow the IPartition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
         /// <returns>
-        /// True if the position in the IPartition&lt;T&gt; specified by <paramref name="position"/> is valid.
+        /// True if the position in the IPartition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
         /// </returns>
         bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd);
 
         /// <summary>
-        /// Gets the previous position in the IPartition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
+        /// Gets the previous position in the IPartition&lt;T&gt;. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding IPartition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
-        /// </returns>
+        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
+        /// <param name="elementIndex">The element index of the position used as starting point.</param>
+        /// <param name="segmentIndexPrevious">Upon return, the segment index of the previous position.</param>
+        /// <param name="elementIndexPrevious">Upon return, the element index of the previous position.</param>
         void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious);
 
         /// <summary>
-        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
+        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
+        /// <param name="elementIndex">The element index of the position used as starting point.</param>
+        /// <param name="segmentIndexNext">Upon return, the segment index of the next position.</param>
+        /// <param name="elementIndexNext">Upon return, the element index of the next position.</param>
         void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext);
 
         /// <summary>
-        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// Updates a position in the IPartition&lt;T&gt; to the previous element.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
-        void IncrementPosition(ref int segmentIndex, ref int elementIndex);
+        /// <param name="segmentIndex">The segment index of the position.</param>
+        /// <param name="elementIndex">The element index of the position.</param>
+        void DecrementPosition(ref int segmentIndex, ref int elementIndex);
 
         /// <summary>
-        /// Gets the previous position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// Updates a position in the IPartition&lt;T&gt; to the next element.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; before <paramref name="position"/>.
-        /// </returns>
-        void DecrementPosition(ref int segmentIndex, ref int elementIndex);
+        /// <param name="segmentIndex">The segment index of the position.</param>
+        /// <param name="elementIndex">The element index of the position.</param>
+        void IncrementPosition(ref int segmentIndex, ref int elementIndex);
 
         /// <summary>
         /// Gets the element in the IPartition&lt;T&gt; at the specified position.
         /// </summary>
-        /// <param name="position">The position of the element.</param>
+        /// <param name="segmentIndex">The segment index of the position of the element.</param>
+        /// <param name="elementIndex">The element index of the position of the element.</param>
         /// <returns>
-        /// The element in the IPartition&lt;T&gt; specified by <paramref name="position"/>.
+        /// The element in the IPartition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         T GetItem(int segmentIndex, int elementIndex);
 
         /// <summary>
         /// Returns an enumerator for the IPartition&lt;T&gt;, starting from the specified position.
         /// </summary>
-        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns>
-        /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
+        /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex);
 
         /// <summary>
         /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position of the first element to enumerate.</param>
-        /// <param name="remainingCount">The remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
+        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
         /// <returns>
         /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
@@ -210,21 +194,25 @@ namespace LargeList
         /// <summary>
         /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the IPartition&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position at which uninitialized elements should be inserted.</param>
+        /// <param name="segmentIndex">The segment index of the position at which uninitialized elements should be inserted.</param>
+        /// <param name="elementIndex">The element index of the position at which uninitialized elements should be inserted.</param>
+        /// <param name="cacheIndex">The cache index of the position at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
         void MakeRoom(int segmentIndex, int elementIndex, int cacheIndex, long count);
 
         /// <summary>
         /// Replaces the element at the specified position with a new item.
         /// </summary>
-        /// <param name="position">The position of the replaced element.</param>
+        /// <param name="segmentIndex">The segment index of the position of the replaced element.</param>
+        /// <param name="elementIndex">The element index of the position of the replaced element.</param>
         /// <param name="item">The item to set.</param>
         void SetItem(int segmentIndex, int elementIndex, T item);
 
         /// <summary>
         /// Replaces a range of elements at the specified position with new items from a collection.
         /// </summary>
-        /// <param name="position">The position of replaced elements.</param>
+        /// <param name="segmentIndex">The segment index of the position of replaced elements.</param>
+        /// <param name="elementIndex">The element index of the position of replaced elements.</param>
         /// <param name="collection">The collection containing items to set.</param>
         void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection);
 
@@ -240,7 +228,9 @@ namespace LargeList
         /// <summary>
         /// Removes a range of elements from the IPartition&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position of the first element to remove.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to remove.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to remove.</param>
+        /// <param name="cacheIndex">The cache index of the position of the first element to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
         void RemoveRange(int segmentIndex, int elementIndex, int cacheIndex, long count);
 
@@ -256,16 +246,20 @@ namespace LargeList
         /// <summary>
         /// Reverses the order of the elements in the specified range of the IPartition&lt;T&gt;.
         /// </summary>
-        /// <param name="begin">The position of the first item in the range.</param>
-        /// <param name="end">The position after the last item in the range.</param>
+        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
+        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
+        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
+        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count);
 
         /// <summary>
         /// Sorts the elements in a range of elements in IPartition&lt;T&gt; using the specified comparer.
         /// </summary>
-        /// <param name="begin">The position of the first item in the range.</param>
-        /// <param name="end">The position after the last item in the range.</param>
+        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
+        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
+        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
+        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
         void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer);
@@ -362,30 +356,6 @@ namespace LargeList
         /// The number of elements contained in the Partition&lt;T&gt;.
         /// </returns>
         public long Count { get; private set; }
-
-        /// <summary>
-        /// Gets the position of the first element in the Partition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// The position of the first element in the Partition&lt;T&gt;.
-        /// </returns>
-        public void GetBegin(out int segmentIndex, out int elementIndex, out int cacheIndex)
-        {
-            segmentIndex = 0;
-            elementIndex = 0;
-            cacheIndex = 0;
-        }
-
-        /// <summary>
-        /// Gets the position after the last element in the Partition&lt;T&gt;.
-        /// </summary>
-        /// <returns>
-        /// The position after the last element in the Partition&lt;T&gt;.
-        /// </returns>
-        public void GetEnd(out int segmentIndex, out int elementIndex, out int cacheIndex)
-        {
-            GetPositionAt(Count, out segmentIndex, out elementIndex, out cacheIndex);
-        }
         #endregion
 
         #region Queries
@@ -393,10 +363,10 @@ namespace LargeList
         /// Gets the position of an element in the Partition&lt;T&gt; from its virtual index in a linear list.
         /// </summary>
         /// <param name="index">The virtual index of the element.</param>
-        /// <returns>
-        /// The position of the element in the Partition&lt;T&gt;.
-        /// </returns>
-        public void GetPositionAt(long index, out int segmentIndex, out int elementIndex, out int cacheIndex)
+        /// <param name="segmentIndex">Upon return, the segment index of the element.</param>
+        /// <param name="elementIndex">Upon return, the element index of the element.</param>
+        /// <param name="cacheIndex">Upon return, the cache index of the element.</param>
+        public void GetPosition(long index, out int segmentIndex, out int elementIndex, out int cacheIndex)
         {
             Debug.Assert(index >= 0 && index <= Count);
 
@@ -410,12 +380,13 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Check that the specified position in the Partition&lt;T&gt; is valid.
+        /// Check that the specified position in the Partition&lt;T&gt; is valid. Calling this method is reserved to debugging.
         /// </summary>
-        /// <param name="position">The position to check.</param>
+        /// <param name="segmentIndex">The segment index of the position to check.</param>
+        /// <param name="elementIndex">The element index of the position to check.</param>
         /// <param name="allowEnd">True to allow the Partition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
         /// <returns>
-        /// True if the position in the Partition&lt;T&gt; specified by <paramref name="position"/> is valid.
+        /// True if the position in the Partition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
         /// </returns>
         public bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd)
         {
@@ -437,12 +408,12 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Gets the previous position in the Partition&lt;T&gt;. The returned position may be invalid if <paramref name="position"/> is the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this class.
+        /// Gets the previous position in the Partition&lt;T&gt;. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the Partition&lt;T&gt; that precedes <paramref name="position"/>. The position preceding Partition&lt;T&gt;.Begin may be returned, but must not be used in subsequent calls.
-        /// </returns>
+        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
+        /// <param name="elementIndex">The element index of the position used as starting point.</param>
+        /// <param name="segmentIndexPrevious">Upon return, the segment index of the previous position.</param>
+        /// <param name="elementIndexPrevious">Upon return, the element index of the previous position.</param>
         public void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -478,12 +449,12 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Gets the next position in the Partition&lt;T&gt;. <paramref name="position"/> must not be Partition&lt;T&gt;.End.
+        /// Gets the next position in the Partition&lt;T&gt;. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the Partition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
+        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
+        /// <param name="elementIndex">The element index of the position used as starting point.</param>
+        /// <param name="segmentIndexNext">Upon return, the segment index of the next position.</param>
+        /// <param name="elementIndexNext">Upon return, the element index of the next position.</param>
         public void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -508,39 +479,10 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
+        /// Updates a position in the Partition&lt;T&gt; to the previous element.
         /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
-        public void IncrementPosition(ref int segmentIndex, ref int elementIndex)
-        {
-            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
-
-            if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
-                elementIndex++;
-
-            else
-            {
-                segmentIndex++;
-                elementIndex = 0;
-            }
-
-            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
-
-#if DEBUG
-            AssertInvariant();
-#endif
-        }
-
-        /// <summary>
-        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="position"/> must not be IPartition&lt;T&gt;.End.
-        /// </summary>
-        /// <param name="position">The position used as starting point.</param>
-        /// <returns>
-        /// The position in the IPartition&lt;T&gt; that follows <paramref name="position"/>.
-        /// </returns>
+        /// <param name="segmentIndex">The segment index of the position.</param>
+        /// <param name="elementIndex">The element index of the position.</param>
         public void DecrementPosition(ref int segmentIndex, ref int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -569,11 +511,37 @@ namespace LargeList
         }
 
         /// <summary>
+        /// Updates a position in the Partition&lt;T&gt; to the next element.
+        /// </summary>
+        /// <param name="segmentIndex">The segment index of the position.</param>
+        /// <param name="elementIndex">The element index of the position.</param>
+        public void IncrementPosition(ref int segmentIndex, ref int elementIndex)
+        {
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
+
+            if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+                elementIndex++;
+
+            else
+            {
+                segmentIndex++;
+                elementIndex = 0;
+            }
+
+            Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
+
+#if DEBUG
+            AssertInvariant();
+#endif
+        }
+
+        /// <summary>
         /// Gets the element in the Partition&lt;T&gt; at the specified position.
         /// </summary>
-        /// <param name="position">The position of the element.</param>
+        /// <param name="segmentIndex">The segment index of the position of the element.</param>
+        /// <param name="elementIndex">The element index of the position of the element.</param>
         /// <returns>
-        /// The element in the Partition&lt;T&gt; specified by <paramref name="position"/>.
+        /// The element in the Partition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         public T GetItem(int segmentIndex, int elementIndex)
         {
@@ -591,9 +559,10 @@ namespace LargeList
         /// <summary>
         /// Returns an enumerator for the Partition&lt;T&gt;, starting from the specified position.
         /// </summary>
-        /// <param name="position">The position of the first element to enumerate.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns>
-        /// An enumerator that can iterate through the Partition&lt;T&gt;, starting from the element specified by <paramref name="position"/>.
+        /// An enumerator that can iterate through the Partition&lt;T&gt;, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         public IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex)
         {
@@ -613,8 +582,9 @@ namespace LargeList
         /// <summary>
         /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position of the first element to enumerate.</param>
-        /// <param name="remainingCount">The remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
+        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
         /// <returns>
         /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
@@ -701,7 +671,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementStartIndex;
             int CacheIndex;
-            GetPositionAt(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+            GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
 
             long ItemIndex = startIndex - ElementStartIndex;
             long RemainingCount = count;
@@ -756,7 +726,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementStartIndex;
             int CacheIndex;
-            GetPositionAt(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+            GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
 
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
@@ -822,13 +792,13 @@ namespace LargeList
             int SegmentIndexLower;
             int ElementIndexLower;
             int CacheIndexLower;
-            GetPositionAt(indexLower, out SegmentIndexLower, out ElementIndexLower, out CacheIndexLower);
+            GetPosition(indexLower, out SegmentIndexLower, out ElementIndexLower, out CacheIndexLower);
 
             long indexUpper = index + count - 1;
             int SegmentIndexUpper;
             int ElementIndexUpper;
             int CacheIndexUpper;
-            GetPositionAt(indexUpper, out SegmentIndexUpper, out ElementIndexUpper, out CacheIndexUpper);
+            GetPosition(indexUpper, out SegmentIndexUpper, out ElementIndexUpper, out CacheIndexUpper);
 
             while (SegmentIndexLower < SegmentIndexUpper || (SegmentIndexLower == SegmentIndexUpper && ElementIndexLower <= ElementIndexUpper))
             {
@@ -863,17 +833,17 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Gets the position in the middle of two positions, assuming <paramref name="lower"/> is lesser than or equal to <paramref name="upper"/>.
+        /// Gets the middle of two positions.
         /// </summary>
-        /// <param name="lower">The lower position.</param>
-        /// <param name="indexLower">The virtual index corresponding to <paramref name="lower"/>.</param>
-        /// <param name="upper">The upper position.</param>
-        /// <param name="indexUpper">The virtual index corresponding to <paramref name="upper"/>.</param>
-        /// <param name="middle">The result as position.</param>
-        /// <param name="indexMiddle">The result as virtual index.</param>
-        /// <returns>
-        /// The position in the middle of <paramref name="lower"/> and <paramref name="upper"/>.
-        /// </returns>
+        /// <param name="segmentIndexLower">Segment index of the lower position.</param>
+        /// <param name="elementIndexLower">Element index of the lower position.</param>
+        /// <param name="indexLower">The virtual index corresponding to the lower position.</param>
+        /// <param name="segmentIndexUpper">Segment index of the upper position.</param>
+        /// <param name="elementIndexUpper">Element index of the upper position.</param>
+        /// <param name="indexUpper">The virtual index corresponding to the upper position.</param>
+        /// <param name="segmentIndexMiddle">Upon return, the segment index of the middle position.</param>
+        /// <param name="elementIndexMiddle">Upon return, the element index of the middle position.</param>
+        /// <param name="indexMiddle">Upon return, he resulting middle position as virtual index.</param>
         private void GetMiddleOf(int segmentIndexLower, int elementIndexLower, long indexLower, int segmentIndexUpper, int elementIndexUpper, long indexUpper, out int segmentIndexMiddle, out int elementIndexMiddle, out long indexMiddle)
         {
             Debug.Assert(segmentIndexLower < segmentIndexUpper || (segmentIndexLower == segmentIndexUpper && elementIndexLower <= elementIndexUpper));
@@ -1076,7 +1046,9 @@ namespace LargeList
         /// <summary>
         /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the Partition&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position at which uninitialized elements should be inserted.</param>
+        /// <param name="segmentIndex">The segment index of the position at which uninitialized elements should be inserted.</param>
+        /// <param name="elementIndex">The element index of the position at which uninitialized elements should be inserted.</param>
+        /// <param name="cacheIndex">The cache index of the position at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
         public void MakeRoom(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
@@ -1190,7 +1162,8 @@ namespace LargeList
         /// <summary>
         /// Replaces the element at the specified position with a new item.
         /// </summary>
-        /// <param name="position">The position of the replaced element.</param>
+        /// <param name="segmentIndex">The segment index of the position of the replaced element.</param>
+        /// <param name="elementIndex">The element index of the position of the replaced element.</param>
         /// <param name="item">The item to set.</param>
         public void SetItem(int segmentIndex, int elementIndex, T item)
         {
@@ -1206,7 +1179,8 @@ namespace LargeList
         /// <summary>
         /// Replaces a range of elements at the specified position with new items from a collection.
         /// </summary>
-        /// <param name="position">The position of replaced elements.</param>
+        /// <param name="segmentIndex">The segment index of the position of replaced elements.</param>
+        /// <param name="elementIndex">The element index of the position of replaced elements.</param>
         /// <param name="collection">The collection containing items to set.</param>
         public void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection)
         {
@@ -1269,7 +1243,9 @@ namespace LargeList
         /// <summary>
         /// Removes a range of elements from the Partition&lt;T&gt;.
         /// </summary>
-        /// <param name="position">The position of the first element to remove.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to remove.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to remove.</param>
+        /// <param name="cacheIndex">The cache index of the position of the first element to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
         public void RemoveRange(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
@@ -1355,8 +1331,10 @@ namespace LargeList
         /// <summary>
         /// Reverses the order of the elements in the specified range of the Partition&lt;T&gt;.
         /// </summary>
-        /// <param name="begin">The position of the first item in the range.</param>
-        /// <param name="end">The position after the last item in the range.</param>
+        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
+        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
+        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
+        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         public void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count)
         {
@@ -1400,8 +1378,10 @@ namespace LargeList
         /// <summary>
         /// Sorts the elements in a range of elements in Partition&lt;T&gt; using the specified comparer.
         /// </summary>
-        /// <param name="begin">The position of the first item in the range.</param>
-        /// <param name="end">The position after the last item in the range.</param>
+        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
+        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
+        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
+        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
         /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
         public void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer)
@@ -1619,7 +1599,8 @@ namespace LargeList
         /// <summary>
         /// Creates an enumerator to iterate through the Partition&lt;T&gt; starting at the specified position.
         /// </summary>
-        /// <param name="position">Position of the first element to enumerate.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns></returns>
         protected IPartitionEnumerator<T> CreateEnumerator(int segmentIndex, int elementIndex)
         {
@@ -1873,7 +1854,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             return GetItem(SegmentIndex, ElementIndex).Equals(item);
         }
@@ -1885,7 +1866,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             return GetItem(SegmentIndex, ElementIndex) == null;
         }
@@ -1897,7 +1878,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             return SegmentIndex == segmentIndex && ElementIndex == elementIndex;
         }

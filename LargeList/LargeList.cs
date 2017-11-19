@@ -291,7 +291,7 @@ namespace LargeList
                 int SegmentIndex;
                 int ElementIndex;
                 int CacheIndex;
-                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+                Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
                 return Partition.GetItem(SegmentIndex, ElementIndex);
             }
             set
@@ -302,7 +302,7 @@ namespace LargeList
                 int SegmentIndex;
                 int ElementIndex;
                 int CacheIndex;
-                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+                Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
                 Partition.SetItem(SegmentIndex, ElementIndex, value);
             }
         }
@@ -359,11 +359,11 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, 1);
 
-            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
             Partition.SetItem(SegmentIndex, ElementIndex, item);
 
 #if DEBUG
@@ -394,11 +394,11 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, CollectionCount);
 
-            Partition.GetPositionAt(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(Index, out SegmentIndex, out ElementIndex, out CacheIndex);
             Partition.SetItemRange(SegmentIndex, ElementIndex, collection);
 
 #if DEBUG
@@ -693,7 +693,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             for (long l = 0; l < count; l++)
             {
@@ -850,7 +850,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             for (long l = 0; l < count; l++)
             {
@@ -879,7 +879,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetEnd(out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(Count, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             for (long l = 0; l < Count; l++)
             {
@@ -960,7 +960,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(startIndex, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             for (long l = 0; l < count; l++)
             {
@@ -1182,11 +1182,11 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, 1);
 
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
             Partition.SetItem(SegmentIndex, ElementIndex, item);
 
 #if DEBUG
@@ -1219,11 +1219,11 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.MakeRoom(SegmentIndex, ElementIndex, CacheIndex, CollectionCount);
 
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
             Partition.SetItemRange(SegmentIndex, ElementIndex, collection);
 
 #if DEBUG
@@ -1392,7 +1392,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.RemoveRange(SegmentIndex, ElementIndex, CacheIndex, 1);
 
@@ -1422,7 +1422,7 @@ namespace LargeList
             int SegmentIndex;
             int ElementIndex;
             int CacheIndex;
-            Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+            Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
             Partition.RemoveRange(SegmentIndex, ElementIndex, CacheIndex, count);
 
@@ -1460,12 +1460,12 @@ namespace LargeList
             int SegmentIndexBegin;
             int ElementIndexBegin;
             int CacheIndexBegin;
-            Partition.GetPositionAt(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
+            Partition.GetPosition(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
 
             int SegmentIndexEnd;
             int ElementIndexEnd;
             int CacheIndexEnd;
-            Partition.GetPositionAt(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
+            Partition.GetPosition(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
 
             Partition.Reverse(SegmentIndexBegin, ElementIndexBegin, SegmentIndexEnd, ElementIndexEnd, count);
 
@@ -1691,12 +1691,12 @@ namespace LargeList
             int SegmentIndexBegin;
             int ElementIndexBegin;
             int CacheIndexBegin;
-            Partition.GetPositionAt(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
+            Partition.GetPosition(index, out SegmentIndexBegin, out ElementIndexBegin, out CacheIndexBegin);
 
             int SegmentIndexEnd;
             int ElementIndexEnd;
             int CacheIndexEnd;
-            Partition.GetPositionAt(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
+            Partition.GetPosition(index + count, out SegmentIndexEnd, out ElementIndexEnd, out CacheIndexEnd);
 
             Partition.Sort(SegmentIndexBegin, ElementIndexBegin, SegmentIndexEnd, ElementIndexEnd, count, comparer);
 
@@ -1763,7 +1763,7 @@ namespace LargeList
                 int SegmentIndex;
                 int ElementIndex;
                 int CacheIndex;
-                Partition.GetPositionAt(index, out SegmentIndex, out ElementIndex, out CacheIndex);
+                Partition.GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
                 Enumerator = Partition.GetEnumerator(SegmentIndex, ElementIndex);
                 Count = count;

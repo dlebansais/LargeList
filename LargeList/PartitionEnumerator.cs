@@ -51,7 +51,8 @@ namespace LargeList
         /// Initializes a new instance of the PartitionEnumerator&lt;T&gt; class that enumerates objects starting at the specified position in IPartition&lt;T&gt;.
         /// </summary>
         /// <param name="partition">The enumerated partition.</param>
-        /// <param name="position">The position in <paramref name="partition"/> of the first element to enumerate.</param>
+        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
+        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         public PartitionEnumerator(IPartition<T> partition, int segmentIndex, int elementIndex)
         {
             Debug.Assert(partition.IsValidPosition(segmentIndex, elementIndex, false));

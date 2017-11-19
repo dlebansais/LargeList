@@ -8,8 +8,8 @@ TODO list:
 * [X] Optimize lengthy operations within segments.
 * [X] Measure operation time in O(n) and compare with List&lt;>.
 * [X] Customizable segment capacity.
-* [ ] Optimization.
-* [ ] Code cleanup.
+* [X] Optimization.
+* [X] Code cleanup.
 
 # LargeList
 ![Build Status](https://travis-ci.org/dlebansais/LargeList.svg?branch=master)
@@ -18,12 +18,12 @@ LargeList is an implementation of collections that can hold a number of elements
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 268 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
 
 ## Caveats
-* Because LargeList doesn't use a single array to store data, and is not integrated with .NET for optimal performance, it is slower than the standard implementation of List&lt;>. However, this is compensated by optimizations resulting from the partition scheme used, that give better performance for many operations such as Insert(), and negligible overhead for others, as long as the number of elements is large. Therefore, using LargeList is not recommended if the number of elements that will be stored is relatively low (less than 10000), and recommended if it will always be large or if performance when it is low is not a concern.
-* Exposed members of the LargeList namespace have been designed to be a copy, as close as possible to the original, of the Collection&lt;> and List&lt;> classes, as well as accompanying interfaces, including documentation. However the original documentation and implementation do not match exactly, and some features of List&lt;> could be regarded as bugs. Therefore, in my own implementation I chose to diverge from the original documentation, and behave slightly differently than the original implementation. But full compatibility is available, see the STRICT mode section below.
-* .NET has a ReadOnlyCollection&lt;> class, but no ReadOnlyList&lt;> class, and therefore doesn't provides a safe way to expose features such as FindLastIndex on a read-only list. The LargeList namespace includes a new class to do this.
+* Because LargeList doesn't use a single array to store data, and is not integrated with .NET for optimal performance, it is slower than the standard implementation of List&lt;>. However, this is compensated by optimizations resulting from the partition scheme used, that give better performance for many operations such as Insert(), and acceptable overhead for others, as long as the number of elements is large. Therefore, using LargeList is not recommended if the number of elements that will be stored is relatively low (less than 10000), and recommended if it will always be large or if performance when it is low is not a concern.
+* Exposed members of the LargeList namespace have been designed to be a copy, as close as possible to the original, of the Collection&lt;> and List&lt;> classes, as well as accompanying interfaces, including documentation. However the original documentation and implementation do not match exactly, and some features of List&lt;> could be regarded as bugs. Therefore, in my own implementation I chose to diverge from the original documentation, and behave slightly differently than the original implementation. But full compatibility is available, see the [STRICT mode](##STRICT mode) section below.
 * Downcasting a reference to a large collection or list to one of their compatible interface, and then using this interface to access the collection or list has not been tested extensively. It should work, but using the original reference to the object by its class is recommended.
+* The sorting algorithm can give a slightly different result for items that are considered equal by a [IComparer](https://msdn.microsoft.com/en-us/library/system.collections.icomparer.aspx) but not by [System.Object.Equals()](https://msdn.microsoft.com/en-us/library/w4hkze5k.aspx).
 * Classes of the LargeList namespace offer minimal support for inheritance, for example if one wants to back the data on disk rather than in memory. On the other hand the source code is available to compensate.
-* The sorting algorithm can give a slightly different result for items that are considered equal by a IComparer but not by System.Object.Equals().
+* .NET has a ReadOnlyCollection&lt;> class, but no ReadOnlyList&lt;> class, and therefore doesn't provides a safe way to expose features such as FindLastIndex on a read-only list. The LargeList namespace includes a new class to do this.
 * The code is free and open without restriction whatsoever, but if it goes into production, please credit me somehow. Thank you!
 
 ## Performance
@@ -105,7 +105,7 @@ catch
 ```
 
 ## Partition default values
-In addition to the STRICT mode, one can read what's the default value for segments in the partition scheme (units on contiguous elements). Just write the same code than above but to get the value of `Attribute.DefaultMaxSegmentCapacity`.
+In addition to the STRICT mode, one can read what's the default value for segments in the partition scheme (units of contiguous elements). Just write the same code than above but to get the value of `Attribute.DefaultMaxSegmentCapacity`.
 
 ## Customization
 LargeList<> has one additional constructor that takes the following arguments:
