@@ -108,7 +108,7 @@ LargeList(long capacity, long count, int maxSegmentCapacity, IEnumerable<T> coll
 
 # Examples
 To use LargeList:
-1 Download the assembly.
+1. Download the assembly.
   - Manually:
     * Download [the lastest release](https://github.com/dlebansais/LargeList/releases) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
     * In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
@@ -118,7 +118,7 @@ To use LargeList:
     * Click __Browse__ in the top left corner and in the search bar type `LargeList`.
     * Select the appropriate extension if there is a choice.
     * Install it.
-2 Add code similar to this in your project.
+2. Add code similar to this in your project.
 
 ```csharp
 using LargeList;
