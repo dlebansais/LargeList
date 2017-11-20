@@ -214,7 +214,7 @@ namespace LargeList
         /// <returns>
         /// A ILargeList&lt;T&gt; wrapper around the LargeCollection&lt;T&gt;.
         /// </returns>
-        protected ILargeList<T> Items { get { return List; } }
+        protected virtual ILargeList<T> Items { get { return List; } }
 
         /// <summary>
         /// Adds an object to the end of the LargeCollection&lt;T&gt;.
@@ -507,7 +507,7 @@ namespace LargeList
         /// <returns>
         /// The list this collection wraps.
         /// </returns>
-        protected ILargeList<T> CreateList()
+        protected virtual ILargeList<T> CreateList()
         {
             return new LargeList<T>();
         }

@@ -93,13 +93,14 @@ namespace LargeList
         /// The number of elements contained in the ReadOnlyLargeCollection&lt;T&gt; instance.
         /// </returns>
         public long Count { get { return List.Count; } }
+
         /// <summary>
         /// Returns the ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
         /// </summary>
         /// <returns>
         /// The ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
         /// </returns>
-        protected ILargeList<T> Items { get { return List; } }
+        protected virtual ILargeList<T> Items { get { return List; } }
 
         /// <summary>
         /// Determines whether an element is in the ReadOnlyLargeCollection&lt;T&gt;.

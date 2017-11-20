@@ -1659,7 +1659,7 @@ namespace LargeList
         /// <returns>
         /// The partition used to store elements.
         /// </returns>
-        protected IPartition<T> CreatePartition(long capacity, long count, int maxSegmentCapacity)
+        protected virtual IPartition<T> CreatePartition(long capacity, long count, int maxSegmentCapacity)
         {
             return new Partition<T>(capacity, count, maxSegmentCapacity);
         }

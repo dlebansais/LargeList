@@ -1580,7 +1580,7 @@ namespace LargeList
         /// <returns>
         /// The created segment.
         /// </returns>
-        protected ISegment<T> CreateMaxCapacitySegment()
+        protected virtual ISegment<T> CreateMaxCapacitySegment()
         {
             return new Segment<T>(MaxSegmentCapacity);
         }
@@ -1591,7 +1591,7 @@ namespace LargeList
         /// <returns>
         /// The created segment.
         /// </returns>
-        protected ISegment<T> CreateSegment(int initialCapacity)
+        protected virtual ISegment<T> CreateSegment(int initialCapacity)
         {
             return new Segment<T>(initialCapacity, MaxSegmentCapacity);
         }
@@ -1602,7 +1602,7 @@ namespace LargeList
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns></returns>
-        protected IPartitionEnumerator<T> CreateEnumerator(int segmentIndex, int elementIndex)
+        protected virtual IPartitionEnumerator<T> CreateEnumerator(int segmentIndex, int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
@@ -1619,7 +1619,7 @@ namespace LargeList
         /// Removes the specified segment from the Partition&lt;T&gt;.
         /// </summary>
         /// <param name="segment">The segment to remove.</param>
-        protected void RemoveSegment(ISegment<T> segment)
+        protected virtual void RemoveSegment(ISegment<T> segment)
         {
             Debug.Assert(SegmentTable.Contains(segment));
 
@@ -1630,7 +1630,7 @@ namespace LargeList
         /// Removes the segment at the specified index from the Partition&lt;T&gt;.
         /// </summary>
         /// <param name="index">The zero-based index of the segment to remove.</param>
-        protected void RemoveSegmentAt(int index)
+        protected virtual void RemoveSegmentAt(int index)
         {
             Debug.Assert(index >= 0 && index < SegmentTable.Count);
 
@@ -1642,7 +1642,7 @@ namespace LargeList
         /// </summary>
         /// <param name="index">The zero-based index of the first segment to remove.</param>
         /// <param name="count">The number of segments to remove.</param>
-        protected void RemoveSegmentRange(int index, int count)
+        protected virtual void RemoveSegmentRange(int index, int count)
         {
             Debug.Assert(index >= 0);
             Debug.Assert(count >= 0);

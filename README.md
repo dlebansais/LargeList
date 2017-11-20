@@ -1,18 +1,8 @@
-# Status: Beta
-Please wait a few days while I sort out unit tests, performance and doc.
-
-You can download the latest build [here](https://github.com/dlebansais/LargeList/releases). Target framework: 4.5.2, Windows 64-bits only.
-
-TODO list:
-* [X] Integrate unit testing with travis-ci.
-* [X] Optimize lengthy operations within segments.
-* [X] Measure operation time in O(n) and compare with List&lt;>.
-* [X] Customizable segment capacity.
-* [X] Optimization.
-* [X] Code cleanup.
-
 # LargeList
 ![Build Status](https://travis-ci.org/dlebansais/LargeList.svg?branch=master)
+[![NuGet](https://img.shields.io/nuget/dlebansais.Largelist.Largelist.svg)](https://www.nuget.org/packages/dlebansais.Largelist.Largelist)
+
+[Download](https://github.com/dlebansais/LargeList/releases). Target framework: 4.5.2, Windows 64-bits only.
 
 LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 268 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
@@ -118,10 +108,17 @@ LargeList(long capacity, long count, int maxSegmentCapacity, IEnumerable<T> coll
 
 # Examples
 To use LargeList:
-* Download [the lastest release](https://github.com/dlebansais/LargeList/releases) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
-* In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
-* Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
-* Add code similar to this in your project.
+1 Download the assembly.
+  - Manually:
+    * Download [the lastest release](https://github.com/dlebansais/LargeList/releases) and save it with the name 'LargeList.dll' somewhere convenient in your project files.
+    * In the Solution Explorer of Visual Studio, right-click on your project and select `Add` / `Reference...`
+    * Select the `Browse` panel and click the `Browse...` button. Then select LargeList.dll.
+  - Using the NuGet package installer:
+    * In Visual Studio, select the `Tools` / `NuGet Package Manager` / `Manage NuGet Packages for Solution...` menu.
+    * Click __Browse__ in the top left corner and in the search bar type `LargeList`.
+    * Select the appropriate extension if there is a choice.
+    * Install it.
+2 Add code similar to this in your project.
 
 ```csharp
 using LargeList;

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>LargeList</id>
+    <version>1.0.0.241</version>
+    <title>LargeList</title>
+    <authors>David Le Bansais</authors>
+    <owners>David Le Bansais</owners>
+    <projectUrl>https://github.com/dlebansais/LargeList</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>LargeList is an implementation of Collection&lt;&gt; and List&lt;&gt; that can hold a number of elements limited only by the available memory, tested up to 8 billions.</description>
+    <releaseNotes>This is the first release.</releaseNotes>
+    <copyright>Copyright 2017 © David Le Bansais</copyright>
+    <tags>partition-scheme lists 64-bit</tags>
+  </metadata>
+</package>

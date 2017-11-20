@@ -101,7 +101,7 @@ namespace LargeList
         /// <returns>
         /// The ILargeList&lt;T&gt; that the ReadOnlyLargeList&lt;T&gt; wraps.
         /// </returns>
-        protected ILargeList<T> Items { get { return List; } }
+        protected virtual ILargeList<T> Items { get { return List; } }
 
         /// <summary>
         /// Determines whether an element is in the ReadOnlyLargeList&lt;T&gt;.
