@@ -1,6 +1,6 @@
 # LargeList
-![Build Status](https://travis-ci.org/dlebansais/LargeList.svg?branch=master)
-[![NuGet](https://img.shields.io/nuget/dlebansais.Largelist.Largelist.svg)](https://www.nuget.org/packages/dlebansais.Largelist.Largelist)
+![Build Status](https://img.shields.io/travis/dlebansais/LargeList/master.svg)
+[![NuGet](https://img.shields.io/nuget/v/dlebansais.Largelist.Largelist.svg)](https://www.nuget.org/packages/dlebansais.Largelist.Largelist)
 
 [Download](https://github.com/dlebansais/LargeList/releases). Target framework: 4.5.2, Windows 64-bits only.
 
