@@ -2,7 +2,7 @@
 ![Build Status](https://img.shields.io/travis/dlebansais/LargeList/master.svg)
 [![NuGet](https://img.shields.io/nuget/v/CSharp.Largelist.svg)](https://www.nuget.org/packages/CSharp.Largelist)
 
-[Download](https://github.com/dlebansais/LargeList/releases). Target framework: 4.5.2, Windows 64-bits only.
+[Download](https://github.com/dlebansais/LargeList/releases) (v1.0.0.250). Target framework: 4.5.2, Windows 64-bits only.
 
 LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 268 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
@@ -116,7 +116,7 @@ To use LargeList:
   - Using the NuGet package installer:
     * In Visual Studio, select the `Tools` / `NuGet Package Manager` / `Manage NuGet Packages for Solution...` menu.
     * Click __Browse__ in the top left corner and in the search bar type `LargeList`.
-    * Select the appropriate extension if there is a choice.
+    * Select `CSharp.LargeList`.
     * Install it.
 2. Add code similar to this in your project.
 
