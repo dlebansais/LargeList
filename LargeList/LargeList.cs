@@ -158,7 +158,7 @@ namespace LargeList
         public LargeList()
         {
 #if STRICT
-            Partition = new Partition<T>(0, 0);
+            Partition = new Partition<T>(0, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #else
             Initialize();
             Partition = CreatePartition(0, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
@@ -182,7 +182,7 @@ namespace LargeList
                 throw new ArgumentOutOfRangeException(nameof(capacity), "Non-negative number required.");
 
 #if STRICT
-            Partition = new Partition<T>(capacity, 0);
+            Partition = new Partition<T>(capacity, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #else
             Initialize();
             Partition = CreatePartition(capacity, 0, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
@@ -213,7 +213,7 @@ namespace LargeList
             long CollectionCount = GetCollectionCount(collection);
 
 #if STRICT
-            Partition = new Partition<T>(CollectionCount, CollectionCount);
+            Partition = new Partition<T>(CollectionCount, CollectionCount, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #else
             Partition = CreatePartition(CollectionCount, CollectionCount, LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity);
 #endif
@@ -255,16 +255,29 @@ namespace LargeList
             Debug.Assert(maxSegmentCapacity > 0);
             Debug.Assert(count <= capacity);
 
+#if STRICT
+#else
             Initialize();
+#endif
 
             if (count >= 0)
+            {
+#if STRICT
+                Partition = new Partition<T>(capacity, count, maxSegmentCapacity);
+#else
                 Partition = CreatePartition(capacity, count, maxSegmentCapacity);
+#endif
+            }
 
             else
             {
                 long CollectionCount = GetCollectionCount(collection);
 
+#if STRICT
+                Partition = new Partition<T>(capacity, CollectionCount, maxSegmentCapacity);
+#else
                 Partition = CreatePartition(capacity, CollectionCount, maxSegmentCapacity);
+#endif
                 Partition.SetItemRange(0, 0, collection);
             }
 
