@@ -66,11 +66,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PreBuildEvent>if exist "$(SolutionDir)updateversion.bat" call "$(SolutionDir)updateversion.bat" "$(SolutionDir)" "$(SolutionPath)" "$(ProjectPath)"</PreBuildEvent>
+    <PreBuildEvent>if exist "$(SolutionDir)updateversion.bat" call "$(SolutionDir)updateversion.bat" "$(SolutionDir)" "$(SolutionPath)"</PreBuildEvent>
     <PostBuildEvent>copy /Y "$(SolutionDir)Test\Test-LargeList.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PreBuildEvent>if exist "$(SolutionDir)updateversion.bat" call "$(SolutionDir)updateversion.bat" "$(SolutionDir)" "$(SolutionPath)" "$(ProjectPath)"</PreBuildEvent>
+    <PreBuildEvent>if exist "$(SolutionDir)updateversion.bat" call "$(SolutionDir)updateversion.bat" "$(SolutionDir)" "$(SolutionPath)"</PreBuildEvent>
     <PostBuildEvent>if exist "$(SolutionDir)signfile.bat" call "$(SolutionDir)signfile.bat" "$(SolutionDir)" "$(Configuration)-$(Platform)" "$(TargetPath)"
 copy /Y "$(SolutionDir)Test\Test-LargeList.dll" "$(TargetDir)"
 </PostBuildEvent>
