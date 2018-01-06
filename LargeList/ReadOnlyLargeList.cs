@@ -42,6 +42,7 @@ namespace LargeList
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(LargeCollectionDebugView<>))]
+    [Serializable]
     public class ReadOnlyLargeList<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>

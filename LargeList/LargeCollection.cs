@@ -129,6 +129,7 @@ namespace LargeList
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(LargeCollectionDebugView<>))]
+    [Serializable]
     public class LargeCollection<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>
