@@ -738,25 +738,8 @@
                 Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
                 Debug.Assert(count >= 0);
 
-                int CompareCount = (ElementStartIndex < count) ? ElementStartIndex + 1 : (int)count;
-                int ElementIndex = Segment.LastIndexOf(item, ElementStartIndex, CompareCount);
-                if (ElementIndex >= 0)
-                {
-                    Result = ItemIndex - ElementStartIndex + ElementIndex;
+                if (LastIndexOfLoop(item, ref count, ref Segment, ref SegmentIndex, ref ElementStartIndex, ref ItemIndex, ref Result))
                     break;
-                }
-
-                count -= CompareCount;
-                ItemIndex -= CompareCount;
-                SegmentIndex--;
-
-                Debug.Assert(SegmentIndex < 0 || SegmentTable[SegmentIndex].Count > 0);
-
-                if (SegmentIndex < 0 || count == 0)
-                    break;
-
-                Segment = SegmentTable[SegmentIndex];
-                ElementStartIndex = Segment.Count - 1;
             }
 
             Debug.Assert(count >= 0);
@@ -767,6 +750,31 @@
 #endif
 
             return Result;
+        }
+
+        private bool LastIndexOfLoop(T item, ref long count, ref ISegment<T> segment, ref int segmentIndex, ref int elementStartIndex, ref long itemIndex, ref long result)
+        {
+            int CompareCount = (elementStartIndex < count) ? elementStartIndex + 1 : (int)count;
+            int ElementIndex = segment.LastIndexOf(item, elementStartIndex, CompareCount);
+            if (ElementIndex >= 0)
+            {
+                result = itemIndex - elementStartIndex + ElementIndex;
+                return true;
+            }
+
+            count -= CompareCount;
+            itemIndex -= CompareCount;
+            segmentIndex--;
+
+            Debug.Assert(segmentIndex < 0 || SegmentTable[segmentIndex].Count > 0);
+
+            if (segmentIndex < 0 || count == 0)
+                return true;
+
+            segment = SegmentTable[segmentIndex];
+            elementStartIndex = segment.Count - 1;
+
+            return false;
         }
 
         /// <summary>
@@ -1345,35 +1353,38 @@
             Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
 
             for (long l = 0; l < count / 2; l++)
-            {
-                if (elementIndexEnd > 0)
-                    elementIndexEnd--;
-                else
-                {
-                    segmentIndexEnd--;
-                    Debug.Assert(segmentIndexEnd >= 0 && SegmentTable[segmentIndexEnd].Count > 0);
-                    elementIndexEnd = SegmentTable[segmentIndexEnd].Count - 1;
-                }
-
-                Debug.Assert(segmentIndexBegin < segmentIndexEnd || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd));
-
-                T item = SegmentTable[segmentIndexBegin][elementIndexBegin];
-                SegmentTable[segmentIndexBegin][elementIndexBegin] = SegmentTable[segmentIndexEnd][elementIndexEnd];
-                SegmentTable[segmentIndexEnd][elementIndexEnd] = item;
-
-                if (elementIndexBegin + 1 < SegmentTable[segmentIndexBegin].Count)
-                    elementIndexBegin++;
-                else
-                {
-                    segmentIndexBegin++;
-                    Debug.Assert(segmentIndexBegin < SegmentTable.Count && SegmentTable[segmentIndexBegin].Count > 0);
-                    elementIndexBegin = 0;
-                }
-            }
+                ReverseLoop(ref segmentIndexBegin, ref elementIndexBegin, ref segmentIndexEnd, ref elementIndexEnd);
 
 #if DEBUG
             AssertInvariant();
 #endif
+        }
+
+        private void ReverseLoop(ref int segmentIndexBegin, ref int elementIndexBegin, ref int segmentIndexEnd, ref int elementIndexEnd)
+        {
+            if (elementIndexEnd > 0)
+                elementIndexEnd--;
+            else
+            {
+                segmentIndexEnd--;
+                Debug.Assert(segmentIndexEnd >= 0 && SegmentTable[segmentIndexEnd].Count > 0);
+                elementIndexEnd = SegmentTable[segmentIndexEnd].Count - 1;
+            }
+
+            Debug.Assert(segmentIndexBegin < segmentIndexEnd || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd));
+
+            T item = SegmentTable[segmentIndexBegin][elementIndexBegin];
+            SegmentTable[segmentIndexBegin][elementIndexBegin] = SegmentTable[segmentIndexEnd][elementIndexEnd];
+            SegmentTable[segmentIndexEnd][elementIndexEnd] = item;
+
+            if (elementIndexBegin + 1 < SegmentTable[segmentIndexBegin].Count)
+                elementIndexBegin++;
+            else
+            {
+                segmentIndexBegin++;
+                Debug.Assert(segmentIndexBegin < SegmentTable.Count && SegmentTable[segmentIndexBegin].Count > 0);
+                elementIndexBegin = 0;
+            }
         }
 
         /// <summary>
