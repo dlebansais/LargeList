@@ -1505,39 +1505,8 @@
 
             for (;;)
             {
-                do
-                    if (SegmentIndexUp < 0)
-                    {
-                        SegmentIndexUp = 0;
-                        ElementIndexUp = 0;
-                    }
-                    else
-                    {
-                        if (ElementIndexUp + 1 < SegmentTable[SegmentIndexUp].Count)
-                            ElementIndexUp++;
-
-                        else
-                        {
-                            SegmentIndexUp++;
-                            Debug.Assert(SegmentIndexUp < SegmentTable.Count && SegmentTable[SegmentIndexUp].Count > 0);
-                            ElementIndexUp = 0;
-                        }
-                    }
-                while (comparer.Compare(SegmentTable[SegmentIndexUp][ElementIndexUp], pivot) < 0);
-
-                do
-                {
-                    if (ElementIndexDown > 0)
-                        ElementIndexDown--;
-
-                    else
-                    {
-                        SegmentIndexDown--;
-                        Debug.Assert(SegmentIndexDown >= 0 && SegmentTable[SegmentIndexDown].Count > 0);
-                        ElementIndexDown = SegmentTable[SegmentIndexDown].Count - 1;
-                    }
-                }
-                while (comparer.Compare(SegmentTable[SegmentIndexDown][ElementIndexDown], pivot) > 0);
+                SplitSortLoop1(comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
+                SplitSortLoop2(comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
 
                 if (SegmentIndexUp > SegmentIndexDown || (SegmentIndexUp == SegmentIndexDown && ElementIndexUp >= ElementIndexDown))
                 {
@@ -1574,6 +1543,46 @@
             }
 
             return SegmentTable[PivotSegmentIndex][PivotElementIndex];
+        }
+
+        private void SplitSortLoop1(IComparer<T> comparer, T pivot, ref int segmentIndexUp, ref int elementIndexUp)
+        {
+            do
+                if (segmentIndexUp < 0)
+                {
+                    segmentIndexUp = 0;
+                    elementIndexUp = 0;
+                }
+                else
+                {
+                    if (elementIndexUp + 1 < SegmentTable[segmentIndexUp].Count)
+                        elementIndexUp++;
+
+                    else
+                    {
+                        segmentIndexUp++;
+                        Debug.Assert(segmentIndexUp < SegmentTable.Count && SegmentTable[segmentIndexUp].Count > 0);
+                        elementIndexUp = 0;
+                    }
+                }
+            while (comparer.Compare(SegmentTable[segmentIndexUp][elementIndexUp], pivot) < 0);
+        }
+
+        private void SplitSortLoop2(IComparer<T> comparer, T pivot, ref int segmentIndexDown, ref int elementIndexDown)
+        {
+            do
+            {
+                if (elementIndexDown > 0)
+                    elementIndexDown--;
+
+                else
+                {
+                    segmentIndexDown--;
+                    Debug.Assert(segmentIndexDown >= 0 && SegmentTable[segmentIndexDown].Count > 0);
+                    elementIndexDown = SegmentTable[segmentIndexDown].Count - 1;
+                }
+            }
+            while (comparer.Compare(SegmentTable[segmentIndexDown][elementIndexDown], pivot) > 0);
         }
         #endregion
 
