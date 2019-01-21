@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Represents a nongeneric large collection of objects that can be individually accessed by index.
     /// </summary>
@@ -153,7 +153,8 @@ namespace LargeList
     public class LargeList<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>
-        /// Initializes a new instance of the LargeList&lt;T&gt; class that is empty and has the default initial capacity.
+        /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
+        /// Creates an empty instance with the default initial capacity.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
         public LargeList()
@@ -171,7 +172,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the LargeList&lt;T&gt; class that is empty and has the specified initial capacity.
+        /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
+        /// Creates an instance that is empty and has the specified initial capacity.
         /// </summary>
         /// <param name="capacity">The number of elements that the new list can initially store.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0</exception>
@@ -195,7 +197,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the LargeList&lt;T&gt; class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
+        /// Creates an instance that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
@@ -210,7 +213,7 @@ namespace LargeList
 #else
             Initialize();
 #endif
-            
+
             long CollectionCount = GetCollectionCount(collection);
 
 #if STRICT
@@ -227,7 +230,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the LargeList&lt;T&gt; class with the specified initial capacity, either uninitialized elements or element copied from a collection, and max segment capacity.
+        /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
+        /// Creates an instance with the specified initial capacity, either uninitialized elements or element copied from a collection, and max segment capacity.
         /// </summary>
         /// <param name="capacity">The number of elements that the new list can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
@@ -320,7 +324,9 @@ namespace LargeList
                 Partition.SetItem(SegmentIndex, ElementIndex, value);
             }
         }
+#pragma warning disable SA1600
         object ILargeList.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
             set { this[index] = (T)value; }
@@ -384,7 +390,9 @@ namespace LargeList
             AssertInvariant();
 #endif
         }
+#pragma warning disable SA1600
         long ILargeList.Add(object value)
+#pragma warning restore SA1600
         {
             long Index = Count;
             Add((T)value);
@@ -518,7 +526,9 @@ namespace LargeList
         {
             return Partition.Contains(item);
         }
+#pragma warning disable SA1600
         bool ILargeList.Contains(object item)
+#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
@@ -610,7 +620,9 @@ namespace LargeList
 
             CopyTo(0, array, arrayIndex, Count);
         }
+#pragma warning disable SA1600
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
+#pragma warning restore SA1600
         {
 #if STRICT
             if (array == null)
@@ -1025,11 +1037,15 @@ namespace LargeList
         {
             return new LargeEnumerator(Partition, 0, Count);
         }
+#pragma warning disable SA1600
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
+#pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
@@ -1175,7 +1191,9 @@ namespace LargeList
 
             return Partition.IndexOf(item, startIndex, count);
         }
+#pragma warning disable SA1600
         long ILargeList.IndexOf(object item)
+#pragma warning restore SA1600
         {
             return IndexOf((T)item, 0, Count);
         }
@@ -1207,7 +1225,9 @@ namespace LargeList
             AssertInvariant();
 #endif
         }
+#pragma warning disable SA1600
         void ILargeList.Insert(long index, object item)
+#pragma warning restore SA1600
         {
             Insert(index, (T)item);
         }
@@ -1366,7 +1386,9 @@ namespace LargeList
 
             return Result;
         }
+#pragma warning disable SA1600
         void ILargeList.Remove(object item)
+#pragma warning restore SA1600
         {
             Remove((T)item);
         }
@@ -1624,7 +1646,9 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return false; } }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
+#pragma warning disable SA1600
         bool ILargeList.IsReadOnly { get { return false; } }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Gets a value indicating whether the LargeList&lt;T&gt; has a fixed size.
@@ -1765,7 +1789,8 @@ namespace LargeList
         public struct LargeEnumerator : IEnumerator<T>, IEnumerator, IDisposable
         {
             /// <summary>
-            /// Initializes a new instance of the LargeEnumerator class that enumerates objects over a collection of segments.
+            /// Initializes a new instance of the <see cref="LargeEnumerator"/> struct.
+            /// Creates an instance that enumerates objects over a collection of segments.
             /// </summary>
             /// <param name="partition">The collection of segments enumerated by the new enumerator.</param>
             /// <param name="index">The index of the first item to enumerate.</param>
@@ -1790,7 +1815,9 @@ namespace LargeList
             /// The element in the LargeList&lt;T&gt; at the current position of the enumerator.
             /// </returns>
             public T Current { get { return Enumerator.Current; } }
+#pragma warning disable SA1600
             object IEnumerator.Current { get { return Current; } }
+#pragma warning restore SA1600
 
             /// <summary>
             /// Sets the enumerator to its initial position, which is before the first element in the collection.

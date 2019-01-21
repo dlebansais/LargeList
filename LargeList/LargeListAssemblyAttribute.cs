@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+
     /// <summary>
     /// Custom attribute for the assembly.
     /// </summary>
@@ -9,21 +9,21 @@ namespace LargeList
     public class LargeListAssemblyAttribute : Attribute
     {
 #if SMALL_SEGMENTS
+        /// <summary>
+        /// Default max capacity for segments.
+        /// </summary>
         internal const int GlobalDefaultMaxSegmentCapacity = 10;
-        //internal const int GlobalDefaultMaxSegmentCapacity = 100000;
-        //internal const int GlobalDefaultMaxSegmentCapacity = 1000000;
 #else
         internal const int GlobalDefaultMaxSegmentCapacity = 0x01000000;
-        //internal const int GlobalDefaultMaxSegmentCapacity = 1000000;
 #endif
 
         /// <summary>
-        /// Indicates if the assembly was compiled in STRICT mode.
+        /// Gets or sets a value indicating whether the assembly was compiled in STRICT mode.
         /// </summary>
         public bool IsStrict { get; set; }
 
         /// <summary>
-        /// Reports the default maximum capacity of a partition's segment.
+        /// Gets or sets the default maximum capacity of a partition's segment.
         /// </summary>
         public int DefaultMaxSegmentCapacity { get; set; } = GlobalDefaultMaxSegmentCapacity;
     }

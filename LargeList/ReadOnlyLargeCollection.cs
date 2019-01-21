@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Represents a read-only, non-generic large collection of elements.
     /// </summary>
@@ -44,7 +44,8 @@ namespace LargeList
     public class ReadOnlyLargeCollection<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>
-        /// Initializes a new instance of the ReadOnlyLargeCollection&lt;T&gt; class that is a read-only wrapper around the specified list.
+        /// Initializes a new instance of the <see cref="ReadOnlyLargeCollection{T}"/> class.
+        /// Creates an instance that is a read-only wrapper around the specified list.
         /// </summary>
         /// <param name="list">The list to wrap.</param>
         /// <exception cref="ArgumentNullException"><paramref name="list"/> is null.</exception>
@@ -74,16 +75,20 @@ namespace LargeList
                 return List[index];
             }
         }
+#pragma warning disable SA1600
         T ILargeList<T>.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
+#pragma warning disable SA1600
         object ILargeList.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
 
@@ -96,7 +101,7 @@ namespace LargeList
         public long Count { get { return List.Count; } }
 
         /// <summary>
-        /// Returns the ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
+        /// Gets the ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
         /// </summary>
         /// <returns>
         /// The ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
@@ -114,7 +119,9 @@ namespace LargeList
         {
             return List.Contains(value);
         }
+#pragma warning disable SA1600
         bool ILargeList.Contains(object value)
+#pragma warning restore SA1600
         {
             return Contains((T)value);
         }
@@ -155,7 +162,9 @@ namespace LargeList
 
             List.CopyTo(array, index);
         }
+#pragma warning disable SA1600
         void ILargeCollection.CopyTo(Array array, int index)
+#pragma warning restore SA1600
         {
 #if STRICT
             if (array == null)
@@ -189,7 +198,9 @@ namespace LargeList
         {
             return List.GetEnumerator();
         }
+#pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
@@ -221,7 +232,9 @@ namespace LargeList
         {
             return List.IndexOf(item);
         }
+#pragma warning disable SA1600
         long ILargeList.IndexOf(object item)
+#pragma warning restore SA1600
         {
             return IndexOf((T)item);
         }
@@ -236,7 +249,9 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return true; } }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
+#pragma warning disable SA1600
         bool ILargeList.IsReadOnly { get { return true; } }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Gets a value indicating whether the ReadOnlyLargeCollection&lt;T&gt; has a fixed size.
@@ -265,41 +280,61 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         object ILargeCollection.SyncRoot { get { return List; } }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList<T>.Insert(long index, T value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Insert(long index, object value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         bool ILargeCollection<T>.Remove(T value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Remove(object value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList<T>.RemoveAt(long index)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.RemoveAt(long index)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeCollection<T>.Add(T item)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         long ILargeList.Add(object item)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeCollection<T>.Clear()
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Clear()
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
         private ILargeList<T> List;

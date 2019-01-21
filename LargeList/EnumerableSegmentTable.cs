@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Simple representation of partially enumerable Partition&lt;T&gt; object.
     /// </summary>
@@ -15,7 +15,7 @@ namespace LargeList
     class EnumerableSegmentTable<T> : IEnumerable<T>
     {
         /// <summary>
-        /// Initializes a new instance of the EnumerableSegmentTable&lt;T&gt; class.
+        /// Initializes a new instance of the <see cref="EnumerableSegmentTable{T}"/> class.
         /// </summary>
         /// <param name="partition">The Partition&lt;T&gt; this class is representing.</param>
         /// <param name="index">The index of the first element to enumerate in <paramref name="partition"/>.</param>
@@ -61,7 +61,9 @@ namespace LargeList
         {
             return new LargeList<T>.LargeEnumerator(Partition, Index, Count);
         }
+#pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }

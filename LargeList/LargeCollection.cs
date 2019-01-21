@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Defines size, enumerators, and synchronization methods for all nongeneric large collections.
     /// </summary>
@@ -133,7 +133,8 @@ namespace LargeList
     public class LargeCollection<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>
-        /// Initializes a new instance of the LargeCollection&lt;T&gt; class that is empty.
+        /// Initializes a new instance of the <see cref="LargeCollection{T}"/> class.
+        /// Creates an empty instance.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeCollection<T>.Initialize and LargeCollection<T>.CreateList")]
         public LargeCollection()
@@ -147,7 +148,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the LargeCollection&lt;T&gt; class as a wrapper for the specified list.
+        /// Initializes a new instance of the <see cref="LargeCollection{T}"/> class.
+        /// Creates a wrapper for the specified list.
         /// </summary>
         /// <param name="list">The list that is wrapped by the new collection.</param>
         /// <exception cref="ArgumentNullException"><paramref name="list"/> is null.</exception>
@@ -195,7 +197,9 @@ namespace LargeList
                 SetItem(index, value);
             }
         }
+#pragma warning disable SA1600
         object ILargeList.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
             set { this[index] = (T)value; }
@@ -226,7 +230,9 @@ namespace LargeList
         {
             InsertItem(Count, item);
         }
+#pragma warning disable SA1600
         long ILargeList.Add(object value)
+#pragma warning restore SA1600
         {
             long index = Count;
             InsertItem(index, (T)value);
@@ -252,7 +258,9 @@ namespace LargeList
         {
             return List.Contains(item);
         }
+#pragma warning disable SA1600
         bool ILargeList.Contains(object item)
+#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
@@ -315,7 +323,9 @@ namespace LargeList
 
             List.CopyTo(array, arrayIndex);
         }
+#pragma warning disable SA1600
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
+#pragma warning restore SA1600
         {
             if (array == null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
@@ -341,7 +351,9 @@ namespace LargeList
         {
             return List.GetEnumerator();
         }
+#pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
@@ -357,7 +369,9 @@ namespace LargeList
         {
             return List.IndexOf(item);
         }
+#pragma warning disable SA1600
         long ILargeList.IndexOf(object item)
+#pragma warning restore SA1600
         {
             return IndexOf((T)item);
         }
@@ -376,7 +390,9 @@ namespace LargeList
 
             InsertItem(index, item);
         }
+#pragma warning disable SA1600
         void ILargeList.Insert(long index, object item)
+#pragma warning restore SA1600
         {
             Insert(index, (T)item);
         }
@@ -397,7 +413,9 @@ namespace LargeList
             RemoveItem(index);
             return true;
         }
+#pragma warning disable SA1600
         void ILargeList.Remove(object item)
+#pragma warning restore SA1600
         {
             Remove((T)item);
         }
@@ -462,7 +480,9 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return List.IsReadOnly; } }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
+#pragma warning disable SA1600
         bool ILargeList.IsReadOnly { get { return List.IsReadOnly; } }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Gets a value indicating whether access to the LargeCollection&lt;T&gt; is synchronized (thread safe).

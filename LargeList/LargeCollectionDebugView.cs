@@ -1,8 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Diagnostics;
+
     /// <summary>
     /// Provides a debugging class to display the content of generic large collections.
     /// </summary>
@@ -12,7 +12,8 @@ namespace LargeList
         private ILargeCollection<T> collection;
 
         /// <summary>
-        /// Initializes a new instance of the LargeCollectionDebugView class as a proxy for the specified collection.
+        /// Initializes a new instance of the <see cref="LargeCollectionDebugView{T}"/> class.
+        /// Creates a proxy for the specified collection.
         /// </summary>
         /// <param name="collection">The collection that is wrapped by the new collection.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>

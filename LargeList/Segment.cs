@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Supports a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a ISegment&lt;T&gt; object to another.
     /// </summary>
@@ -90,6 +90,7 @@ namespace LargeList
         /// <summary>
         /// Returns an enumerator that iterates through the ISegment&lt;T&gt;.
         /// </summary>
+        /// <param name="index">Index of the segment.</param>
         /// <returns>
         /// An enumerator for the ISegment&lt;T&gt;.
         /// </returns>
@@ -201,7 +202,8 @@ namespace LargeList
     {
         #region Initialization
         /// <summary>
-        /// Initializes a new instance of the Segment&lt;T&gt; class that is empty, has no pre-allocated capacity and has the specified maximum capacity.
+        /// Initializes a new instance of the <see cref="Segment{T}"/> class.
+        /// Creates an empty instance, has no pre-allocated capacity and has the specified maximum capacity.
         /// </summary>
         /// <param name="maxCapacity">The maximum number of elements that the new Segment&lt;T&gt; can ever store.</param>
         public Segment(int maxCapacity)
@@ -215,7 +217,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the Segment&lt;T&gt; class that is empty and has the specified initial and maximum capacities.
+        /// Initializes a new instance of the <see cref="Segment{T}"/> class.
+        /// Creates an empty instance that has the specified initial and maximum capacities.
         /// </summary>
         /// <param name="initialCapacity">The maximum number of elements that the new Segment&lt;T&gt; can initially store.</param>
         /// <param name="maxCapacity">The maximum number of elements that the new Segment&lt;T&gt; can ever store.</param>
@@ -251,7 +254,7 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the Segment&lt;T&gt;.
+        /// Gets or sets the number of elements contained in the Segment&lt;T&gt;.
         /// </summary>
         /// <returns>
         /// The number of elements contained in the Segment&lt;T&gt;.
@@ -389,6 +392,7 @@ namespace LargeList
         /// <summary>
         /// Returns an enumerator that iterates through the Segment&lt;T&gt;.
         /// </summary>
+        /// <param name="index">Index of the segment.</param>
         /// <returns>
         /// An enumerator for the Segment&lt;T&gt;.
         /// </returns>

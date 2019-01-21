@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnumerableSegmentTable.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LargeCollection.cs" />
     <Compile Include="LargeCollectionDebugView.cs" />
     <Compile Include="LargeList.cs" />
@@ -63,6 +64,13 @@
     <Compile Include="ReadOnlyLargeList.cs" />
     <Compile Include="Segment.cs" />
     <Compile Include="Partition.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">

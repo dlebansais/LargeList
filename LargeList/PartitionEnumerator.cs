@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Supports a simple iteration over a IPartition&lt;T&gt; object.
     /// </summary>
@@ -39,7 +39,8 @@ namespace LargeList
     class PartitionEnumerator<T> : IPartitionEnumerator<T>, IDisposable
     {
         /// <summary>
-        /// Initializes a new instance of the PartitionEnumerator&lt;T&gt; class that has no element to enumerate.
+        /// Initializes a new instance of the <see cref="PartitionEnumerator{T}"/> class.
+        /// Creates an instance that has no element to enumerate.
         /// </summary>
         public PartitionEnumerator()
         {
@@ -48,7 +49,8 @@ namespace LargeList
         }
 
         /// <summary>
-        /// Initializes a new instance of the PartitionEnumerator&lt;T&gt; class that enumerates objects starting at the specified position in IPartition&lt;T&gt;.
+        /// Initializes a new instance of the <see cref="PartitionEnumerator{T}"/> class.
+        /// Creates an instance that enumerates objects starting at the specified position in <see cref="IPartition{T}"/>.
         /// </summary>
         /// <param name="partition">The enumerated partition.</param>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
@@ -114,6 +116,7 @@ namespace LargeList
         /// <summary>
         /// Releases the unmanaged resources used by the PartitionEnumerator&lt;T&gt; and optionally releases the managed resources.
         /// </summary>
+        /// <param name="isDisposing">True if the object is being disposed of.</param>
         protected virtual void Dispose(bool isDisposing)
         {
             if (isDisposing)

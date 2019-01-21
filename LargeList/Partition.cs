@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
     /// </summary>
@@ -278,7 +278,8 @@ namespace LargeList
     {
         #region Initialization
         /// <summary>
-        /// Initializes a new instance of the Partition&lt;T&gt; class with the specified initial number of uninitialized elements and capacity.
+        /// Initializes a new instance of the <see cref="Partition{T}"/> class.
+        /// With the specified initial number of uninitialized elements and capacity.
         /// </summary>
         /// <param name="capacity">The number of elements that the new partition can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new partition contains.</param>
@@ -731,7 +732,7 @@ namespace LargeList
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-            for(;;)
+            for (; ;)
             {
                 Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
                 Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
@@ -912,7 +913,7 @@ namespace LargeList
                 Debug.Assert(segmentIndexLower == segmentIndexUpper);
                 Debug.Assert(elementIndexLower <= elementIndexUpper);
 
-                int Middle = elementIndexLower + (elementIndexUpper - elementIndexLower) / 2;
+                int Middle = elementIndexLower + ((elementIndexUpper - elementIndexLower) / 2);
 
                 segmentIndexMiddle = segmentIndexLower;
                 elementIndexMiddle = Middle;
@@ -1491,7 +1492,7 @@ namespace LargeList
             GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
             GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
 
-            for (;;)
+            for (; ;)
             {
                 do
                     if (SegmentIndexUp < 0)
@@ -1522,7 +1523,7 @@ namespace LargeList
                     {
                         SegmentIndexDown--;
                         Debug.Assert(SegmentIndexDown >= 0 && SegmentTable[SegmentIndexDown].Count > 0);
-                        ElementIndexDown = SegmentTable[SegmentIndexDown].Count -  1;
+                        ElementIndexDown = SegmentTable[SegmentIndexDown].Count - 1;
                     }
                 }
                 while (comparer.Compare(SegmentTable[SegmentIndexDown][ElementIndexDown], pivot) > 0);
@@ -1588,6 +1589,7 @@ namespace LargeList
         /// <summary>
         /// Creates a new segment with the specified initial capacity.
         /// </summary>
+        /// <param name="initialCapacity">The initial capacity.</param>
         /// <returns>
         /// The created segment.
         /// </returns>
@@ -1601,7 +1603,7 @@ namespace LargeList
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
-        /// <returns></returns>
+        /// <returns>The enumerator.</returns>
         protected virtual IPartitionEnumerator<T> CreateEnumerator(int segmentIndex, int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -1692,20 +1694,20 @@ namespace LargeList
                 Array.Resize(ref Cache, CacheLineCount);
         }
 
-        private void RebuildCacheFrom(int CacheLine)
+        private void RebuildCacheFrom(int cacheLine)
         {
-            Debug.Assert(CacheLine < CacheLineCount);
+            Debug.Assert(cacheLine < CacheLineCount);
 
-            int SegmentIndex = Cache[CacheLine].SegmentIndex;
-            long Min = Cache[CacheLine].Min;
+            int SegmentIndex = Cache[cacheLine].SegmentIndex;
+            long Min = Cache[cacheLine].Min;
 
             Debug.Assert(SegmentIndex < SegmentTable.Count);
 
-            while (CacheLine + 1 < CacheLineCount)
+            while (cacheLine + 1 < CacheLineCount)
             {
-                CacheLine++;
+                cacheLine++;
 
-                long CacheIndex = CacheLine * CacheLineLength;
+                long CacheIndex = cacheLine * CacheLineLength;
 
                 while (Min + SegmentTable[SegmentIndex].Count < CacheIndex)
                 {
@@ -1718,8 +1720,8 @@ namespace LargeList
 
                 Debug.Assert(SegmentIndex < SegmentTable.Count);
 
-                Cache[CacheLine].SegmentIndex = SegmentIndex;
-                Cache[CacheLine].Min = Min;
+                Cache[cacheLine].SegmentIndex = SegmentIndex;
+                Cache[cacheLine].Min = Min;
             }
         }
 

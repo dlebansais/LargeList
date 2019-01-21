@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace LargeList
+﻿namespace LargeList
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     /// <summary>
     /// Represents a read-only large collection of non-generic elements that can be accessed by index.
     /// </summary>
@@ -46,7 +46,8 @@ namespace LargeList
     public class ReadOnlyLargeList<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
         /// <summary>
-        /// Initializes a new instance of the ReadOnlyLargeList&lt;T&gt; class that is a read-only wrapper around the specified list.
+        /// Initializes a new instance of the <see cref="ReadOnlyLargeList{T}"/> class.
+        /// Creates an instance that is a read-only wrapper around the specified list.
         /// </summary>
         /// <param name="list">The list to wrap.</param>
         /// <exception cref="ArgumentNullException"><paramref name="list"/> is null.</exception>
@@ -76,16 +77,20 @@ namespace LargeList
                 return List[index];
             }
         }
+#pragma warning disable SA1600
         T ILargeList<T>.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
+#pragma warning disable SA1600
         object ILargeList.this[long index]
+#pragma warning restore SA1600
         {
             get { return this[index]; }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
 
@@ -96,8 +101,9 @@ namespace LargeList
         /// The number of elements contained in the ReadOnlyLargeList&lt;T&gt; instance.
         /// </returns>
         public long Count { get { return List.Count; } }
+
         /// <summary>
-        /// Returns the ILargeList&lt;T&gt; that the ReadOnlyLargeList&lt;T&gt; wraps.
+        /// Gets the ILargeList&lt;T&gt; that the ReadOnlyLargeList&lt;T&gt; wraps.
         /// </summary>
         /// <returns>
         /// The ILargeList&lt;T&gt; that the ReadOnlyLargeList&lt;T&gt; wraps.
@@ -115,7 +121,9 @@ namespace LargeList
         {
             return List.Contains(item);
         }
+#pragma warning disable SA1600
         bool ILargeList.Contains(object item)
+#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
@@ -136,6 +144,7 @@ namespace LargeList
 
             List.CopyTo(array);
         }
+
         /// <summary>
         /// Copies the entire ReadOnlyLargeList&lt;T&gt; to a compatible one-dimensional System.Array, starting at the specified index of the target array.
         /// </summary>
@@ -157,7 +166,9 @@ namespace LargeList
 
             List.CopyTo(array, arrayIndex);
         }
+#pragma warning disable SA1600
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
+#pragma warning restore SA1600
         {
             if (array == null)
                 throw new ArgumentNullException(nameof(array));
@@ -171,6 +182,7 @@ namespace LargeList
             ILargeCollection AsCollection = List as ILargeCollection;
             AsCollection.CopyTo(array, arrayIndex);
         }
+
         /// <summary>
         /// Copies a range of elements from the ReadOnlyLargeList&lt;T&gt; to a compatible one-dimensional System.Array, starting at the specified index of the target array.
         /// </summary>
@@ -197,6 +209,7 @@ namespace LargeList
 
             List.CopyTo(index, array, arrayIndex, count);
         }
+
         /// <summary>
         /// Returns an enumerator that iterates through the ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -207,14 +220,19 @@ namespace LargeList
         {
             return List.GetEnumerator();
         }
+#pragma warning disable SA1600
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
+#pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -226,10 +244,13 @@ namespace LargeList
         {
             return List.IndexOf(item);
         }
+#pragma warning disable SA1600
         long ILargeList.IndexOf(object item)
+#pragma warning restore SA1600
         {
             return IndexOf((T)item);
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that extends from the specified index to the last element.
         /// </summary>
@@ -246,6 +267,7 @@ namespace LargeList
 
             return List.IndexOf(item, index);
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that starts at the specified index and contains the specified number of elements.
         /// </summary>
@@ -282,6 +304,7 @@ namespace LargeList
         {
             return List.BinarySearch(item);
         }
+
         /// <summary>
         /// Searches the entire sorted ReadOnlyLargeList&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
@@ -295,6 +318,7 @@ namespace LargeList
         {
             return List.BinarySearch(item, comparer);
         }
+
         /// <summary>
         /// Searches a range of elements in the sorted ReadOnlyLargeList&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
@@ -321,6 +345,7 @@ namespace LargeList
 
             return List.BinarySearch(index, count, item, comparer);
         }
+
         /// <summary>
         /// Converts the elements in the current ReadOnlyLargeList&lt;T&gt; to another type, and returns a list containing the converted elements.
         /// </summary>
@@ -337,6 +362,7 @@ namespace LargeList
 
             return List.ConvertAll<TOutput>(converter);
         }
+
         /// <summary>
         /// Determines whether the ReadOnlyLargeList&lt;T&gt; contains elements that match the conditions defined by the specified predicate.
         /// </summary>
@@ -352,6 +378,7 @@ namespace LargeList
 
             return List.Exists(match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -367,6 +394,7 @@ namespace LargeList
 
             return List.Find(match);
         }
+
         /// <summary>
         /// Retrieves all the elements that match the conditions defined by the specified predicate.
         /// </summary>
@@ -382,6 +410,7 @@ namespace LargeList
 
             return List.FindAll(match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -397,6 +426,7 @@ namespace LargeList
 
             return List.FindIndex(match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that extends from the specified index to the last element.
         /// </summary>
@@ -417,6 +447,7 @@ namespace LargeList
 
             return List.FindIndex(startIndex, Count - startIndex, match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that starts at the specified index and contains the specified number of elements.
         /// </summary>
@@ -441,6 +472,7 @@ namespace LargeList
 
             return List.FindIndex(startIndex, count, match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -456,6 +488,7 @@ namespace LargeList
 
             return List.FindLast(match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -471,6 +504,7 @@ namespace LargeList
 
             return List.FindLastIndex(match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that extends from the first element to the specified index.
         /// </summary>
@@ -491,6 +525,7 @@ namespace LargeList
 
             return List.FindLastIndex(startIndex, match);
         }
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that contains the specified number of elements and ends at the specified index.
         /// </summary>
@@ -518,6 +553,7 @@ namespace LargeList
 
             return List.FindLastIndex(startIndex, count, match);
         }
+
         /// <summary>
         /// Performs the specified action on each element of the ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -530,6 +566,7 @@ namespace LargeList
 
             List.ForEach(action);
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -541,6 +578,7 @@ namespace LargeList
         {
             return List.LastIndexOf(item);
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that extends from the first element to the specified index.
         /// </summary>
@@ -557,6 +595,7 @@ namespace LargeList
 
             return List.LastIndexOf(item, index);
         }
+
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the ReadOnlyLargeList&lt;T&gt; that contains the specified number of elements and ends at the specified index.
         /// </summary>
@@ -580,6 +619,7 @@ namespace LargeList
 
             return List.LastIndexOf(item, index, count);
         }
+
         /// <summary>
         /// Determines whether every element in the ReadOnlyLargeList&lt;T&gt; matches the conditions defined by the specified predicate.
         /// </summary>
@@ -595,6 +635,7 @@ namespace LargeList
 
             return List.TrueForAll(match);
         }
+
         /// <summary>
         /// Creates a shallow copy of a range of elements in the source ReadOnlyLargeList&lt;T&gt;.
         /// </summary>
@@ -619,6 +660,7 @@ namespace LargeList
 
             return List.GetRange(index, count);
         }
+
         /// <summary>
         /// Copies the elements of the ReadOnlyLargeList&lt;T&gt; to a new array.
         /// </summary>
@@ -630,6 +672,7 @@ namespace LargeList
         {
             return List.ToArray();
         }
+
         /// <summary>
         /// Gets a value indicating whether the ReadOnlyLargeList&lt;T&gt; is read-only.
         /// </summary>
@@ -639,7 +682,9 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return true; } }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
+#pragma warning disable SA1600
         bool ILargeList.IsReadOnly { get { return true; } }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Gets a value indicating whether the ReadOnlyLargeList&lt;T&gt; has a fixed size.
@@ -668,41 +713,61 @@ namespace LargeList
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         object ILargeCollection.SyncRoot { get { return List; } }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList<T>.Insert(long index, T value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Insert(long index, object value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         bool ILargeCollection<T>.Remove(T value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Remove(object value)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList<T>.RemoveAt(long index)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.RemoveAt(long index)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeCollection<T>.Add(T item)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         long ILargeList.Add(object item)
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeCollection<T>.Clear()
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
+#pragma warning disable SA1600
         void ILargeList.Clear()
+#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
         private LargeList<T> List;
