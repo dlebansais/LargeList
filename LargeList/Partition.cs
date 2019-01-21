@@ -732,7 +732,7 @@
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-            for (; ;)
+            for (;;)
             {
                 Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
                 Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
@@ -1492,7 +1492,7 @@
             GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
             GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
 
-            for (; ;)
+            for (;;)
             {
                 do
                     if (SegmentIndexUp < 0)
