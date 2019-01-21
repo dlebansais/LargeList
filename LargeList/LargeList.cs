@@ -111,35 +111,35 @@
         /// <returns>
         /// The element at the specified index.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the ILargeList&lt;T&gt;.</exception>
-        /// <exception cref="NotSupportedException">The property is set and the ILargeList&lt;T&gt; is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="ILargeList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The property is set and the <see cref="ILargeList{T}"/> is read-only.</exception>
         T this[long index] { get; set; }
 
         /// <summary>
-        /// Determines the index of a specific item in the ILargeList&lt;T&gt;.
+        /// Determines the index of a specific item in the <see cref="ILargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the ILargeList&lt;T&gt;.</param>
+        /// <param name="item">The object to locate in the <see cref="ILargeList{T}"/>.</param>
         /// <returns>
         /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
         /// </returns>
         long IndexOf(T item);
 
         /// <summary>
-        /// Inserts an item to the ILargeList&lt;T&gt; at the specified index.
+        /// Inserts an item to the <see cref="ILargeList{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the ILargeList&lt;T&gt;.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the ILargeList&lt;T&gt;.</exception>
-        /// <exception cref="NotSupportedException">The ILargeList&lt;T&gt; is read-only.</exception>
+        /// <param name="item">The object to insert into the <see cref="ILargeList{T}"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="ILargeList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="ILargeList{T}"/> is read-only.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         void Insert(long index, T item);
 
         /// <summary>
-        /// Removes the ILargeList&lt;T&gt; item at the specified index.
+        /// Removes the <see cref="ILargeList{T}"/> item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the ILargeList&lt;T&gt;.</exception>
-        /// <exception cref="NotSupportedException">The ILargeList&lt;T&gt; is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="ILargeList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="ILargeList{T}"/> is read-only.</exception>
         void RemoveAt(long index);
     }
 
@@ -298,7 +298,7 @@
         /// <returns>
         /// The element at the specified index.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than LargeList&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeList{T}.Count"/>.</para></exception>
         public T this[long index]
         {
             get
@@ -336,9 +336,9 @@
         /// Gets or sets the total number of elements the internal data structure can hold without resizing.
         /// </summary>
         /// <returns>
-        /// The number of elements that the LargeList&lt;T&gt; can contain before resizing is required.
+        /// The number of elements that the <see cref="LargeList{T}"/> can contain before resizing is required.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">LargeList&lt;T&gt;.Capacity is set to a value that is less than LargeList&lt;T&gt;.Count.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="LargeList{T}"/>.Capacity is set to a value that is less than <see cref="LargeList{T}.Count"/>.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public long Capacity
         {
@@ -360,17 +360,17 @@
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the LargeList&lt;T&gt;.
+        /// Gets the number of elements contained in the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the LargeList&lt;T&gt;.
+        /// The number of elements contained in the <see cref="LargeList{T}"/>.
         /// </returns>
         public long Count { get { return Partition.Count; } }
 
         /// <summary>
-        /// Adds an object to the end of the LargeList&lt;T&gt;.
+        /// Adds an object to the end of the <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to be added to the end of the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to be added to the end of the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void Add(T item)
         {
@@ -400,9 +400,9 @@
         }
 
         /// <summary>
-        /// Adds the elements of the specified collection to the end of the LargeList&lt;T&gt;.
+        /// Adds the elements of the specified collection to the end of the <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="collection">The collection whose elements should be added to the end of the LargeList&lt;T&gt;. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
+        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="LargeList{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void AddRange(IEnumerable<T> collection)
@@ -429,10 +429,10 @@
         }
 
         /// <summary>
-        /// Returns a read-only LargeCollection&lt;T&gt; wrapper for the current list.
+        /// Returns a read-only <see cref="LargeCollection{T}"/> wrapper for the current list.
         /// </summary>
         /// <returns>
-        /// A ReadOnlyLargeCollection&lt;T&gt; that acts as a read-only wrapper around the current LargeList&lt;T&gt;.
+        /// A <see cref="ReadOnlyLargeCollection{T}"/> that acts as a read-only wrapper around the current <see cref="LargeList{T}"/>.
         /// </returns>
         public ReadOnlyLargeCollection<T> AsReadOnly()
         {
@@ -440,27 +440,27 @@
         }
 
         /// <summary>
-        /// Searches the entire sorted LargeList&lt;T&gt; for an element using the default comparer and returns the zero-based index of the element.
+        /// Searches the entire sorted <see cref="LargeList{T}"/> for an element using the default comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted LargeList&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of LargeList&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException">The default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find an implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <exception cref="InvalidOperationException">The default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item)
         {
             return BinarySearchItem(0, Count, item, Comparer<T>.Default);
         }
 
         /// <summary>
-        /// Searches the entire sorted LargeList&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// Searches the entire sorted <see cref="LargeList{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements, or null to use the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted LargeList&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of LargeList&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find an implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item, IComparer<T> comparer)
         {
             if (comparer == null)
@@ -472,18 +472,18 @@
         }
 
         /// <summary>
-        /// Searches a range of elements in the sorted LargeList&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// Searches a range of elements in the sorted <see cref="LargeList{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to search.</param>
         /// <param name="count">The length of the range to search.</param>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements, or null to use the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted LargeList&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of LargeList&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range in the LargeList&lt;T&gt;.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find an implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range in the <see cref="LargeList{T}"/>.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
             if (index < 0)
@@ -504,7 +504,7 @@
         }
 
         /// <summary>
-        /// Removes all elements from the LargeList&lt;T&gt;.
+        /// Removes all elements from the <see cref="LargeList{T}"/>.
         /// </summary>
         public void Clear()
         {
@@ -516,11 +516,11 @@
         }
 
         /// <summary>
-        /// Determines whether an element is in the LargeList&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the LargeList&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="LargeList{T}"/>; otherwise, false.
         /// </returns>
         public bool Contains(T item)
         {
@@ -534,12 +534,12 @@
         }
 
         /// <summary>
-        /// Converts the elements in the current LargeList&lt;T&gt; to another type, and returns a list containing the converted elements.
+        /// Converts the elements in the current <see cref="LargeList{T}"/> to another type, and returns a list containing the converted elements.
         /// </summary>
-        /// <param name="converter">A System.Converter&lt;T, TOutput&gt; delegate that converts each element from one type to another type.</param>
+        /// <param name="converter">A <see cref="System.Converter{T, TOutput}"/> delegate that converts each element from one type to another type.</param>
         /// <typeparam name="TOutput">The type of the elements of the target array.</typeparam>
         /// <returns>
-        /// A LargeList&lt;T&gt; of the target type containing the converted elements from the current LargeList&lt;T&gt;.
+        /// A <see cref="LargeList{T}"/> of the target type containing the converted elements from the current <see cref="LargeList{T}"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="converter"/> is null.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
@@ -566,11 +566,11 @@
         }
 
         /// <summary>
-        /// Copies the entire LargeList&lt;T&gt; to a compatible one-dimensional array, starting at the beginning of the target array.
+        /// Copies the entire <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the beginning of the target array.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from LargeList&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeList{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source LargeList&lt;T&gt; is greater than the number of elements that the destination array can contain.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeList{T}"/> is greater than the number of elements that the destination array can contain.</exception>
         public void CopyTo(T[] array)
         {
 #if STRICT
@@ -585,13 +585,13 @@
         }
 
         /// <summary>
-        /// Copies the entire LargeList&lt;T&gt; to a compatible one-dimensional array, starting at the specified index of the target array.
+        /// Copies the entire <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from LargeList&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeList{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source LargeList&lt;T&gt; is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeList{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
 #if STRICT
@@ -662,15 +662,15 @@
         }
 
         /// <summary>
-        /// Copies a range of elements from the LargeList&lt;T&gt; to a compatible one-dimensional array, starting at the specified index of the target array.
+        /// Copies a range of elements from the <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="index">The zero-based index in the source LargeList&lt;T&gt; at which copying begins.</param>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from LargeList&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="index">The zero-based index in the source <see cref="LargeList{T}"/> at which copying begins.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeList{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <param name="count">The number of elements to copy.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="arrayIndex"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><para><paramref name="index"/> is equal to or greater than the LargeList&lt;T&gt;.Count of the source LargeList&lt;T&gt;.</para><para>-or-</para><para>The number of elements from <paramref name="index"/> to the end of the source LargeList&lt;T&gt; is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</para></exception>
+        /// <exception cref="ArgumentException"><para><paramref name="index"/> is equal to or greater than the <see cref="LargeList{T}.Count"/> of the source <see cref="LargeList{T}"/>.</para><para>-or-</para><para>The number of elements from <paramref name="index"/> to the end of the source <see cref="LargeList{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</para></exception>
         public void CopyTo(long index, T[] array, int arrayIndex, long count)
         {
 #if STRICT
@@ -733,11 +733,11 @@
         }
 
         /// <summary>
-        /// Determines whether the LargeList&lt;T&gt; contains elements that match the conditions defined by the specified predicate.
+        /// Determines whether the <see cref="LargeList{T}"/> contains elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to search for.</param>
         /// <returns>
-        /// true if the LargeList&lt;T&gt; contains one or more elements that match the conditions defined by the specified predicate; otherwise, false.
+        /// true if the <see cref="LargeList{T}"/> contains one or more elements that match the conditions defined by the specified predicate; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool Exists(Predicate<T> match)
@@ -759,9 +759,9 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <typeparamref name="T"/>.
         /// </returns>
@@ -788,9 +788,9 @@
         /// <summary>
         /// Retrieves all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to search for.</param>
         /// <returns>
-        /// A LargeList&lt;T&gt; containing all the elements that match the conditions defined by the specified predicate, if found; otherwise, an empty LargeList&lt;T&gt;.
+        /// A <see cref="LargeList{T}"/> containing all the elements that match the conditions defined by the specified predicate, if found; otherwise, an empty <see cref="LargeList{T}"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public LargeList<T> FindAll(Predicate<T> match)
@@ -815,9 +815,9 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the first occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
@@ -831,15 +831,15 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the specified index to the last element.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the specified index to the last element.
         /// </summary>
         /// <param name="startIndex">The zero-based starting index of the search.</param>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the first occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long FindIndex(long startIndex, Predicate<T> match)
         {
             if (startIndex < 0 || startIndex > Count)
@@ -852,16 +852,16 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that starts at the specified index and contains the specified number of elements.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that starts at the specified index and contains the specified number of elements.
         /// </summary>
         /// <param name="startIndex">The zero-based starting index of the search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the first occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long FindIndex(long startIndex, long count, Predicate<T> match)
         {
             if (startIndex < 0 || startIndex > Count)
@@ -890,9 +890,9 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The last element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <typeparamref name="T"/>.
         /// </returns>
@@ -919,9 +919,9 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the last occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
@@ -938,15 +938,15 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the first element to the specified index.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the first element to the specified index.
         /// </summary>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the last occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long FindLastIndex(long startIndex, Predicate<T> match)
         {
             if (match == null)
@@ -959,16 +959,16 @@
         }
 
         /// <summary>
-        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that contains the specified number of elements and ends at the specified index.
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that contains the specified number of elements and ends at the specified index.
         /// </summary>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the element to search for.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the element to search for.</param>
         /// <returns>
         /// The zero-based index of the last occurrence of an element that matches the conditions defined by <paramref name="match"/>, if found; otherwise, –1.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long FindLastIndex(long startIndex, long count, Predicate<T> match)
         {
             if (match == null)
@@ -1000,9 +1000,9 @@
         }
 
         /// <summary>
-        /// Performs the specified action on each element of the LargeList&lt;T&gt;.
+        /// Performs the specified action on each element of the <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="action">The System.Action&lt;T&gt; delegate to perform on each element of the LargeList&lt;T&gt;.</param>
+        /// <param name="action">The <see cref="System.Action{T}"/> delegate to perform on each element of the <see cref="LargeList{T}"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is null</exception>
         public void ForEach(Action<T> action)
         {
@@ -1028,10 +1028,10 @@
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the LargeList&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <returns>
-        /// A LargeEnumerator for the LargeList&lt;T&gt;.
+        /// A LargeEnumerator for the <see cref="LargeList{T}"/>.
         /// </returns>
         public LargeEnumerator GetEnumerator()
         {
@@ -1051,15 +1051,15 @@
         }
 
         /// <summary>
-        /// Creates a shallow copy of a range of elements in the source LargeList&lt;T&gt;.
+        /// Creates a shallow copy of a range of elements in the source <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="index">The zero-based LargeList&lt;T&gt; index at which the range starts.</param>
+        /// <param name="index">The zero-based <see cref="LargeList{T}"/> index at which the range starts.</param>
         /// <param name="count">The number of elements in the range.</param>
         /// <returns>
-        /// A shallow copy of a range of elements in the source LargeList&lt;T&gt;.
+        /// A shallow copy of a range of elements in the source <see cref="LargeList{T}"/>.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the <see cref="LargeList{T}"/>.</exception>
         public LargeList<T> GetRange(long index, long count)
         {
             if (index < 0)
@@ -1076,11 +1076,11 @@
         }
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire LargeList&lt;T&gt;, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="LargeList{T}"/>, if found; otherwise, –1.
         /// </returns>
         public long IndexOf(T item)
         {
@@ -1089,14 +1089,14 @@
 
 #if STRICT
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the specified index to the last element.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the specified index to the last element.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that extends from <paramref name="index"/> to the last element, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that extends from <paramref name="index"/> to the last element, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long IndexOf(T item, long index)
         {
 #if STRICT
@@ -1114,14 +1114,14 @@
         }
 #else
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the specified index to the last element.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the specified index to the last element.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that extends from <paramref name="startIndex"/> to the last element, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that extends from <paramref name="startIndex"/> to the last element, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long IndexOf(T item, long startIndex)
         {
             if (startIndex < 0 || startIndex >= Count)
@@ -1133,15 +1133,15 @@
 
 #if STRICT
             /// <summary>
-            /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that starts at the specified index and contains the specified number of elements.
+            /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that starts at the specified index and contains the specified number of elements.
             /// </summary>
-            /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+            /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
             /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
             /// <param name="count">The number of elements in the section to search.</param>
             /// <returns>
-            /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that starts at <paramref name="index"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
+            /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that starts at <paramref name="index"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
             /// </returns>
-            /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+            /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long IndexOf(T item, long index, long count)
         {
 #if STRICT
@@ -1169,15 +1169,15 @@
         }
 #else
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the LargeList&lt;T&gt; that starts at the specified index and contains the specified number of elements.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="LargeList{T}"/> that starts at the specified index and contains the specified number of elements.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long IndexOf(T item, long startIndex, long count)
         {
             if (startIndex < 0 || startIndex >= Count)
@@ -1200,11 +1200,11 @@
 #endif
 
         /// <summary>
-        /// Inserts an element into the LargeList&lt;T&gt; at the specified index.
+        /// Inserts an element into the <see cref="LargeList{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
         /// <param name="item">The object to insert. The value can be null for reference types.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is greater than LargeList&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is greater than <see cref="LargeList{T}.Count"/>.</para></exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void Insert(long index, T item)
         {
@@ -1233,12 +1233,12 @@
         }
 
         /// <summary>
-        /// Inserts the elements of a collection into the LargeList&lt;T&gt; at the specified index.
+        /// Inserts the elements of a collection into the <see cref="LargeList{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
-        /// <param name="collection">The collection whose elements should be inserted into the LargeList&lt;T&gt;. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
+        /// <param name="collection">The collection whose elements should be inserted into the <see cref="LargeList{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is greater than LargeList&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is greater than <see cref="LargeList{T}.Count"/>.</para></exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void InsertRange(long index, IEnumerable<T> collection)
         {
@@ -1266,11 +1266,11 @@
         }
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire LargeList&lt;T&gt;.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the entire the LargeList&lt;T&gt;, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the entire the <see cref="LargeList{T}"/>, if found; otherwise, –1.
         /// </returns>
         public long LastIndexOf(T item)
         {
@@ -1282,14 +1282,14 @@
 
 #if STRICT
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the first element to the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the first element to the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="index">The zero-based starting index of the backward search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that extends from the first element to <paramref name="index"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that extends from the first element to <paramref name="index"/>, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long LastIndexOf(T item, long index)
         {
             if (index < 0 || index >= Count)
@@ -1299,14 +1299,14 @@
         }
 #else
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that extends from the first element to the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that extends from the first element to the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that extends from the first element to <paramref name="startIndex"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that extends from the first element to <paramref name="startIndex"/>, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long LastIndexOf(T item, long startIndex)
         {
             if (startIndex < 0 || startIndex >= Count)
@@ -1318,15 +1318,15 @@
 
 #if STRICT
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that contains the specified number of elements and ends at the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="index">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that contains <paramref name="count"/> number of elements and ends at <paramref name="index"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that contains <paramref name="count"/> number of elements and ends at <paramref name="index"/>, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long LastIndexOf(T item, long index, long count)
         {
             if (index < 0 || index >= Count)
@@ -1342,15 +1342,15 @@
         }
 #else
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the LargeList&lt;T&gt; that contains the specified number of elements and ends at the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="LargeList{T}"/> that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the LargeList&lt;T&gt; that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="LargeList{T}"/> that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the LargeList&lt;T&gt;.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the LargeList&lt;T&gt;.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long LastIndexOf(T item, long startIndex, long count)
         {
             if (startIndex < 0 || startIndex >= Count)
@@ -1367,11 +1367,11 @@
 #endif
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the LargeList&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="LargeList{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the LargeList&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the LargeList&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="LargeList{T}"/>.
         /// </returns>
         public bool Remove(T item)
         {
@@ -1396,9 +1396,9 @@
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
         /// <returns>
-        /// The number of elements removed from the LargeList&lt;T&gt; .
+        /// The number of elements removed from the <see cref="LargeList{T}"/> .
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long RemoveAll(Predicate<T> match)
@@ -1416,10 +1416,10 @@
         }
 
         /// <summary>
-        /// Removes the element at the specified index of the LargeList&lt;T&gt;.
+        /// Removes the element at the specified index of the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than LargeList&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeList{T}.Count"/>.</para></exception>
         public void RemoveAt(long index)
         {
             if (index < 0 || index >= Count)
@@ -1438,12 +1438,12 @@
         }
 
         /// <summary>
-        /// Removes a range of elements from the LargeList&lt;T&gt;.
+        /// Removes a range of elements from the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the <see cref="LargeList{T}"/>.</exception>
         public void RemoveRange(long index, long count)
         {
             if (index < 0)
@@ -1468,7 +1468,7 @@
         }
 
         /// <summary>
-        /// Reverses the order of the elements in the entire LargeList&lt;T&gt;.
+        /// Reverses the order of the elements in the entire <see cref="LargeList{T}"/>.
         /// </summary>
         public void Reverse()
         {
@@ -1481,7 +1481,7 @@
         /// <param name="index">The zero-based starting index of the range to reverse.</param>
         /// <param name="count">The number of elements in the range to reverse.</param>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the LargeList&lt;T&gt;.</exception>
+        /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the <see cref="LargeList{T}"/>.</exception>
         public void Reverse(long index, long count)
         {
             if (index < 0)
@@ -1511,18 +1511,18 @@
         }
 
         /// <summary>
-        /// Sorts the elements in the entire LargeList&lt;T&gt; using the default comparer.
+        /// Sorts the elements in the entire <see cref="LargeList{T}"/> using the default comparer.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find an implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <exception cref="InvalidOperationException">The default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public void Sort()
         {
             SortItems(0, Count, Comparer<T>.Default);
         }
 
         /// <summary>
-        /// Sorts the elements in the entire LargeList&lt;T&gt; using the specified System.Comparison&lt;T&gt;.
+        /// Sorts the elements in the entire <see cref="LargeList{T}"/> using the specified <see cref="System.Comparison{T}"/>.
         /// </summary>
-        /// <param name="comparison">The System.Comparison&lt;T&gt; to use when comparing elements.</param>
+        /// <param name="comparison">The <see cref="System.Comparison{T}"/> to use when comparing elements.</param>
         /// <exception cref="ArgumentNullException"><paramref name="comparison"/> is null.</exception>
         /// <exception cref="ArgumentException">The implementation of <paramref name="comparison"/> caused an error during the sort. For example, <paramref name="comparison"/> might not return 0 when comparing an item with itself.</exception>
         public void Sort(Comparison<T> comparison)
@@ -1539,10 +1539,10 @@
         }
 
         /// <summary>
-        /// Sorts the elements in the entire LargeList&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in the entire <see cref="LargeList{T}"/> using the specified comparer.
         /// </summary>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements, or null to use the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default.</param>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         /// <exception cref="ArgumentException">The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</exception>
         public void Sort(IComparer<T> comparer)
         {
@@ -1555,14 +1555,14 @@
         }
 
         /// <summary>
-        /// Sorts the elements in a range of elements in LargeList&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="LargeList{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to sort.</param>
         /// <param name="count">The length of the range to sort.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements, or null to use the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
-        /// <exception cref="ArgumentException"><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid range in the LargeList&lt;T&gt;.</para><para>-or-</para><para>The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</para></exception>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer System.Collections.Generic.Comparer&lt;T&gt;.Default cannot find implementation of the System.IComparable&lt;T&gt; generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
+        /// <exception cref="ArgumentException"><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid range in the <see cref="LargeList{T}"/>.</para><para>-or-</para><para>The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</para></exception>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public void Sort(long index, long count, IComparer<T> comparer)
         {
             if (index < 0)
@@ -1583,10 +1583,10 @@
         }
 
         /// <summary>
-        /// Copies the elements of the LargeList&lt;T&gt; to a new array.
+        /// Copies the elements of the <see cref="LargeList{T}"/> to a new array.
         /// </summary>
         /// <returns>
-        /// An array containing copies of the elements of the LargeList&lt;T&gt;.
+        /// An array containing copies of the elements of the <see cref="LargeList{T}"/>.
         /// </returns>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public T[] ToArray()
@@ -1599,7 +1599,7 @@
         }
 
         /// <summary>
-        /// Sets the capacity to the actual number of elements in the LargeList&lt;T&gt;, if that number is less than a threshold value.
+        /// Sets the capacity to the actual number of elements in the <see cref="LargeList{T}"/>, if that number is less than a threshold value.
         /// </summary>
         public void TrimExcess()
         {
@@ -1612,11 +1612,11 @@
         }
 
         /// <summary>
-        /// Determines whether every element in the LargeList&lt;T&gt; matches the conditions defined by the specified predicate.
+        /// Determines whether every element in the <see cref="LargeList{T}"/> matches the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions to check against the elements.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions to check against the elements.</param>
         /// <returns>
-        /// true if every element in the LargeList&lt;T&gt; matches the conditions defined by the specified predicate; otherwise, false. If the list has no elements, the return value is true.
+        /// true if every element in the <see cref="LargeList{T}"/> matches the conditions defined by the specified predicate; otherwise, false. If the list has no elements, the return value is true.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool TrueForAll(Predicate<T> match)
@@ -1638,10 +1638,10 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether the LargeList&lt;T&gt; is read-only.
+        /// Gets a value indicating whether the <see cref="LargeList{T}"/> is read-only.
         /// </summary>
         /// <returns>
-        /// true if the LargeList&lt;T&gt; is read-only; otherwise, false.
+        /// true if the <see cref="LargeList{T}"/> is read-only; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return false; } }
@@ -1651,28 +1651,28 @@
 #pragma warning restore SA1600
 
         /// <summary>
-        /// Gets a value indicating whether the LargeList&lt;T&gt; has a fixed size.
+        /// Gets a value indicating whether the <see cref="LargeList{T}"/> has a fixed size.
         /// </summary>
         /// <returns>
-        /// true if the LargeList&lt;T&gt; has a fixed size; otherwise, false.
+        /// true if the <see cref="LargeList{T}"/> has a fixed size; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         bool ILargeList.IsFixedSize { get { return false; } }
 
         /// <summary>
-        /// Gets a value indicating whether access to the LargeList&lt;T&gt; is synchronized (thread safe).
+        /// Gets a value indicating whether access to the <see cref="LargeList{T}"/> is synchronized (thread safe).
         /// </summary>
         /// <returns>
-        /// true if access to the LargeList&lt;T&gt; is synchronized (thread safe); otherwise, false.
+        /// true if access to the <see cref="LargeList{T}"/> is synchronized (thread safe); otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         bool ILargeCollection.IsSynchronized { get { return false; } }
 
         /// <summary>
-        /// Gets an object that can be used to synchronize access to the LargeList&lt;T&gt;.
+        /// Gets an object that can be used to synchronize access to the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <returns>
-        /// An object that can be used to synchronize access to the LargeList&lt;T&gt;.
+        /// An object that can be used to synchronize access to the <see cref="LargeList{T}"/>.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         object ILargeCollection.SyncRoot { get { return Partition; } }
@@ -1689,7 +1689,7 @@
 
         /// <summary>
         /// <para>Creates the partition used to store elements.</para>
-        /// <para>This method is called once, from constructors, at the begining, after LargeList&lt;T&gt;.Initialize.</para>
+        /// <para>This method is called once, from constructors, at the begining, after <see cref="LargeList{T}"/>.Initialize.</para>
         /// </summary>
         /// <param name="capacity">The number of elements that the new partition can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new partition should have.</param>
@@ -1704,14 +1704,14 @@
 #endif
 
         /// <summary>
-        /// Searches a range of elements in the sorted LargeList&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// Searches a range of elements in the sorted <see cref="LargeList{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to search.</param>
         /// <param name="count">The length of the range to search.</param>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted LargeList&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of LargeList&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
         private long BinarySearchItem(long index, long count, T item, IComparer<T> comparer)
         {
@@ -1719,11 +1719,11 @@
         }
 
         /// <summary>
-        /// Sorts the elements in a range of elements in LargeList&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="LargeList{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to sort.</param>
         /// <param name="count">The length of the range to sort.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         private void SortItems(long index, long count, IComparer<T> comparer)
         {
             int SegmentIndexBegin;
@@ -1744,11 +1744,11 @@
         }
 
         /// <summary>
-        /// Returns the number of elements of a System.Collections.Generic.IEnumerable&lt;T&gt; collection.
+        /// Returns the number of elements of a <see cref="System.Collections.Generic.IEnumerable{T}"/> collection.
         /// </summary>
         /// <param name="collection">The collection to enumerate.</param>
         /// <returns>
-        /// The number of elements in the System.Collections.Generic.IEnumerable&lt;T&gt; collection.
+        /// The number of elements in the <see cref="System.Collections.Generic.IEnumerable{T}"/> collection.
         /// </returns>
         private long GetCollectionCount(IEnumerable<T> collection)
         {
@@ -1784,7 +1784,7 @@
         #endregion
 
         /// <summary>
-        /// Enumerates the elements of a LargeList&lt;T&gt;.
+        /// Enumerates the elements of a <see cref="LargeList{T}"/>.
         /// </summary>
         public struct LargeEnumerator : IEnumerator<T>, IEnumerator, IDisposable
         {
@@ -1812,7 +1812,7 @@
             /// Gets the element at the current position of the enumerator.
             /// </summary>
             /// <returns>
-            /// The element in the LargeList&lt;T&gt; at the current position of the enumerator.
+            /// The element in the <see cref="LargeList{T}"/> at the current position of the enumerator.
             /// </returns>
             public T Current { get { return Enumerator.Current; } }
 #pragma warning disable SA1600
@@ -1832,7 +1832,7 @@
             }
 
             /// <summary>
-            /// Advances the enumerator to the next element of the LargeList&lt;T&gt;.
+            /// Advances the enumerator to the next element of the <see cref="LargeList{T}"/>.
             /// </summary>
             /// <returns>
             /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.

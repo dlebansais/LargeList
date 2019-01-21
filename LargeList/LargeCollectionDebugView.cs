@@ -25,10 +25,10 @@
         }
 
         /// <summary>
-        /// Gets a System.Array&lt;T&gt; proxy for the ILargeCollection&lt;T&gt;.
+        /// Gets a <see cref="System.Array"/> proxy for the <see cref="ILargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// A System.Array&lt;T&gt; proxy for the ILargeCollection&lt;T&gt;.
+        /// A <see cref="System.Array"/> proxy for the <see cref="ILargeCollection{T}"/>.
         /// </returns>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public T[] Items

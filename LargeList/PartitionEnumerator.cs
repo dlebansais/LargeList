@@ -5,7 +5,7 @@
     using System.Diagnostics;
 
     /// <summary>
-    /// Supports a simple iteration over a IPartition&lt;T&gt; object.
+    /// Supports a simple iteration over a <see cref="IPartition{T}"/> object.
     /// </summary>
     /// <typeparam name="T">The type of objects to enumerate.</typeparam>
 #if STRICT
@@ -16,19 +16,19 @@
     interface IPartitionEnumerator<T>
     {
         /// <summary>
-        /// Gets the element in the IPartition&lt;T&gt; at the current position of the enumerator.
+        /// Gets the element in the <see cref="IPartition{T}"/> at the current position of the enumerator.
         /// </summary>
         T Current { get; }
 
         /// <summary>
-        /// Advances the enumerator to the next element of the IPartition&lt;T&gt;. If there are no more elements, does nothing.
+        /// Advances the enumerator to the next element of the <see cref="IPartition{T}"/>. If there are no more elements, does nothing.
         /// </summary>
-        /// <param name="partition">The IPartition&lt;T&gt; object over which this enumerator is iterating.</param>
+        /// <param name="partition">The <see cref="IPartition{T}"/> object over which this enumerator is iterating.</param>
         void MoveNext(IPartition<T> partition);
     }
 
     /// <summary>
-    /// Enumerates the elements of a IPartition&lt;T&gt; object.
+    /// Enumerates the elements of a <see cref="IPartition{T}"/> object.
     /// </summary>
     /// <typeparam name="T">The type of objects to enumerate.</typeparam>
 #if STRICT
@@ -66,14 +66,14 @@
         }
 
         /// <summary>
-        /// Gets the element in the IPartition&lt;T&gt; at the current position of the enumerator.
+        /// Gets the element in the <see cref="IPartition{T}"/> at the current position of the enumerator.
         /// </summary>
         public T Current { get { return Enumerator.Current; } }
 
         /// <summary>
-        /// Advances the enumerator to the next element of the IPartition&lt;T&gt;. If there are no more elements, does nothing.
+        /// Advances the enumerator to the next element of the <see cref="IPartition{T}"/>. If there are no more elements, does nothing.
         /// </summary>
-        /// <param name="partition">The IPartition&lt;T&gt; object over which this enumerator is iterating.</param>
+        /// <param name="partition">The <see cref="IPartition{T}"/> object over which this enumerator is iterating.</param>
         public void MoveNext(IPartition<T> partition)
         {
             if (partition == null || Enumerator == null)
@@ -114,7 +114,7 @@
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the PartitionEnumerator&lt;T&gt; and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="PartitionEnumerator{T}"/> and optionally releases the managed resources.
         /// </summary>
         /// <param name="isDisposing">True if the object is being disposed of.</param>
         protected virtual void Dispose(bool isDisposing)

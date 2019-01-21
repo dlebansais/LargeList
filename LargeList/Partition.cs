@@ -16,7 +16,7 @@
     interface IPartition<T>
     {
         /// <summary>
-        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given IPartition&lt;T&gt;.
+        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but must remain constant in a given <see cref="IPartition{T}"/>.
         /// </summary>
         /// <returns>
         /// The maximum capacity allowed for segments.
@@ -24,23 +24,23 @@
         int MaxSegmentCapacity { get; }
 
         /// <summary>
-        /// Gets the total number of elements the IPartition&lt;T&gt; can hold without resizing.
+        /// Gets the total number of elements the <see cref="IPartition{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
-        /// The total number of elements the IPartition&lt;T&gt; can hold without resizing.
+        /// The total number of elements the <see cref="IPartition{T}"/> can hold without resizing.
         /// </returns>
         long Capacity { get; }
 
         /// <summary>
-        /// Gets the number of elements contained in the IPartition&lt;T&gt;.
+        /// Gets the number of elements contained in the <see cref="IPartition{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the IPartition&lt;T&gt;.
+        /// The number of elements contained in the <see cref="IPartition{T}"/>.
         /// </returns>
         long Count { get; }
 
         /// <summary>
-        /// Gets the position of an element in the IPartition&lt;T&gt; from its virtual index in a linear list.
+        /// Gets the position of an element in the <see cref="IPartition{T}"/> from its virtual index in a linear list.
         /// </summary>
         /// <param name="index">The virtual index of the element.</param>
         /// <param name="segmentIndex">Upon return, the segment index of the element.</param>
@@ -49,18 +49,18 @@
         void GetPosition(long index, out int segmentIndex, out int elementIndex, out int cacheIndex);
 
         /// <summary>
-        /// Check that the specified position in the IPartition&lt;T&gt; is valid. Calling this method is reserved to debugging.
+        /// Check that the specified position in the <see cref="IPartition{T}"/> is valid. Calling this method is reserved to debugging.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position to check.</param>
         /// <param name="elementIndex">The element index of the position to check.</param>
-        /// <param name="allowEnd">True to allow the IPartition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
+        /// <param name="allowEnd">True to allow the <see cref="IPartition{T}"/>.End position; False to only allow position of existing elements.</param>
         /// <returns>
-        /// True if the position in the IPartition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
+        /// True if the position in the <see cref="IPartition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
         /// </returns>
         bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd);
 
         /// <summary>
-        /// Gets the previous position in the IPartition&lt;T&gt;. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
+        /// Gets the previous position in the <see cref="IPartition{T}"/>. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
         /// <param name="elementIndex">The element index of the position used as starting point.</param>
@@ -69,7 +69,7 @@
         void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious);
 
         /// <summary>
-        /// Gets the next position in the IPartition&lt;T&gt;. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
+        /// Gets the next position in the <see cref="IPartition{T}"/>. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
         /// <param name="elementIndex">The element index of the position used as starting point.</param>
@@ -78,72 +78,72 @@
         void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext);
 
         /// <summary>
-        /// Updates a position in the IPartition&lt;T&gt; to the previous element.
+        /// Updates a position in the <see cref="IPartition{T}"/> to the previous element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position.</param>
         /// <param name="elementIndex">The element index of the position.</param>
         void DecrementPosition(ref int segmentIndex, ref int elementIndex);
 
         /// <summary>
-        /// Updates a position in the IPartition&lt;T&gt; to the next element.
+        /// Updates a position in the <see cref="IPartition{T}"/> to the next element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position.</param>
         /// <param name="elementIndex">The element index of the position.</param>
         void IncrementPosition(ref int segmentIndex, ref int elementIndex);
 
         /// <summary>
-        /// Gets the element in the IPartition&lt;T&gt; at the specified position.
+        /// Gets the element in the <see cref="IPartition{T}"/> at the specified position.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the element.</param>
         /// <param name="elementIndex">The element index of the position of the element.</param>
         /// <returns>
-        /// The element in the IPartition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
+        /// The element in the <see cref="IPartition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         T GetItem(int segmentIndex, int elementIndex);
 
         /// <summary>
-        /// Returns an enumerator for the IPartition&lt;T&gt;, starting from the specified position.
+        /// Returns an enumerator for the <see cref="IPartition{T}"/>, starting from the specified position.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns>
-        /// An enumerator that can iterate through the IPartition&lt;T&gt;, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
+        /// An enumerator that can iterate through the <see cref="IPartition{T}"/>, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex);
 
         /// <summary>
-        /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
+        /// Returns an enumerator that iterates through the specified <see cref="ISegment{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
-        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
+        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the <see cref="ISegment{T}"/>.</param>
         /// <returns>
-        /// An enumerator for the ISegment&lt;T&gt;.
+        /// An enumerator for the <see cref="ISegment{T}"/>.
         /// </returns>
         IEnumerator<T> GetSegmentEnumerator(int segmentIndex, int elementIndex, out int remainingCount);
 
         /// <summary>
-        /// Gets the next segment in the IPartition&lt;T&gt;.
+        /// Gets the next segment in the <see cref="IPartition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">Index of the segment used as starting point.</param>
         /// <returns>
-        /// The index of the segment in the IPartition&lt;T&gt; that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the IPartition&lt;T&gt;.
+        /// The index of the segment in the <see cref="IPartition{T}"/> that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the <see cref="IPartition{T}"/>.
         /// </returns>
         int NextSegmentIndex(int segmentIndex);
 
         /// <summary>
-        /// Determines whether an element is in the IPartition&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="IPartition{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the IPartition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="IPartition{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the IPartition&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="IPartition{T}"/>; otherwise, false.
         /// </returns>
         bool Contains(T item);
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based virtual index of the first occurrence in a linear list that starts at the specified index and contains the specified number of elements.
         /// </summary>
-        /// <param name="item">The object to locate in the IPartition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="IPartition{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty partition.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
@@ -154,7 +154,7 @@
         /// <summary>
         /// Searches for the specified object and returns the zero-based virtual index of the last occurrence within the range of elements in a linear list that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the IPartition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="IPartition{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
@@ -163,36 +163,36 @@
         long LastIndexOf(T item, long startIndex, long count);
 
         /// <summary>
-        /// Searches a range of elements in the sorted IPartition&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// Searches a range of elements in the sorted <see cref="IPartition{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to search.</param>
         /// <param name="count">The length of the range to search.</param>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted IPartition&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of IPartition&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="IPartition{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="IPartition{T}"/>.Count.
         /// </returns>
         long BinarySearch(long index, long count, T item, IComparer<T> comparer);
 
         /// <summary>
-        /// Removes all elements from the IPartition&lt;T&gt;.
+        /// Removes all elements from the <see cref="IPartition{T}"/>.
         /// </summary>
         void Clear();
 
         /// <summary>
-        /// Increases the IPartition&lt;T&gt;.Capacity by the given amount.
+        /// Increases the <see cref="IPartition{T}"/>.Capacity by the given amount.
         /// </summary>
-        /// <param name="extended">The number of elements added to the IPartition&lt;T&gt;.Capacity.</param>
+        /// <param name="extended">The number of elements added to the <see cref="IPartition{T}"/>.Capacity.</param>
         void ExtendCapacity(long extended);
 
         /// <summary>
-        /// Decreases the IPartition&lt;T&gt;.Capacity by the given amount.
+        /// Decreases the <see cref="IPartition{T}"/>.Capacity by the given amount.
         /// </summary>
-        /// <param name="trimed">The number of elements substracted to the IPartition&lt;T&gt;.Capacity.</param>
+        /// <param name="trimed">The number of elements substracted to the <see cref="IPartition{T}"/>.Capacity.</param>
         void TrimCapacity(long trimed);
 
         /// <summary>
-        /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the IPartition&lt;T&gt;.
+        /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the <see cref="IPartition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position at which uninitialized elements should be inserted.</param>
         /// <param name="elementIndex">The element index of the position at which uninitialized elements should be inserted.</param>
@@ -217,16 +217,16 @@
         void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection);
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the IPartition&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="IPartition{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the IPartition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="IPartition{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the IPartition&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="IPartition{T}"/>.
         /// </returns>
         bool Remove(T item);
 
         /// <summary>
-        /// Removes a range of elements from the IPartition&lt;T&gt;.
+        /// Removes a range of elements from the <see cref="IPartition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to remove.</param>
         /// <param name="elementIndex">The element index of the position of the first element to remove.</param>
@@ -237,14 +237,14 @@
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
         /// <returns>
-        /// The number of elements removed from the IPartition&lt;T&gt;.
+        /// The number of elements removed from the <see cref="IPartition{T}"/>.
         /// </returns>
         long RemoveAll(Predicate<T> match);
 
         /// <summary>
-        /// Reverses the order of the elements in the specified range of the IPartition&lt;T&gt;.
+        /// Reverses the order of the elements in the specified range of the <see cref="IPartition{T}"/>.
         /// </summary>
         /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
         /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
@@ -254,14 +254,14 @@
         void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count);
 
         /// <summary>
-        /// Sorts the elements in a range of elements in IPartition&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="IPartition{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
         /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
         /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
         /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer);
     }
 
@@ -335,7 +335,7 @@
 
         #region Properties
         /// <summary>
-        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but remains constant in a given Partition&lt;T&gt;.
+        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but remains constant in a given <see cref="Partition{T}"/>.
         /// </summary>
         /// <returns>
         /// The maximum capacity allowed for segments.
@@ -343,25 +343,25 @@
         public int MaxSegmentCapacity { get; private set; }
 
         /// <summary>
-        /// Gets the total number of elements the Partition&lt;T&gt; can hold without resizing.
+        /// Gets the total number of elements the <see cref="Partition{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
-        /// The total number of elements the Partition&lt;T&gt; can hold without resizing.
+        /// The total number of elements the <see cref="Partition{T}"/> can hold without resizing.
         /// </returns>
         public long Capacity { get; private set; }
 
         /// <summary>
-        /// Gets the number of elements contained in the Partition&lt;T&gt;.
+        /// Gets the number of elements contained in the <see cref="Partition{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the Partition&lt;T&gt;.
+        /// The number of elements contained in the <see cref="Partition{T}"/>.
         /// </returns>
         public long Count { get; private set; }
         #endregion
 
         #region Queries
         /// <summary>
-        /// Gets the position of an element in the Partition&lt;T&gt; from its virtual index in a linear list.
+        /// Gets the position of an element in the <see cref="Partition{T}"/> from its virtual index in a linear list.
         /// </summary>
         /// <param name="index">The virtual index of the element.</param>
         /// <param name="segmentIndex">Upon return, the segment index of the element.</param>
@@ -381,13 +381,13 @@
         }
 
         /// <summary>
-        /// Check that the specified position in the Partition&lt;T&gt; is valid. Calling this method is reserved to debugging.
+        /// Check that the specified position in the <see cref="Partition{T}"/> is valid. Calling this method is reserved to debugging.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position to check.</param>
         /// <param name="elementIndex">The element index of the position to check.</param>
-        /// <param name="allowEnd">True to allow the Partition&lt;T&gt;.End position; False to only allow position of existing elements.</param>
+        /// <param name="allowEnd">True to allow the <see cref="Partition{T}"/>.End position; False to only allow position of existing elements.</param>
         /// <returns>
-        /// True if the position in the Partition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
+        /// True if the position in the <see cref="Partition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
         /// </returns>
         public bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd)
         {
@@ -409,7 +409,7 @@
         }
 
         /// <summary>
-        /// Gets the previous position in the Partition&lt;T&gt;. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
+        /// Gets the previous position in the <see cref="Partition{T}"/>. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
         /// <param name="elementIndex">The element index of the position used as starting point.</param>
@@ -450,7 +450,7 @@
         }
 
         /// <summary>
-        /// Gets the next position in the Partition&lt;T&gt;. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
+        /// Gets the next position in the <see cref="Partition{T}"/>. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
         /// <param name="elementIndex">The element index of the position used as starting point.</param>
@@ -480,7 +480,7 @@
         }
 
         /// <summary>
-        /// Updates a position in the Partition&lt;T&gt; to the previous element.
+        /// Updates a position in the <see cref="Partition{T}"/> to the previous element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position.</param>
         /// <param name="elementIndex">The element index of the position.</param>
@@ -512,7 +512,7 @@
         }
 
         /// <summary>
-        /// Updates a position in the Partition&lt;T&gt; to the next element.
+        /// Updates a position in the <see cref="Partition{T}"/> to the next element.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position.</param>
         /// <param name="elementIndex">The element index of the position.</param>
@@ -537,12 +537,12 @@
         }
 
         /// <summary>
-        /// Gets the element in the Partition&lt;T&gt; at the specified position.
+        /// Gets the element in the <see cref="Partition{T}"/> at the specified position.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the element.</param>
         /// <param name="elementIndex">The element index of the position of the element.</param>
         /// <returns>
-        /// The element in the Partition&lt;T&gt; specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
+        /// The element in the <see cref="Partition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         public T GetItem(int segmentIndex, int elementIndex)
         {
@@ -558,12 +558,12 @@
         }
 
         /// <summary>
-        /// Returns an enumerator for the Partition&lt;T&gt;, starting from the specified position.
+        /// Returns an enumerator for the <see cref="Partition{T}"/>, starting from the specified position.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         /// <returns>
-        /// An enumerator that can iterate through the Partition&lt;T&gt;, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
+        /// An enumerator that can iterate through the <see cref="Partition{T}"/>, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
         /// </returns>
         public IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex)
         {
@@ -581,13 +581,13 @@
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the specified ISegment&lt;T&gt;.
+        /// Returns an enumerator that iterates through the specified <see cref="ISegment{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
-        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the ISegment&lt;T&gt;.</param>
+        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the <see cref="ISegment{T}"/>.</param>
         /// <returns>
-        /// An enumerator for the ISegment&lt;T&gt;.
+        /// An enumerator for the <see cref="ISegment{T}"/>.
         /// </returns>
         public IEnumerator<T> GetSegmentEnumerator(int segmentIndex, int elementIndex, out int remainingCount)
         {
@@ -602,11 +602,11 @@
         }
 
         /// <summary>
-        /// Gets the next segment in the Partition&lt;T&gt;.
+        /// Gets the next segment in the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">Index of the segment used as starting point.</param>
         /// <returns>
-        /// The index of the segment in the Partition&lt;T&gt; that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the Partition&lt;T&gt;.
+        /// The index of the segment in the <see cref="Partition{T}"/> that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the <see cref="Partition{T}"/>.
         /// </returns>
         public int NextSegmentIndex(int segmentIndex)
         {
@@ -628,11 +628,11 @@
         }
 
         /// <summary>
-        /// Determines whether an element is in the Partition&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="Partition{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the Partition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the Partition&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="Partition{T}"/>; otherwise, false.
         /// </returns>
         public bool Contains(T item)
         {
@@ -655,7 +655,7 @@
         /// <summary>
         /// Searches for the specified object and returns the zero-based virtual index of the first occurrence in a linear list that starts at the specified index and contains the specified number of elements.
         /// </summary>
-        /// <param name="item">The object to locate in the Partition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty partition.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
@@ -710,7 +710,7 @@
         /// <summary>
         /// Searches for the specified object and returns the zero-based virtual index of the last occurrence within the range of elements in a linear list that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the Partition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
@@ -770,14 +770,14 @@
         }
 
         /// <summary>
-        /// Searches a range of elements in the sorted Partition&lt;T&gt; for an element using the specified comparer and returns the zero-based index of the element.
+        /// Searches a range of elements in the sorted <see cref="Partition{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to search.</param>
         /// <param name="count">The length of the range to search.</param>
         /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted Partition&lt;T&gt;, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of Partition&lt;T&gt;.Count.
+        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="Partition{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="Partition{T}"/>.Count.
         /// </returns>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
@@ -926,7 +926,7 @@
 
         #region Commands
         /// <summary>
-        /// Removes all elements from the Partition&lt;T&gt;.
+        /// Removes all elements from the <see cref="Partition{T}"/>.
         /// </summary>
         public void Clear()
         {
@@ -942,9 +942,9 @@
         }
 
         /// <summary>
-        /// Increases the Partition&lt;T&gt;.Capacity by the given amount.
+        /// Increases the <see cref="Partition{T}"/>.Capacity by the given amount.
         /// </summary>
-        /// <param name="extended">The number of elements added to the Partition&lt;T&gt;.Capacity.</param>
+        /// <param name="extended">The number of elements added to the <see cref="Partition{T}"/>.Capacity.</param>
         public void ExtendCapacity(long extended)
         {
             Debug.Assert(extended >= 0);
@@ -987,9 +987,9 @@
         }
 
         /// <summary>
-        /// Decreases the Partition&lt;T&gt;.Capacity by the given amount.
+        /// Decreases the <see cref="Partition{T}"/>.Capacity by the given amount.
         /// </summary>
-        /// <param name="trimed">The number of elements substracted to the Partition&lt;T&gt;.Capacity.</param>
+        /// <param name="trimed">The number of elements substracted to the <see cref="Partition{T}"/>.Capacity.</param>
         public void TrimCapacity(long trimed)
         {
             Debug.Assert(trimed >= 0);
@@ -1045,7 +1045,7 @@
         }
 
         /// <summary>
-        /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the Partition&lt;T&gt;.
+        /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position at which uninitialized elements should be inserted.</param>
         /// <param name="elementIndex">The element index of the position at which uninitialized elements should be inserted.</param>
@@ -1208,11 +1208,11 @@
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the Partition&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="Partition{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the Partition&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the Partition&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="Partition{T}"/>.
         /// </returns>
         public bool Remove(T item)
         {
@@ -1242,7 +1242,7 @@
         }
 
         /// <summary>
-        /// Removes a range of elements from the Partition&lt;T&gt;.
+        /// Removes a range of elements from the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to remove.</param>
         /// <param name="elementIndex">The element index of the position of the first element to remove.</param>
@@ -1293,9 +1293,9 @@
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
         /// <returns>
-        /// The number of elements removed from the Partition&lt;T&gt;.
+        /// The number of elements removed from the <see cref="Partition{T}"/>.
         /// </returns>
         public long RemoveAll(Predicate<T> match)
         {
@@ -1330,7 +1330,7 @@
         }
 
         /// <summary>
-        /// Reverses the order of the elements in the specified range of the Partition&lt;T&gt;.
+        /// Reverses the order of the elements in the specified range of the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
         /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
@@ -1377,14 +1377,14 @@
         }
 
         /// <summary>
-        /// Sorts the elements in a range of elements in Partition&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="Partition{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
         /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
         /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
         /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
         /// <param name="count">The number of elements in the range.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         public void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer)
         {
             Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
@@ -1599,7 +1599,7 @@
         }
 
         /// <summary>
-        /// Creates an enumerator to iterate through the Partition&lt;T&gt; starting at the specified position.
+        /// Creates an enumerator to iterate through the <see cref="Partition{T}"/> starting at the specified position.
         /// </summary>
         /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
@@ -1618,7 +1618,7 @@
         }
 
         /// <summary>
-        /// Removes the specified segment from the Partition&lt;T&gt;.
+        /// Removes the specified segment from the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="segment">The segment to remove.</param>
         protected virtual void RemoveSegment(ISegment<T> segment)
@@ -1629,7 +1629,7 @@
         }
 
         /// <summary>
-        /// Removes the segment at the specified index from the Partition&lt;T&gt;.
+        /// Removes the segment at the specified index from the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the segment to remove.</param>
         protected virtual void RemoveSegmentAt(int index)
@@ -1640,7 +1640,7 @@
         }
 
         /// <summary>
-        /// Removes segments starting from the specified index in the Partition&lt;T&gt;.
+        /// Removes segments starting from the specified index in the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the first segment to remove.</param>
         /// <param name="count">The number of segments to remove.</param>

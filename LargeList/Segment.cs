@@ -5,7 +5,7 @@
     using System.Diagnostics;
 
     /// <summary>
-    /// Supports a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a ISegment&lt;T&gt; object to another.
+    /// Supports a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a <see cref="ISegment{T}"/> object to another.
     /// </summary>
     /// <typeparam name="T">The type of objects to store and manipulate.</typeparam>
 #if STRICT
@@ -16,18 +16,18 @@
     interface ISegment<T>
     {
         /// <summary>
-        /// Gets or sets the total number of elements the ISegment&lt;T&gt; can hold without resizing.
+        /// Gets or sets the total number of elements the <see cref="ISegment{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
-        /// The number of elements that the ISegment&lt;T&gt; can contain before resizing is required.
+        /// The number of elements that the <see cref="ISegment{T}"/> can contain before resizing is required.
         /// </returns>
         int Capacity { get; set; }
 
         /// <summary>
-        /// Gets the number of elements contained in the ISegment&lt;T&gt;.
+        /// Gets the number of elements contained in the <see cref="ISegment{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the ISegment&lt;T&gt;.
+        /// The number of elements contained in the <see cref="ISegment{T}"/>.
         /// </returns>
         int Count { get; }
 
@@ -41,81 +41,81 @@
         T this[int index] { get; set; }
 
         /// <summary>
-        /// Gets the number of elements that can be substracted to ISegment&lt;T&gt;.Capacity.
+        /// Gets the number of elements that can be substracted to <see cref="ISegment{T}"/>.Capacity.
         /// </summary>
         /// <returns>
-        /// The number of elements that can be substracted to ISegment&lt;T&gt;.Capacity.
+        /// The number of elements that can be substracted to <see cref="ISegment{T}"/>.Capacity.
         /// </returns>
         int Trimmable { get; }
 
         /// <summary>
-        /// Gets the number of elements that can be added before reaching the maximum allowed value for ISegment&lt;T&gt;.Capacity.
+        /// Gets the number of elements that can be added before reaching the maximum allowed value for <see cref="ISegment{T}"/>.Capacity.
         /// </summary>
         /// <returns>
-        /// The number of elements that can be added before reaching the maximum allowed value for ISegment&lt;T&gt;.Capacity.
+        /// The number of elements that can be added before reaching the maximum allowed value for <see cref="ISegment{T}"/>.Capacity.
         /// </returns>
         int Extendable { get; }
 
         /// <summary>
-        /// Determines whether an element is in the ISegment&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="ISegment{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the ISegment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="ISegment{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the ISegment&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="ISegment{T}"/>; otherwise, false.
         /// </returns>
         bool Contains(T item);
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the ISegment&lt;T&gt; that starts at the specified index and contains the specified number of elements.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="ISegment{T}"/> that starts at the specified index and contains the specified number of elements.
         /// </summary>
-        /// <param name="item">The object to locate in the ISegment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="ISegment{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the ISegment&lt;T&gt; that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="ISegment{T}"/> that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
         /// </returns>
         int IndexOf(T item, int startIndex, int count);
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the ISegment&lt;T&gt; that contains the specified number of elements and ends at the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="ISegment{T}"/> that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the ISegment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="ISegment{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the ISegment&lt;T&gt; that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="ISegment{T}"/> that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
         /// </returns>
         int LastIndexOf(T item, int startIndex, int count);
 
         /// <summary>
-        /// Returns an enumerator that iterates through the ISegment&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="ISegment{T}"/>.
         /// </summary>
         /// <param name="index">Index of the segment.</param>
         /// <returns>
-        /// An enumerator for the ISegment&lt;T&gt;.
+        /// An enumerator for the <see cref="ISegment{T}"/>.
         /// </returns>
         IEnumerator<T> GetEnumerator(long index);
 
         /// <summary>
-        /// Removes all elements from the ISegment&lt;T&gt;. Sets the ISegment&lt;T&gt;.Count to zero.
+        /// Removes all elements from the <see cref="ISegment{T}"/>. Sets the <see cref="ISegment{T}"/>.Count to zero.
         /// </summary>
         void Clear();
 
         /// <summary>
-        /// Extends the number of stored elements by the ISegment&lt;T&gt; and leave them uninitialized.
+        /// Extends the number of stored elements by the <see cref="ISegment{T}"/> and leave them uninitialized.
         /// </summary>
-        /// <param name="extended">The number of elements added to this ISegment&lt;T&gt;.</param>
+        /// <param name="extended">The number of elements added to this <see cref="ISegment{T}"/>.</param>
         /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
         void Extend(int extended, out int effectiveExtended);
 
         /// <summary>
-        /// Reduces the maximum number of elements this ISegment&lt;T&gt; can store.
+        /// Reduces the maximum number of elements this <see cref="ISegment{T}"/> can store.
         /// </summary>
-        /// <param name="trimmed">The number of elements that this ISegment&lt;T&gt; can no longer store and is substracted to ISegment&lt;T&gt;.Capacity.</param>
+        /// <param name="trimmed">The number of elements that this <see cref="ISegment{T}"/> can no longer store and is substracted to <see cref="ISegment{T}"/>.Capacity.</param>
         void Trim(int trimmed);
 
         /// <summary>
-        /// Makes room for a number of elements at the specified index. Elements already the specified position and beyond are moved toward the end of the ISegment&lt;T&gt;.
+        /// Makes room for a number of elements at the specified index. Elements already the specified position and beyond are moved toward the end of the <see cref="ISegment{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
@@ -123,49 +123,49 @@
         void MakeRoom(int index, int count, out int effectiveExtended);
 
         /// <summary>
-        /// Inserts an element to the ISegment&lt;T&gt; at the specified index.
+        /// Inserts an element to the <see cref="ISegment{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the ISegment&lt;T&gt;.</param>
+        /// <param name="item">The object to insert into the <see cref="ISegment{T}"/>.</param>
         void Insert(int index, T item);
 
         /// <summary>
-        /// Inserts the elements of a collection into the ISegment&lt;T&gt; at the specified index.
+        /// Inserts the elements of a collection into the <see cref="ISegment{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
-        /// <param name="collection">The collection whose elements should be inserted into the ISegment&lt;T&gt;. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
+        /// <param name="collection">The collection whose elements should be inserted into the <see cref="ISegment{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
         /// <param name="count">The number of elements in <paramref name="collection"/>.</param>
         void InsertRange(int index, IEnumerable<T> collection, int count);
 
         /// <summary>
-        /// Moves elements from this ISegment&lt;T&gt; to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
+        /// Moves elements from this <see cref="ISegment{T}"/> to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
         /// </summary>
-        /// <param name="destination">The destination ISegment&lt;T&gt; object.</param>
+        /// <param name="destination">The destination <see cref="ISegment{T}"/> object.</param>
         /// <param name="toIndex">The zero-based index at which the new elements should be moved in the destination.</param>
         /// <param name="fromIndex">The zero-based index in the source from which elements should be moved.</param>
         /// <param name="count">The number of elements to move.</param>
         void MoveTo(ISegment<T> destination, int toIndex, int fromIndex, int count);
 
         /// <summary>
-        /// Copies elements from this ISegment&lt;T&gt; to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination ISegment&lt;T&gt;.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
+        /// Copies elements from this <see cref="ISegment{T}"/> to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination <see cref="ISegment{T}"/>.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
         /// </summary>
-        /// <param name="destination">The destination ISegment&lt;T&gt; object.</param>
+        /// <param name="destination">The destination <see cref="ISegment{T}"/> object.</param>
         /// <param name="toIndex">The zero-based index at which the new elements should be copied in the destination.</param>
         /// <param name="fromIndex">The zero-based index in the source from which elements are copied.</param>
         /// <param name="count">The number of elements to copy.</param>
         void CopyTo(ISegment<T> destination, int toIndex, int fromIndex, int count);
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the ISegment&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="ISegment{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the ISegment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="ISegment{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the ISegment&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="ISegment{T}"/>.
         /// </returns>
         bool Remove(T item);
 
         /// <summary>
-        /// Removes a range of elements from the ISegment&lt;T&gt;.
+        /// Removes a range of elements from the <see cref="ISegment{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
@@ -174,23 +174,23 @@
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
         /// <returns>
-        /// The number of elements removed from the ISegment&lt;T&gt;.
+        /// The number of elements removed from the <see cref="ISegment{T}"/>.
         /// </returns>
         int RemoveAll(Predicate<T> match);
 
         /// <summary>
-        /// Sorts the elements in a range of elements in ISegment&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="ISegment{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="low">The position of the first item in the range.</param>
         /// <param name="high">The position of the last item in the range.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         void Sort(int low, int high, IComparer<T> comparer);
     }
 
     /// <summary>
-    /// Represents a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a Segment&lt;T&gt; object to another.
+    /// Represents a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a <see cref="Segment{T}"/> object to another.
     /// </summary>
     /// <typeparam name="T">The type of stored elements.</typeparam>
 #if STRICT
@@ -205,7 +205,7 @@
         /// Initializes a new instance of the <see cref="Segment{T}"/> class.
         /// Creates an empty instance, has no pre-allocated capacity and has the specified maximum capacity.
         /// </summary>
-        /// <param name="maxCapacity">The maximum number of elements that the new Segment&lt;T&gt; can ever store.</param>
+        /// <param name="maxCapacity">The maximum number of elements that the new <see cref="Segment{T}"/> can ever store.</param>
         public Segment(int maxCapacity)
         {
             Debug.Assert(maxCapacity > 0);
@@ -220,8 +220,8 @@
         /// Initializes a new instance of the <see cref="Segment{T}"/> class.
         /// Creates an empty instance that has the specified initial and maximum capacities.
         /// </summary>
-        /// <param name="initialCapacity">The maximum number of elements that the new Segment&lt;T&gt; can initially store.</param>
-        /// <param name="maxCapacity">The maximum number of elements that the new Segment&lt;T&gt; can ever store.</param>
+        /// <param name="initialCapacity">The maximum number of elements that the new <see cref="Segment{T}"/> can initially store.</param>
+        /// <param name="maxCapacity">The maximum number of elements that the new <see cref="Segment{T}"/> can ever store.</param>
         public Segment(int initialCapacity, int maxCapacity)
         {
             Debug.Assert(initialCapacity >= 0);
@@ -237,10 +237,10 @@
 
         #region Properties
         /// <summary>
-        /// Gets or sets the total number of elements the Segment&lt;T&gt; can hold without resizing.
+        /// Gets or sets the total number of elements the <see cref="Segment{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
-        /// The number of elements that the Segment&lt;T&gt; can contain before resizing is required.
+        /// The number of elements that the <see cref="Segment{T}"/> can contain before resizing is required.
         /// </returns>
         public int Capacity
         {
@@ -254,10 +254,10 @@
         }
 
         /// <summary>
-        /// Gets or sets the number of elements contained in the Segment&lt;T&gt;.
+        /// Gets or sets the number of elements contained in the <see cref="Segment{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the Segment&lt;T&gt;.
+        /// The number of elements contained in the <see cref="Segment{T}"/>.
         /// </returns>
         public int Count { get; set; }
 
@@ -285,10 +285,10 @@
         }
 
         /// <summary>
-        /// Gets the number of elements that can be substracted to Segment&lt;T&gt;.Capacity.
+        /// Gets the number of elements that can be substracted to <see cref="Segment{T}"/>.Capacity.
         /// </summary>
         /// <returns>
-        /// The number of elements that can be substracted to Segment&lt;T&gt;.Capacity.
+        /// The number of elements that can be substracted to <see cref="Segment{T}"/>.Capacity.
         /// </returns>
         public int Trimmable
         {
@@ -296,10 +296,10 @@
         }
 
         /// <summary>
-        /// Gets the number of elements that can be added before reaching the maximum allowed value for Segment&lt;T&gt;.Capacity.
+        /// Gets the number of elements that can be added before reaching the maximum allowed value for <see cref="Segment{T}"/>.Capacity.
         /// </summary>
         /// <returns>
-        /// The number of elements that can be added before reaching the maximum allowed value for Segment&lt;T&gt;.Capacity.
+        /// The number of elements that can be added before reaching the maximum allowed value for <see cref="Segment{T}"/>.Capacity.
         /// </returns>
         public int Extendable
         {
@@ -309,11 +309,11 @@
 
         #region Queries
         /// <summary>
-        /// Determines whether an element is in the Segment&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="Segment{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the Segment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the Segment&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="Segment{T}"/>; otherwise, false.
         /// </returns>
         public bool Contains(T item)
         {
@@ -332,13 +332,13 @@
         }
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the Segment&lt;T&gt; that starts at the specified index and contains the specified number of elements.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="Segment{T}"/> that starts at the specified index and contains the specified number of elements.
         /// </summary>
-        /// <param name="item">The object to locate in the Segment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the Segment&lt;T&gt; that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="Segment{T}"/> that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
         /// </returns>
         public int IndexOf(T item, int startIndex, int count)
         {
@@ -361,13 +361,13 @@
         }
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the Segment&lt;T&gt; that contains the specified number of elements and ends at the specified index.
+        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="Segment{T}"/> that contains the specified number of elements and ends at the specified index.
         /// </summary>
-        /// <param name="item">The object to locate in the Segment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
         /// <param name="startIndex">The zero-based starting index of the backward search.</param>
         /// <param name="count">The number of elements in the section to search.</param>
         /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the Segment&lt;T&gt; that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
+        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="Segment{T}"/> that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
         /// </returns>
         public int LastIndexOf(T item, int startIndex, int count)
         {
@@ -390,11 +390,11 @@
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the Segment&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="Segment{T}"/>.
         /// </summary>
         /// <param name="index">Index of the segment.</param>
         /// <returns>
-        /// An enumerator for the Segment&lt;T&gt;.
+        /// An enumerator for the <see cref="Segment{T}"/>.
         /// </returns>
         public IEnumerator<T> GetEnumerator(long index)
         {
@@ -416,7 +416,7 @@
 
         #region Commands
         /// <summary>
-        /// Removes all elements from the Segment&lt;T&gt;. Sets the Segment&lt;T&gt;.Count to zero.
+        /// Removes all elements from the <see cref="Segment{T}"/>. Sets the <see cref="Segment{T}"/>.Count to zero.
         /// </summary>
         public void Clear()
         {
@@ -429,9 +429,9 @@
         }
 
         /// <summary>
-        /// Extends the number of stored elements by the Segment&lt;T&gt; and leave them uninitialized.
+        /// Extends the number of stored elements by the <see cref="Segment{T}"/> and leave them uninitialized.
         /// </summary>
-        /// <param name="extended">The number of elements added to this Segment&lt;T&gt;.</param>
+        /// <param name="extended">The number of elements added to this <see cref="Segment{T}"/>.</param>
         /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
         public void Extend(int extended, out int effectiveExtended)
         {
@@ -450,9 +450,9 @@
         }
 
         /// <summary>
-        /// Reduces the maximum number of elements this Segment&lt;T&gt; can store.
+        /// Reduces the maximum number of elements this <see cref="Segment{T}"/> can store.
         /// </summary>
-        /// <param name="trimmed">The number of elements that this Segment&lt;T&gt; can no longer store and is substracted to Segment&lt;T&gt;.Capacity.</param>
+        /// <param name="trimmed">The number of elements that this <see cref="Segment{T}"/> can no longer store and is substracted to <see cref="Segment{T}"/>.Capacity.</param>
         public void Trim(int trimmed)
         {
             Debug.Assert(trimmed >= 0);
@@ -464,7 +464,7 @@
         }
 
         /// <summary>
-        /// Makes room for a number of elements at the specified index. Elements already the specified position and beyond are moved toward the end of the Segment&lt;T&gt;.
+        /// Makes room for a number of elements at the specified index. Elements already the specified position and beyond are moved toward the end of the <see cref="Segment{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index at which uninitialized elements should be inserted.</param>
         /// <param name="count">The number of elements to insert.</param>
@@ -483,10 +483,10 @@
         }
 
         /// <summary>
-        /// Inserts an element to the Segment&lt;T&gt; at the specified index.
+        /// Inserts an element to the <see cref="Segment{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the Segment&lt;T&gt;.</param>
+        /// <param name="item">The object to insert into the <see cref="Segment{T}"/>.</param>
         public void Insert(int index, T item)
         {
             Debug.Assert(index >= 0 && index <= Count);
@@ -505,10 +505,10 @@
         }
 
         /// <summary>
-        /// Inserts the elements of a collection into the Segment&lt;T&gt; at the specified index.
+        /// Inserts the elements of a collection into the <see cref="Segment{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
-        /// <param name="collection">The collection whose elements should be inserted into the Segment&lt;T&gt;. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
+        /// <param name="collection">The collection whose elements should be inserted into the <see cref="Segment{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
         /// <param name="count">The number of elements in <paramref name="collection"/>.</param>
         public void InsertRange(int index, IEnumerable<T> collection, int count)
         {
@@ -531,9 +531,9 @@
         }
 
         /// <summary>
-        /// Moves elements from this Segment&lt;T&gt; to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
+        /// Moves elements from this <see cref="Segment{T}"/> to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
         /// </summary>
-        /// <param name="destination">The destination Segment&lt;T&gt; object.</param>
+        /// <param name="destination">The destination <see cref="Segment{T}"/> object.</param>
         /// <param name="toIndex">The zero-based index at which the new elements should be moved in the destination.</param>
         /// <param name="fromIndex">The zero-based index in the source from which elements should be moved.</param>
         /// <param name="count">The number of elements to move.</param>
@@ -564,9 +564,9 @@
         }
 
         /// <summary>
-        /// Copies elements from this Segment&lt;T&gt; to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination Segment&lt;T&gt;.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
+        /// Copies elements from this <see cref="Segment{T}"/> to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination <see cref="Segment{T}"/>.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
         /// </summary>
-        /// <param name="destination">The destination Segment&lt;T&gt; object.</param>
+        /// <param name="destination">The destination <see cref="Segment{T}"/> object.</param>
         /// <param name="toIndex">The zero-based index at which the new elements should be copied in the destination.</param>
         /// <param name="fromIndex">The zero-based index in the source from which elements are copied.</param>
         /// <param name="count">The number of elements to copy.</param>
@@ -592,11 +592,11 @@
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the Segment&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="Segment{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the Segment&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the Segment&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="Segment{T}"/>.
         /// </returns>
         public bool Remove(T item)
         {
@@ -620,7 +620,7 @@
         }
 
         /// <summary>
-        /// Removes a range of elements from the Segment&lt;T&gt;.
+        /// Removes a range of elements from the <see cref="Segment{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
         /// <param name="count">The number of elements to remove.</param>
@@ -644,9 +644,9 @@
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
-        /// <param name="match">The System.Predicate&lt;T&gt; delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
         /// <returns>
-        /// The number of elements removed from the Segment&lt;T&gt;.
+        /// The number of elements removed from the <see cref="Segment{T}"/>.
         /// </returns>
         public int RemoveAll(Predicate<T> match)
         {
@@ -673,11 +673,11 @@
         }
 
         /// <summary>
-        /// Sorts the elements in a range of elements in Segment&lt;T&gt; using the specified comparer.
+        /// Sorts the elements in a range of elements in <see cref="Segment{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="low">The position of the first item in the range.</param>
         /// <param name="high">The position of the last item in the range.</param>
-        /// <param name="comparer">The System.Collections.Generic.IComparer&lt;T&gt; implementation to use when comparing elements.</param>
+        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         public void Sort(int low, int high, IComparer<T> comparer)
         {
             Debug.Assert(low >= 0 && low < Content.Length);

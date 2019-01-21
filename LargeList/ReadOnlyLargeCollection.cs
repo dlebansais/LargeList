@@ -64,7 +64,7 @@
         /// <returns>
         /// The element at the specified index.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para>index is equal to or greater than ReadOnlyLargeCollection&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para>index is equal to or greater than <see cref="ReadOnlyLargeCollection{T}"/>.Count.</para></exception>
         public T this[long index]
         {
             get
@@ -93,27 +93,27 @@
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the ReadOnlyLargeCollection&lt;T&gt; instance.
+        /// Gets the number of elements contained in the <see cref="ReadOnlyLargeCollection{T}"/> instance.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the ReadOnlyLargeCollection&lt;T&gt; instance.
+        /// The number of elements contained in the <see cref="ReadOnlyLargeCollection{T}"/> instance.
         /// </returns>
         public long Count { get { return List.Count; } }
 
         /// <summary>
-        /// Gets the ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
+        /// Gets the <see cref="ILargeList{T}"/> that the <see cref="ReadOnlyLargeCollection{T}"/> wraps.
         /// </summary>
         /// <returns>
-        /// The ILargeList&lt;T&gt; that the ReadOnlyLargeCollection&lt;T&gt; wraps.
+        /// The <see cref="ILargeList{T}"/> that the <see cref="ReadOnlyLargeCollection{T}"/> wraps.
         /// </returns>
         protected virtual ILargeList<T> Items { get { return List; } }
 
         /// <summary>
-        /// Determines whether an element is in the ReadOnlyLargeCollection&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </summary>
-        /// <param name="value">The object to locate in the ReadOnlyLargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="value">The object to locate in the <see cref="ReadOnlyLargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if value is found in the ReadOnlyLargeCollection&lt;T&gt;; otherwise, false.
+        /// true if value is found in the <see cref="ReadOnlyLargeCollection{T}"/>; otherwise, false.
         /// </returns>
         public bool Contains(T value)
         {
@@ -127,13 +127,13 @@
         }
 
         /// <summary>
-        /// Copies the entire ReadOnlyLargeCollection&lt;T&gt; to a compatible one-dimensional System.Array, starting at the specified index of the target array.
+        /// Copies the entire <see cref="ReadOnlyLargeCollection{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from ReadOnlyLargeCollection&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="ReadOnlyLargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="index">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source ReadOnlyLargeCollection&lt;T&gt; is greater than the available space from <paramref name="index"/> to the end of the destination array.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ReadOnlyLargeCollection{T}"/> is greater than the available space from <paramref name="index"/> to the end of the destination array.</exception>
         public void CopyTo(T[] array, int index)
         {
 #if STRICT
@@ -189,10 +189,10 @@
             AsCollection.CopyTo(array, index);
         }
         /// <summary>
-        /// Returns an enumerator that iterates through the ReadOnlyLargeCollection&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// An System.Collections.Generic.IEnumerator&lt;T&gt; for the ReadOnlyLargeCollection&lt;T&gt;.
+        /// An <see cref="System.Collections.Generic.IEnumerator{T}"/> for the <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -206,11 +206,11 @@
         }
 #if STRICT
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyLargeCollection&lt;T&gt;.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </summary>
-        /// <param name="value">The object to locate in the ReadOnlyLargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="value">The object to locate in the <see cref="ReadOnlyLargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="value"/> within the entire ReadOnlyLargeCollection&lt;T&gt;, if found; otherwise, -1.
+        /// The zero-based index of the first occurrence of <paramref name="value"/> within the entire <see cref="ReadOnlyLargeCollection{T}"/>, if found; otherwise, -1.
         /// </returns>
         public long IndexOf(T value)
         {
@@ -222,11 +222,11 @@
         }
 #else
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire ReadOnlyLargeCollection&lt;T&gt;.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the ReadOnlyLargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="ReadOnlyLargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire ReadOnlyLargeCollection&lt;T&gt;, if found; otherwise, -1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="ReadOnlyLargeCollection{T}"/>, if found; otherwise, -1.
         /// </returns>
         public long IndexOf(T item)
         {
@@ -241,10 +241,10 @@
 #endif
 
         /// <summary>
-        /// Gets a value indicating whether the ReadOnlyLargeCollection&lt;T&gt; is read-only.
+        /// Gets a value indicating whether the <see cref="ReadOnlyLargeCollection{T}"/> is read-only.
         /// </summary>
         /// <returns>
-        /// true if the ReadOnlyLargeCollection&lt;T&gt; is read-only; otherwise, false.
+        /// true if the <see cref="ReadOnlyLargeCollection{T}"/> is read-only; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return true; } }
@@ -254,28 +254,28 @@
 #pragma warning restore SA1600
 
         /// <summary>
-        /// Gets a value indicating whether the ReadOnlyLargeCollection&lt;T&gt; has a fixed size.
+        /// Gets a value indicating whether the <see cref="ReadOnlyLargeCollection{T}"/> has a fixed size.
         /// </summary>
         /// <returns>
-        /// true if the ReadOnlyLargeCollection&lt;T&gt; has a fixed size; otherwise, false.
+        /// true if the <see cref="ReadOnlyLargeCollection{T}"/> has a fixed size; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         bool ILargeList.IsFixedSize { get { return true; } }
 
         /// <summary>
-        /// Gets a value indicating whether access to the ReadOnlyLargeCollection&lt;T&gt; is synchronized (thread safe).
+        /// Gets a value indicating whether access to the <see cref="ReadOnlyLargeCollection{T}"/> is synchronized (thread safe).
         /// </summary>
         /// <returns>
-        /// true if access to the ReadOnlyLargeCollection&lt;T&gt; is synchronized (thread safe); otherwise, false.
+        /// true if access to the <see cref="ReadOnlyLargeCollection{T}"/> is synchronized (thread safe); otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         bool ILargeCollection.IsSynchronized { get { return false; } }
 
         /// <summary>
-        /// Gets an object that can be used to synchronize access to the ReadOnlyLargeCollection&lt;T&gt;.
+        /// Gets an object that can be used to synchronize access to the <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// An object that can be used to synchronize access to the ReadOnlyLargeCollection&lt;T&gt;.
+        /// An object that can be used to synchronize access to the <see cref="ReadOnlyLargeCollection{T}"/>.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
         object ILargeCollection.SyncRoot { get { return List; } }

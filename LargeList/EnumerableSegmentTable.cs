@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Simple representation of partially enumerable Partition&lt;T&gt; object.
+    /// Simple representation of partially enumerable <see cref="Partition{T}"/> object.
     /// </summary>
     /// <typeparam name="T">The type of elements in the partition.</typeparam>
 #if STRICT
@@ -17,7 +17,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumerableSegmentTable{T}"/> class.
         /// </summary>
-        /// <param name="partition">The Partition&lt;T&gt; this class is representing.</param>
+        /// <param name="partition">The <see cref="Partition{T}"/> this class is representing.</param>
         /// <param name="index">The index of the first element to enumerate in <paramref name="partition"/>.</param>
         /// <param name="count">The number of elements to enumerate in <paramref name="partition"/>.</param>
         public EnumerableSegmentTable(IPartition<T> partition, long index, long count)
@@ -28,34 +28,34 @@
         }
 
         /// <summary>
-        /// Gets the Partition&lt;T&gt; this class is representing.
+        /// Gets the <see cref="Partition{T}"/> this class is representing.
         /// </summary>
         /// <returns>
-        /// The Partition&lt;T&gt; this class is representing.
+        /// The <see cref="Partition{T}"/> this class is representing.
         /// </returns>
         public IPartition<T> Partition { get; private set; }
 
         /// <summary>
-        /// Gets the index of the first element to enumerate in EnumerableSegmentTable&lt;T&gt;.Partition.
+        /// Gets the index of the first element to enumerate in <see cref="EnumerableSegmentTable{T}.Partition"/>.
         /// </summary>
         /// <returns>
-        /// The index of the first element to enumerate in EnumerableSegmentTable&lt;T&gt;.Partition.
+        /// The index of the first element to enumerate in <see cref="EnumerableSegmentTable{T}.Partition"/>.
         /// </returns>
         public long Index { get; private set; }
 
         /// <summary>
-        /// Gets the number of elements to enumerate in EnumerableSegmentTable&lt;T&gt;.Partition.
+        /// Gets the number of elements to enumerate in <see cref="EnumerableSegmentTable{T}.Partition"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements to enumerate in EnumerableSegmentTable&lt;T&gt;.Partition.
+        /// The number of elements to enumerate in <see cref="EnumerableSegmentTable{T}.Partition"/>.
         /// </returns>
         public long Count { get; private set; }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the Partition&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="Partition{T}"/>.
         /// </summary>
         /// <returns>
-        /// An enumerator for the Partition&lt;T&gt;.
+        /// An enumerator for the <see cref="Partition{T}"/>.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {

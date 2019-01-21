@@ -64,62 +64,62 @@
     public interface ILargeCollection<T> : IEnumerable<T>, IEnumerable
     {
         /// <summary>
-        /// Gets the number of elements contained in the ILargeCollection&lt;T&gt;.
+        /// Gets the number of elements contained in the <see cref="ILargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the ILargeCollection&lt;T&gt;.
+        /// The number of elements contained in the <see cref="ILargeCollection{T}"/>.
         /// </returns>
         long Count { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the ILargeCollection&lt;T&gt; is read-only.
+        /// Gets a value indicating whether the <see cref="ILargeCollection{T}"/> is read-only.
         /// </summary>
         /// <returns>
-        /// true if the ILargeCollection&lt;T&gt; is read-only; otherwise, false.
+        /// true if the <see cref="ILargeCollection{T}"/> is read-only; otherwise, false.
         /// </returns>
         bool IsReadOnly { get; }
 
         /// <summary>
-        /// Adds an item to the ILargeCollection&lt;T&gt;.
+        /// Adds an item to the <see cref="ILargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to add to the ILargeCollection&lt;T&gt;.</param>
-        /// <exception cref="NotSupportedException">The ILargeCollection&lt;T&gt; is read-only.</exception>
+        /// <param name="item">The object to add to the <see cref="ILargeCollection{T}"/>.</param>
+        /// <exception cref="NotSupportedException">The <see cref="ILargeCollection{T}"/> is read-only.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         void Add(T item);
 
         /// <summary>
-        /// Removes all items from the ILargeCollection&lt;T&gt;.
+        /// Removes all items from the <see cref="ILargeCollection{T}"/>.
         /// </summary>
-        /// <exception cref="NotSupportedException">The ILargeCollection&lt;T&gt; is read-only.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="ILargeCollection{T}"/> is read-only.</exception>
         void Clear();
 
         /// <summary>
-        /// Determines whether the ILargeCollection&lt;T&gt; contains a specific value.
+        /// Determines whether the <see cref="ILargeCollection{T}"/> contains a specific value.
         /// </summary>
-        /// <param name="item">The object to locate in the ILargeCollection&lt;T&gt;.</param>
+        /// <param name="item">The object to locate in the <see cref="ILargeCollection{T}"/>.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the ILargeCollection&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="ILargeCollection{T}"/>; otherwise, false.
         /// </returns>
         bool Contains(T item);
 
         /// <summary>
-        /// Copies the elements of the ILargeCollection&lt;T&gt; to a System.Array, starting at a particular System.Array index.
+        /// Copies the elements of the <see cref="ILargeCollection{T}"/> to a System.Array, starting at a particular System.Array index.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from ILargeCollection&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="ILargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source ILargeCollection&lt;T&gt; is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ILargeCollection{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
         void CopyTo(T[] array, int arrayIndex);
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the ILargeCollection&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="ILargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the ILargeCollection&lt;T&gt;.</param>
+        /// <param name="item">The object to remove from the <see cref="ILargeCollection{T}"/>.</param>
         /// <returns>
-        /// true if <paramref name="item"/> was successfully removed from the ILargeCollection&lt;T&gt;; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original ILargeCollection&lt;T&gt;.
+        /// true if <paramref name="item"/> was successfully removed from the <see cref="ILargeCollection{T}"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="ILargeCollection{T}"/>.
         /// </returns>
-        /// <exception cref="NotSupportedException">The ILargeCollection&lt;T&gt; is read-only.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="ILargeCollection{T}"/> is read-only.</exception>
         bool Remove(T item);
     }
 
@@ -179,7 +179,7 @@
         /// <returns>
         /// The element at the specified index.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than LargeCollection&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
         public T this[long index]
         {
             get
@@ -206,25 +206,25 @@
         }
 
         /// <summary>
-        /// Gets the number of elements actually contained in the LargeCollection&lt;T&gt;.
+        /// Gets the number of elements actually contained in the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements actually contained in the LargeCollection&lt;T&gt;.
+        /// The number of elements actually contained in the <see cref="LargeCollection{T}"/>.
         /// </returns>
         public long Count { get { return List.Count; } }
 
         /// <summary>
-        /// Gets a ILargeList&lt;T&gt; wrapper around the LargeCollection&lt;T&gt;.
+        /// Gets a <see cref="ILargeList{T}"/> wrapper around the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// A ILargeList&lt;T&gt; wrapper around the LargeCollection&lt;T&gt;.
+        /// A <see cref="ILargeList{T}"/> wrapper around the <see cref="LargeCollection{T}"/>.
         /// </returns>
         protected virtual ILargeList<T> Items { get { return List; } }
 
         /// <summary>
-        /// Adds an object to the end of the LargeCollection&lt;T&gt;.
+        /// Adds an object to the end of the <see cref="LargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to be added to the end of the LargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to be added to the end of the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void Add(T item)
         {
@@ -240,7 +240,7 @@
         }
 
         /// <summary>
-        /// Removes all elements from the LargeCollection&lt;T&gt;.
+        /// Removes all elements from the <see cref="LargeCollection{T}"/>.
         /// </summary>
         public void Clear()
         {
@@ -248,11 +248,11 @@
         }
 
         /// <summary>
-        /// Determines whether an element is in the LargeCollection&lt;T&gt;.
+        /// Determines whether an element is in the <see cref="LargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is found in the LargeCollection&lt;T&gt;; otherwise, false.
+        /// true if <paramref name="item"/> is found in the <see cref="LargeCollection{T}"/>; otherwise, false.
         /// </returns>
         public bool Contains(T item)
         {
@@ -267,13 +267,13 @@
 
 #if STRICT
         /// <summary>
-        /// Copies the entire LargeCollection&lt;T&gt; to a compatible one-dimensional System.Array, starting at the specified index of the target array.
+        /// Copies the entire <see cref="LargeCollection{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from LargeCollection&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source LargeCollection&lt;T&gt; is greater than the available space from <paramref name="index"/> to the end of the destination array.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeCollection{T}"/> is greater than the available space from <paramref name="index"/> to the end of the destination array.</exception>
         public void CopyTo(T[] array, int index)
         {
             if (array == null)
@@ -303,13 +303,13 @@
         }
 #else
         /// <summary>
-        /// Copies the entire LargeCollection&lt;T&gt; to a compatible one-dimensional System.Array, starting at the specified index of the target array.
+        /// Copies the entire <see cref="LargeCollection{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from LargeCollection&lt;T&gt;. The System.Array must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source LargeCollection&lt;T&gt; is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeCollection{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
@@ -342,10 +342,10 @@
 #endif
 
         /// <summary>
-        /// Returns an enumerator that iterates through the LargeCollection&lt;T&gt;.
+        /// Returns an enumerator that iterates through the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// A System.Collections.Generic.IEnumerator&lt;T&gt; for the LargeCollection&lt;T&gt;.
+        /// A <see cref="System.Collections.Generic.IEnumerator{T}"/> for the <see cref="LargeCollection{T}"/>.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -359,11 +359,11 @@
         }
 
         /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire LargeCollection&lt;T&gt;.
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="LargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the LargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to locate in the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire LargeCollection&lt;T&gt;, if found; otherwise, -1.
+        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="LargeCollection{T}"/>, if found; otherwise, -1.
         /// </returns>
         public long IndexOf(T item)
         {
@@ -377,11 +377,11 @@
         }
 
         /// <summary>
-        /// Inserts an element into the LargeCollection&lt;T&gt; at the specified index.
+        /// Inserts an element into the <see cref="LargeCollection{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
         /// <param name="item">The object to insert. The value can be null for reference types.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is greater than LargeCollection&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void Insert(long index, T item)
         {
@@ -398,11 +398,11 @@
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the LargeCollection&lt;T&gt;.
+        /// Removes the first occurrence of a specific object from the <see cref="LargeCollection{T}"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the LargeCollection&lt;T&gt;. The value can be null for reference types.</param>
+        /// <param name="item">The object to remove from the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
         /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the original LargeCollection&lt;T&gt;.
+        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the original <see cref="LargeCollection{T}"/>.
         /// </returns>
         public bool Remove(T item)
         {
@@ -421,10 +421,10 @@
         }
 
         /// <summary>
-        /// Removes the element at the specified index of the LargeCollection&lt;T&gt;.
+        /// Removes the element at the specified index of the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than LargeCollection&lt;T&gt;.Count.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
         public void RemoveAt(long index)
         {
             if (index < 0 || index >= Count)
@@ -434,7 +434,7 @@
         }
 
         /// <summary>
-        /// Removes all elements from the LargeCollection&lt;T&gt;.
+        /// Removes all elements from the <see cref="LargeCollection{T}"/>.
         /// </summary>
         protected virtual void ClearItems()
         {
@@ -442,7 +442,7 @@
         }
 
         /// <summary>
-        /// Inserts an element into the LargeCollection&lt;T&gt; at the specified index.
+        /// Inserts an element into the <see cref="LargeCollection{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="index"/> should be inserted.</param>
         /// <param name="item">The object to insert. The value can be null for reference types.</param>
@@ -453,7 +453,7 @@
         }
 
         /// <summary>
-        /// Removes the element at the specified index of the LargeCollection&lt;T&gt;.
+        /// Removes the element at the specified index of the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to remove.</param>
         protected virtual void RemoveItem(long index)
@@ -472,10 +472,10 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether the LargeCollection&lt;T&gt; is read-only.
+        /// Gets a value indicating whether the <see cref="LargeCollection{T}"/> is read-only.
         /// </summary>
         /// <returns>
-        /// true if the LargeCollection&lt;T&gt; is read-only; otherwise, false.
+        /// true if the <see cref="LargeCollection{T}"/> is read-only; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return List.IsReadOnly; } }
@@ -485,28 +485,28 @@
 #pragma warning restore SA1600
 
         /// <summary>
-        /// Gets a value indicating whether access to the LargeCollection&lt;T&gt; is synchronized (thread safe).
+        /// Gets a value indicating whether access to the <see cref="LargeCollection{T}"/> is synchronized (thread safe).
         /// </summary>
         /// <returns>
-        /// true if access to the LargeCollection&lt;T&gt; is synchronized (thread safe); otherwise, false.
+        /// true if access to the <see cref="LargeCollection{T}"/> is synchronized (thread safe); otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
         bool ILargeCollection.IsSynchronized { get { return false; } }
 
         /// <summary>
-        /// Gets a value indicating whether the LargeCollection&lt;T&gt; has a fixed size.
+        /// Gets a value indicating whether the <see cref="LargeCollection{T}"/> has a fixed size.
         /// </summary>
         /// <returns>
-        /// true if the LargeCollection&lt;T&gt; has a fixed size; otherwise, false.
+        /// true if the <see cref="LargeCollection{T}"/> has a fixed size; otherwise, false.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification="Same as Collection<T>")]
         bool ILargeList.IsFixedSize { get { return List.IsReadOnly; } }
 
         /// <summary>
-        /// Gets an object that can be used to synchronize access to the LargeCollection&lt;T&gt;.
+        /// Gets an object that can be used to synchronize access to the <see cref="LargeCollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// An object that can be used to synchronize access to the LargeCollection&lt;T&gt;.
+        /// An object that can be used to synchronize access to the <see cref="LargeCollection{T}"/>.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
         object ILargeCollection.SyncRoot { get { return List; } }
@@ -523,7 +523,7 @@
 
         /// <summary>
         /// <para>Creates the list this collection wraps.</para>
-        /// <para>This method is called once, from constructors, at the begining, after LargeCollection&lt;T&gt;.Initialize.</para>
+        /// <para>This method is called once, from constructors, at the begining, after <see cref="LargeCollection{T}"/>.Initialize.</para>
         /// </summary>
         /// <returns>
         /// The list this collection wraps.
