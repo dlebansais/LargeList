@@ -14,6 +14,9 @@
         /// </summary>
         internal const int GlobalDefaultMaxSegmentCapacity = 10;
 #else
+        /// <summary>
+        /// Default max capacity for segments.
+        /// </summary>
         internal const int GlobalDefaultMaxSegmentCapacity = 0x01000000;
 #endif
 
