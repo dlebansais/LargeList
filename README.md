@@ -139,4 +139,3 @@ namespace Test
 # Certification
 
 This library is digitally signed with a [CAcert](https://www.cacert.org/) certificate.
-
