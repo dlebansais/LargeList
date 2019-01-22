@@ -28,5 +28,5 @@ using LargeList;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("49708123-ffcc-4fda-9d6a-53d7d07fac52")]
 
-[assembly: AssemblyVersion("1.0.0.279")]
-[assembly: AssemblyFileVersion("1.0.0.291")]
+[assembly: AssemblyVersion("1.0.0.280")]
+[assembly: AssemblyFileVersion("1.0.0.292")]
