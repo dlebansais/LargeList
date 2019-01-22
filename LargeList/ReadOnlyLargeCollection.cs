@@ -185,7 +185,7 @@
             if (index + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(index) + " and length, and the array's lower bounds.");
 
-            ILargeCollection AsCollection = List as ILargeCollection;
+            ILargeCollection AsCollection = Items as ILargeCollection;
             AsCollection.CopyTo(array, index);
         }
         /// <summary>

@@ -179,7 +179,7 @@
             if (arrayIndex + Count > array.Length)
                 throw new ArgumentException();
 
-            ILargeCollection AsCollection = List as ILargeCollection;
+            ILargeCollection AsCollection = Items as ILargeCollection;
             AsCollection.CopyTo(array, arrayIndex);
         }
 
@@ -461,8 +461,11 @@
             if (match == null)
                 throw new ArgumentNullException(nameof(match));
 
-            if (startIndex < 0 || count < 0)
+            if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
 
             if (startIndex + count > Count)
                 throw new ArgumentOutOfRangeException();
