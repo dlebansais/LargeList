@@ -86,6 +86,7 @@ copy /Y "$(SolutionDir)Test\Test-LargeList.dll" "$(TargetDir)"
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Travis|x64'">
-    <PostBuildEvent>cp "$(SolutionDir)Test\Test-LargeList.dll" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>cp "$(SolutionDir)Test\Test-LargeList.dll" "$(TargetDir)"
+cp "$(SolutionDir)Test\Coverage-LargeList.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
