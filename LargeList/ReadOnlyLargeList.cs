@@ -299,7 +299,6 @@
         /// <returns>
         /// The zero-based index of item in the sorted <see cref="ReadOnlyLargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="ReadOnlyLargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException">The default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item)
         {
             return List.BinarySearch(item);
@@ -313,7 +312,6 @@
         /// <returns>
         /// The zero-based index of <paramref name="item"/> in the sorted <see cref="ReadOnlyLargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="ReadOnlyLargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item, IComparer<T> comparer)
         {
             return List.BinarySearch(item, comparer);
@@ -331,7 +329,6 @@
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
         /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range in the <see cref="ReadOnlyLargeList{T}"/>.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
             if (index < 0)

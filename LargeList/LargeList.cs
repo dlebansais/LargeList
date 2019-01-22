@@ -446,7 +446,6 @@
         /// <returns>
         /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException">The default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item)
         {
             return BinarySearchItem(0, Count, item, Comparer<T>.Default);
@@ -460,13 +459,10 @@
         /// <returns>
         /// The zero-based index of <paramref name="item"/> in the sorted <see cref="LargeList{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="LargeList{T}.Count"/>.
         /// </returns>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(T item, IComparer<T> comparer)
         {
             if (comparer == null)
                 comparer = Comparer<T>.Default;
-            if (comparer == null)
-                throw new InvalidOperationException();
 
             return BinarySearchItem(0, Count, item, comparer);
         }
@@ -483,7 +479,6 @@
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
         /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range in the <see cref="LargeList{T}"/>.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
             if (index < 0)
@@ -497,8 +492,6 @@
 
             if (comparer == null)
                 comparer = Comparer<T>.Default;
-            if (comparer == null)
-                throw new InvalidOperationException();
 
             return BinarySearchItem(index, count, item, comparer);
         }
@@ -1528,7 +1521,6 @@
         /// <summary>
         /// Sorts the elements in the entire <see cref="LargeList{T}"/> using the default comparer.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find an implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public void Sort()
         {
             SortItems(0, Count, Comparer<T>.Default);
@@ -1557,14 +1549,11 @@
         /// Sorts the elements in the entire <see cref="LargeList{T}"/> using the specified comparer.
         /// </summary>
         /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         /// <exception cref="ArgumentException">The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</exception>
         public void Sort(IComparer<T> comparer)
         {
             if (comparer == null)
                 comparer = Comparer<T>.Default;
-            if (comparer == null)
-                throw new InvalidOperationException();
 
             SortItems(0, Count, comparer);
         }
@@ -1577,7 +1566,6 @@
         /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements, or null to use the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
         /// <exception cref="ArgumentException"><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid range in the <see cref="LargeList{T}"/>.</para><para>-or-</para><para>The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</para></exception>
-        /// <exception cref="InvalidOperationException"><paramref name="comparer"/> is null, and the default comparer <see cref="System.Collections.Generic.Comparer{T}.Default"/> cannot find implementation of the <see cref="System.IComparable{T}"/> generic interface or the System.IComparable interface for type <typeparamref name="T"/>.</exception>
         public void Sort(long index, long count, IComparer<T> comparer)
         {
             if (index < 0)
@@ -1591,8 +1579,6 @@
 
             if (comparer == null)
                 comparer = Comparer<T>.Default;
-            if (comparer == null)
-                throw new InvalidOperationException();
 
             SortItems(index, count, comparer);
         }
@@ -1767,17 +1753,17 @@
         /// </returns>
         private long GetCollectionCount(IEnumerable<T> collection)
         {
-            long CollectionCount;
+            long CollectionCount = -1;
             ICollection AsICollection;
             ICollection<T> AsICollectionT;
 
             if ((AsICollection = collection as ICollection) != null)
                 CollectionCount = AsICollection.Count;
 
-            else if ((AsICollectionT = collection as ICollection<T>) != null)
+            if ((AsICollectionT = collection as ICollection<T>) != null)
                 CollectionCount = AsICollectionT.Count;
 
-            else
+            if (CollectionCount < 0)
             {
                 IEnumerator<T> enumerator;
 
@@ -1793,9 +1779,11 @@
         private IPartition<T> Partition;
 
         #region Contracts
+#if DEBUG
         private void AssertInvariant()
         {
         }
+#endif
         #endregion
 
         /// <summary>
@@ -1838,7 +1826,6 @@
             /// Sets the enumerator to its initial position, which is before the first element in the collection.
             /// Note: this method will always throw System.NotSupportedException.
             /// </summary>
-            /// <exception cref="InvalidOperationException">The collection was modified after the enumerator was created.</exception>
             /// <exception cref="NotSupportedException">Always.</exception>
             void IEnumerator.Reset()
             {

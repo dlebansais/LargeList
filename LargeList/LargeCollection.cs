@@ -298,7 +298,7 @@
             if (index + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds.");
 
-            ILargeCollection AsCollection = List as ILargeCollection;
+            ILargeCollection AsCollection = Items as ILargeCollection;
             AsCollection.CopyTo(array, index);
         }
 #else
@@ -336,7 +336,7 @@
             if (arrayIndex + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(arrayIndex) + " and length, and the array's lower bounds.");
 
-            ILargeCollection AsCollection = List as ILargeCollection;
+            ILargeCollection AsCollection = Items as ILargeCollection;
             AsCollection.CopyTo(array, arrayIndex);
         }
 #endif
