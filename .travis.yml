@@ -7,14 +7,12 @@ install:
 - nuget install NUnit.ConsoleRunner -Version 3.7.0 -OutputDirectory test-runner
 - nuget install xunit.runner.console -Version 2.4.1 -OutputDirectory coverage-runner
 - nuget install OpenCover -Version 4.6.519 -OutputDirectory coverage-runner
-- nuget install log4net -Version 2.0.8 -OutputDirectory coverage-runner
 
 script:
 - msbuild /p:Configuration=Travis LargeList.sln
 - cp ./test-runner/NUnit.3.8.1/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Release/
 #- mono ./test-runner/NUnit.ConsoleRunner.3.7.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Release/Test-LargeList.dll
-- ls ./coverage-runner/OpenCover.4.6.519/tools
-- mono ./coverage-runner/OpenCover.4.6.519/tools/OpenCover.Console.exe -register:user -target:"./coverage-runner/xunit.runner.console.2.4.1/tools/net452/xunit.console.exe" -targetargs:"./LargeList/bin/x64/Release/Coverage-LargeList.dll -noshadow" -filter:"+[Coverage-LargeList*]*" -output:"./LargeList/bin/x64/Release/Coverage-LargeList_coverage.xml"
+- mono ./coverage-runner/OpenCover.4.6.519/tools/OpenCover.Console.exe -log:Off -register:user -target:"./coverage-runner/xunit.runner.console.2.4.1/tools/net452/xunit.console.exe" -targetargs:"./LargeList/bin/x64/Release/Coverage-LargeList.dll -noshadow" -filter:"+[Coverage-LargeList*]*" -output:"./LargeList/bin/x64/Release/Coverage-LargeList_coverage.xml"
 
 deploy:
   provider: pages
