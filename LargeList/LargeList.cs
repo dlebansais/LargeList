@@ -981,7 +981,10 @@
                 throw new ArgumentOutOfRangeException(nameof(count), "Count must be positive and count must refer to a location within the string/array/collection.");
 
             if (startIndex + 1 < count)
-                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+            {
+                Exception InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             int SegmentIndex;
             int ElementIndex;
@@ -1180,14 +1183,20 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long IndexOf(T item, long startIndex, long count)
         {
-            if (startIndex < 0 || startIndex >= Count)
+            if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
 
+            if (startIndex >= Count)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
+
             if (startIndex + count > Count)
-                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+            {
+                Exception InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             return Partition.IndexOf(item, startIndex, count);
         }
@@ -1353,14 +1362,20 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long LastIndexOf(T item, long startIndex, long count)
         {
-            if (startIndex < 0 || startIndex >= Count)
+            if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
 
+            if (startIndex >= Count)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
+
             if (startIndex + 1 < count)
-                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection.");
+            {
+                Exception InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection.", InnerException);
+            }
 
             return Partition.LastIndexOf(item, startIndex, count);
         }
