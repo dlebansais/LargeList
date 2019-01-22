@@ -320,7 +320,7 @@
             bool Result = false;
 
             for (int l = 0; l < Count; l++)
-                if (Content[l].Equals(item))
+                if (Equals(Content[l], item))
                 {
                     Result = true;
                     break;
@@ -349,7 +349,7 @@
             int Result = -1;
 
             for (int l = startIndex; l < startIndex + count; l++)
-                if (Content[l].Equals(item))
+                if (Equals(Content[l], item))
                 {
                     Result = l;
                     break;
@@ -603,7 +603,7 @@
             bool Result = false;
 
             for (int l = 0; l < Count; l++)
-                if (Content[l].Equals(item))
+                if (Equals(Content[l], item))
                 {
                     for (; l + 1 < Count; l++)
                         Content[l] = Content[l + 1];
