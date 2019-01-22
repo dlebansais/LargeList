@@ -1878,7 +1878,7 @@
             int CacheIndex;
             GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
-            return GetItem(SegmentIndex, ElementIndex).Equals(item);
+            return Equals(GetItem(SegmentIndex, ElementIndex), item);
         }
 
         private bool IsItemNull(long index)

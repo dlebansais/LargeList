@@ -378,7 +378,7 @@
             int Result = -1;
 
             for (int l = 0; l < count; l++)
-                if ((item == null && Content[startIndex - l] == null) || (item != null && item.Equals(Content[startIndex - l])))
+                if (Equals(item, Content[startIndex - l]))
                 {
                     Result = startIndex - l;
                     break;
