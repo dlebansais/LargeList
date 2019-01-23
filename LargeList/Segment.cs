@@ -16,12 +16,12 @@
     interface ISegment<T>
     {
         /// <summary>
-        /// Gets or sets the total number of elements the <see cref="ISegment{T}"/> can hold without resizing.
+        /// Gets the total number of elements the <see cref="ISegment{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
         /// The number of elements that the <see cref="ISegment{T}"/> can contain before resizing is required.
         /// </returns>
-        int Capacity { get; set; }
+        int Capacity { get; }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="ISegment{T}"/>.
@@ -123,21 +123,6 @@
         void MakeRoom(int index, int count, out int effectiveExtended);
 
         /// <summary>
-        /// Inserts an element to the <see cref="ISegment{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="ISegment{T}"/>.</param>
-        void Insert(int index, T item);
-
-        /// <summary>
-        /// Inserts the elements of a collection into the <see cref="ISegment{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
-        /// <param name="collection">The collection whose elements should be inserted into the <see cref="ISegment{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
-        /// <param name="count">The number of elements in <paramref name="collection"/>.</param>
-        void InsertRange(int index, IEnumerable<T> collection, int count);
-
-        /// <summary>
         /// Moves elements from this <see cref="ISegment{T}"/> to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
         /// </summary>
         /// <param name="destination">The destination <see cref="ISegment{T}"/> object.</param>
@@ -145,15 +130,6 @@
         /// <param name="fromIndex">The zero-based index in the source from which elements should be moved.</param>
         /// <param name="count">The number of elements to move.</param>
         void MoveTo(ISegment<T> destination, int toIndex, int fromIndex, int count);
-
-        /// <summary>
-        /// Copies elements from this <see cref="ISegment{T}"/> to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination <see cref="ISegment{T}"/>.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
-        /// </summary>
-        /// <param name="destination">The destination <see cref="ISegment{T}"/> object.</param>
-        /// <param name="toIndex">The zero-based index at which the new elements should be copied in the destination.</param>
-        /// <param name="fromIndex">The zero-based index in the source from which elements are copied.</param>
-        /// <param name="count">The number of elements to copy.</param>
-        void CopyTo(ISegment<T> destination, int toIndex, int fromIndex, int count);
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="ISegment{T}"/>.
@@ -237,7 +213,7 @@
 
         #region Properties
         /// <summary>
-        /// Gets or sets the total number of elements the <see cref="Segment{T}"/> can hold without resizing.
+        /// Gets the total number of elements the <see cref="Segment{T}"/> can hold without resizing.
         /// </summary>
         /// <returns>
         /// The number of elements that the <see cref="Segment{T}"/> can contain before resizing is required.
@@ -245,12 +221,6 @@
         public int Capacity
         {
             get { return Content.Length; }
-            set
-            {
-                Debug.Assert(value >= 0 && value <= MaxCapacity);
-
-                Array.Resize(ref Content, value);
-            }
         }
 
         /// <summary>
@@ -483,54 +453,6 @@
         }
 
         /// <summary>
-        /// Inserts an element to the <see cref="Segment{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="Segment{T}"/>.</param>
-        public void Insert(int index, T item)
-        {
-            Debug.Assert(index >= 0 && index <= Count);
-            Debug.Assert(Capacity + 1 <= MaxCapacity);
-
-            if (Count + 1 > Capacity)
-                Array.Resize(ref Content, Capacity + 1);
-
-            for (long l = Count; l > index; l--)
-                Content[l] = Content[l - 1];
-
-            Content[index] = item;
-            Count++;
-
-            AssertInvariant();
-        }
-
-        /// <summary>
-        /// Inserts the elements of a collection into the <see cref="Segment{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
-        /// <param name="collection">The collection whose elements should be inserted into the <see cref="Segment{T}"/>. The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T"/> is a reference type.</param>
-        /// <param name="count">The number of elements in <paramref name="collection"/>.</param>
-        public void InsertRange(int index, IEnumerable<T> collection, int count)
-        {
-            Debug.Assert(index >= 0 && index <= Count);
-            Debug.Assert(count >= 0);
-            Debug.Assert(Count + count <= MaxCapacity);
-
-            if (Count + count > Capacity)
-                Array.Resize(ref Content, Count + count);
-
-            for (long l = Count + count - 1; l >= index + count; l--)
-                Content[l] = Content[l - count];
-
-            foreach (T item in collection)
-                Content[index++] = item;
-
-            Count += count;
-
-            AssertInvariant();
-        }
-
-        /// <summary>
         /// Moves elements from this <see cref="Segment{T}"/> to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
         /// </summary>
         /// <param name="destination">The destination <see cref="Segment{T}"/> object.</param>
@@ -558,34 +480,6 @@
                 Content[i] = default(T);
 
             Count -= count;
-
-            AssertInvariant();
-            Destination.AssertInvariant();
-        }
-
-        /// <summary>
-        /// Copies elements from this <see cref="Segment{T}"/> to another from and to the specified indexes. Copied elements override existing elements in the destination. If the destination <see cref="Segment{T}"/>.Count of elements is lower than the index of the last copied element, it is increased to reflect the new number of elements in the destination.
-        /// </summary>
-        /// <param name="destination">The destination <see cref="Segment{T}"/> object.</param>
-        /// <param name="toIndex">The zero-based index at which the new elements should be copied in the destination.</param>
-        /// <param name="fromIndex">The zero-based index in the source from which elements are copied.</param>
-        /// <param name="count">The number of elements to copy.</param>
-        public void CopyTo(ISegment<T> destination, int toIndex, int fromIndex, int count)
-        {
-            Debug.Assert(destination != null);
-            Debug.Assert(toIndex >= 0 && toIndex <= destination.Capacity);
-            Debug.Assert(fromIndex >= 0 && fromIndex <= Count);
-            Debug.Assert(count >= 0);
-            Debug.Assert(toIndex + count <= destination.Capacity);
-            Debug.Assert(fromIndex + count <= Count);
-
-            Segment<T> Destination = destination as Segment<T>;
-
-            for (int i = 0; i < count; i++)
-                Destination.Content[toIndex + i] = Content[fromIndex + i];
-
-            if (Destination.Count < toIndex + count)
-                Destination.Count = toIndex + count;
 
             AssertInvariant();
             Destination.AssertInvariant();
