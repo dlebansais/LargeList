@@ -326,7 +326,7 @@
 
             Debug.Assert(Capacity == capacity);
             Debug.Assert(Count == count);
-            Debug.Assert(!IsValidPosition(0, 0, false));
+            Debug.Assert(!IsValidPosition(0, 0, false) || IsValidPosition(0, 0, true));
             Debug.Assert(!IsValidPosition(0, SegmentTable[0].Count + 1, true));
 
 #if DEBUG
