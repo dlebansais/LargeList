@@ -326,6 +326,8 @@
 
             Debug.Assert(Capacity == capacity);
             Debug.Assert(Count == count);
+            Debug.Assert(!IsValidPosition(0, 0, false));
+            Debug.Assert(!IsValidPosition(0, SegmentTable[0].Count + 1, true));
 
 #if DEBUG
             AssertInvariant();
@@ -1638,28 +1640,6 @@
         }
 
         /// <summary>
-        /// Removes the specified segment from the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="segment">The segment to remove.</param>
-        protected virtual void RemoveSegment(ISegment<T> segment)
-        {
-            Debug.Assert(SegmentTable.Contains(segment));
-
-            RemoveSegmentAt(SegmentTable.IndexOf(segment));
-        }
-
-        /// <summary>
-        /// Removes the segment at the specified index from the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="index">The zero-based index of the segment to remove.</param>
-        protected virtual void RemoveSegmentAt(int index)
-        {
-            Debug.Assert(index >= 0 && index < SegmentTable.Count);
-
-            SegmentTable.RemoveAt(index);
-        }
-
-        /// <summary>
         /// Removes segments starting from the specified index in the <see cref="Partition{T}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the first segment to remove.</param>
@@ -1680,10 +1660,11 @@
             public int SegmentIndex;
             public long Min;
 
+            /*
             public override string ToString()
             {
                 return SegmentIndex.ToString() + "," + Min;
-            }
+            }*/
         }
 
         private void InitCache()
