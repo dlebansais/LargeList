@@ -4,7 +4,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/dlebansais/largelist/badge)](https://www.codefactor.io/repository/github/dlebansais/largelist)
 [![codecov](https://codecov.io/gh/dlebansais/LargeList/branch/master/graph/badge.svg)](https://codecov.io/gh/dlebansais/LargeList)
 
-[Download](https://github.com/dlebansais/LargeList/releases) (v1.0.0.289). Target framework: 4.5.2, Windows 64-bits only.
+[Download](https://github.com/dlebansais/LargeList/releases) (v1.0.0.325). Target framework: 4.5.2, Windows 64-bits only.
 
 LargeList is an implementation of collections that can hold a number of elements limited only by the available memory, tested up to 8 billions.
 The current implementation of Collection&lt;> and List&lt;> in .NET (4.6.1) can only hold up to 268 millions of reference per collection or list, but LargeList is able to break this barrier using a partition scheme.
