@@ -586,6 +586,7 @@
         private int MaxCapacity;
 
         #region Debugging
+        /*
         /// <summary>
         /// Converts this instance to its equivalent string representation.
         /// </summary>
@@ -596,6 +597,7 @@
         {
             return Count.ToString() + " / " + Capacity.ToString();
         }
+        */
         #endregion
 
         #region Contracts
