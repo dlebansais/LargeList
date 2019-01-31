@@ -1684,7 +1684,7 @@
 
             Cache[0].SegmentIndex = 0;
             Cache[0].Min = 0;
-            Debug.Assert(Cache.ToString() != null); // For code coverage.
+            Debug.Assert(Cache[0].ToString() != null); // For code coverage.
 
             RebuildCacheFrom(0);
         }
