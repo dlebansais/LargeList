@@ -328,6 +328,8 @@
             Debug.Assert(Count == count);
             Debug.Assert(!IsValidPosition(0, 0, false) || IsValidPosition(0, 0, true));
             Debug.Assert(!IsValidPosition(0, SegmentTable[0].Count + 1, true));
+            Debug.Assert(SegmentTable.Count > 0);
+            Debug.Assert(SegmentTable[0].ToString() != null); // For code coverage.
 
 #if DEBUG
             AssertInvariant();
@@ -1660,11 +1662,10 @@
             public int SegmentIndex;
             public long Min;
 
-            /*
             public override string ToString()
             {
                 return SegmentIndex.ToString() + "," + Min;
-            }*/
+            }
         }
 
         private void InitCache()
@@ -1683,6 +1684,7 @@
 
             Cache[0].SegmentIndex = 0;
             Cache[0].Min = 0;
+            Debug.Assert(Cache.ToString() != null); // For code coverage.
 
             RebuildCacheFrom(0);
         }
