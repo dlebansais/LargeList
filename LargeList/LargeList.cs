@@ -1754,13 +1754,11 @@
         private long GetCollectionCount(IEnumerable<T> collection)
         {
             long CollectionCount = -1;
-            ICollection AsICollection;
-            ICollection<T> AsICollectionT;
 
-            if ((AsICollection = collection as ICollection) != null)
+            if (collection is ICollection AsICollection)
                 CollectionCount = AsICollection.Count;
 
-            if ((AsICollectionT = collection as ICollection<T>) != null)
+            if (collection is ICollection<T> AsICollectionT)
                 CollectionCount = AsICollectionT.Count;
 
             if (CollectionCount < 0)
