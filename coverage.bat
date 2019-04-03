@@ -2,8 +2,8 @@
 
 if not exist "..\Misc-Beta-Test\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe" goto error_console1
 if not exist "..\Misc-Beta-Test\packages\NUnit.ConsoleRunner.3.9.0\tools\nunit3-console.exe" goto error_console2
-if not exist "..\Misc-Beta-Test\Test-LargeList\bin\x64\Debug\Test-LargeList.dll" goto error_largelist
-if not exist "..\Misc-Beta-Test\Test-LargeList\bin\x64\Release\Test-LargeList.dll" goto error_largelist
+if not exist "..\Misc-Beta-Test\Test-LargeList\bin\x64\Debug\Test-LargeList.dll" goto error_not_built
+if not exist "..\Misc-Beta-Test\Test-LargeList\bin\x64\Release\Test-LargeList.dll" goto error_not_built
 if exist ..\Misc-Beta-Test\Test-LargeList\*.log del ..\Misc-Beta-Test\Test-LargeList\*.log
 if exist ..\Misc-Beta-Test\Test-LargeList\obj\x64\Debug\Coverage-LargeList-Debug_coverage.xml del ..\Misc-Beta-Test\Test-LargeList\obj\x64\Debug\Coverage-LargeList-Debug_coverage.xml
 if exist ..\Misc-Beta-Test\Test-LargeList\obj\x64\Release\Coverage-LargeList-Release_coverage.xml del ..\Misc-Beta-Test\Test-LargeList\obj\x64\Release\Coverage-LargeList-Release_coverage.xml
@@ -21,7 +21,7 @@ goto end
 echo ERROR: nunit3-console not found.
 goto end
 
-:error_largelist
+:error_not_built
 echo ERROR: Test-LargeList.dll not built (both Debug and Release are required).
 goto end
 
