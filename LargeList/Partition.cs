@@ -1354,7 +1354,14 @@
             Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
             Debug.Assert(IsValidPosition(segmentIndexEnd, elementIndexEnd, true));
             Debug.Assert(count >= 0);
-            Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
+
+            bool IsPartitionEmpty = count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd;
+            bool IsSomeSegmentsFilled = segmentIndexBegin < segmentIndexEnd;
+            bool IsAllSegmentsFilled = segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd;
+            bool IsPartitionNotEmpty = count > 0 && (IsSomeSegmentsFilled || IsAllSegmentsFilled);
+            bool IsPartitionValid = IsPartitionEmpty || IsPartitionNotEmpty;
+
+            Debug.Assert(IsPartitionValid);
 
             for (long l = 0; l < count / 2; l++)
                 ReverseLoop(ref segmentIndexBegin, ref elementIndexBegin, ref segmentIndexEnd, ref elementIndexEnd);
