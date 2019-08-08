@@ -9,7 +9,6 @@ addons:
   coverity_scan:
     project:
       name: dlebansais/LargeList
-    notification_email: scan_notifications@example.com
     build_command_prepend: ./configure
     build_command: msbuild
     branch_pattern: coverity-scan
