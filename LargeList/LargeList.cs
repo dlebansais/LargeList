@@ -541,6 +541,8 @@
             if (converter == null)
                 throw new ArgumentNullException(nameof(converter), "Value cannot be null.");
 
+            Debug.Assert(Count >= 0);
+
             LargeList<TOutput> Result = new LargeList<TOutput>(Count, Count, Partition.MaxSegmentCapacity, null);
 
             int SegmentIndex = 0;

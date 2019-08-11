@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Diagnostics;
 
+#pragma warning disable CS1710
     /// <summary>
     /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
     /// </summary>
     /// <typeparam name="T">The type of elements in the partition.</typeparam>
+#pragma warning restore CS1710
 #if STRICT
     internal
 #else

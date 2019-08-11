@@ -265,10 +265,12 @@
         void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer);
     }
 
+#pragma warning disable CS1710
     /// <summary>
     /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
     /// </summary>
     /// <typeparam name="T">The type of elements in the partition.</typeparam>
+#pragma warning restore CS1710
 #if STRICT
     internal
 #else
@@ -719,8 +721,13 @@
         {
             Debug.Assert(SegmentTable.Count > 0);
 
+            Debug.Assert(MaxSegmentCapacity > 0);
             CacheLineExponent = HighestExponentAbove(MaxSegmentCapacity) - 1;
+
+            Debug.Assert(CacheLineExponent >= 0);
             CacheLineLength = 1 << CacheLineExponent;
+
+            Debug.Assert(CacheLineLength > 0);
 
             ResizeCache();
 
@@ -752,7 +759,7 @@
             {
                 cacheLine++;
 
-                long CacheIndex = cacheLine * CacheLineLength;
+                long CacheIndex = (long)cacheLine * CacheLineLength;
 
                 while (Min + SegmentTable[SegmentIndex].Count < CacheIndex)
                 {
@@ -783,7 +790,7 @@
                 i >>= 1;
             }
 
-            Debug.Assert((1 << Exponent) >= n);
+            Debug.Assert((1L << Exponent) >= n);
 
             return Exponent;
         }
