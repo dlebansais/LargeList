@@ -58,6 +58,7 @@
     <Compile Include="LargeCollectionDebugView.cs" />
     <Compile Include="LargeList.cs" />
     <Compile Include="LargeListAssemblyAttribute.cs" />
+    <Compile Include="PartitionAlgorithm.cs" />
     <Compile Include="PartitionEnumerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadOnlyLargeCollection.cs" />

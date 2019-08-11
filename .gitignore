@@ -21,6 +21,9 @@
 bld/
 [Bb]in/
 [Oo]bj/
+cov-int/
+cov-int.zip
+firstbuild.bat
 
 # Visual Studio 2015 cache/options directory
 .vs/
