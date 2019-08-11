@@ -8,9 +8,12 @@ env:
 addons:
   coverity_scan:
     project:
-      name: dlebansais/LargeList
+      name: "dlebansais/LargeList"
+      description: "LargeList is an implementation of Collection<> and List<> that can hold a number of elements limited only by the available memory, tested up to 8 billions."
+
+    notification_email: dlebansais@gmail.com
     build_command_prepend: ./configure
-    build_command: msbuild
+    build_command: msbuild /p:Configuration=Travis LargeList.sln
     branch_pattern: coverity-scan
 
 install:
