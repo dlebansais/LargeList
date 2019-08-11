@@ -176,7 +176,7 @@
         /// Creates an instance that is empty and has the specified initial capacity.
         /// </summary>
         /// <param name="capacity">The number of elements that the new list can initially store.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
         public LargeList(long capacity)
@@ -237,7 +237,7 @@
         /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
         /// <param name="maxSegmentCapacity">The maximum size of a segment in the partition.</param>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
 #if STRICT
@@ -999,7 +999,7 @@
         /// Performs the specified action on each element of the <see cref="LargeList{T}"/>.
         /// </summary>
         /// <param name="action">The <see cref="System.Action{T}"/> delegate to perform on each element of the <see cref="LargeList{T}"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is null</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
         public void ForEach(Action<T> action)
         {
 #if STRICT

@@ -558,7 +558,7 @@
         /// Performs the specified action on each element of the <see cref="ReadOnlyLargeList{T}"/>.
         /// </summary>
         /// <param name="action">The <see cref="System.Action{T}"/> delegate to perform on each element of the <see cref="ReadOnlyLargeList{T}"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is null</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
         public void ForEach(Action<T> action)
         {
             if (action == null)
@@ -644,7 +644,7 @@
         /// <returns>
         /// A shallow copy of a range of elements in the source <see cref="ReadOnlyLargeList{T}"/>.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para></exception>
         /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range of elements in the <see cref="ReadOnlyLargeList{T}"/>.</exception>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public LargeList<T> GetRange(long index, long count)
