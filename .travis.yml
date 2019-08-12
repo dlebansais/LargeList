@@ -12,7 +12,6 @@ addons:
       description: "LargeList"
 
     notification_email: $NOTIFICATION_EMAIL
-    build_command_prepend: ./configure
     build_command: msbuild /p:Configuration=Debug LargeList.sln
     branch_pattern: coverity-scan
 
