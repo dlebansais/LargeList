@@ -12,7 +12,7 @@ addons:
       description: "LargeList"
 
     notification_email: $NOTIFICATION_EMAIL
-    build_command: msbuild
+    build_command: msbuild /p:Configuration=Travis
     branch_pattern: coverity-scan
 
 install:
