@@ -12,7 +12,7 @@ addons:
       description: "LargeList"
 
     notification_email: $NOTIFICATION_EMAIL
-    build_command_prepend: "cov-configure --compiler /usr/lib/mono/msbuild/Current/bin/Roslyn/csc.exe --comptype msbuild"
+    build_command_prepend: "cov-configure --compiler /usr/lib/mono/msbuild/Current/bin/Roslyn/csc.exe --comptype csc"
     build_command: msbuild /p:Configuration=Travis
     branch_pattern: coverity-scan
 
