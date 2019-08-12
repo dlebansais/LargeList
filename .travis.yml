@@ -12,7 +12,7 @@ addons:
       description: "LargeList"
 
     notification_email: $NOTIFICATION_EMAIL
-    build_command: msbuild /p:Configuration=Debug LargeList.sln
+    build_command: msbuild /p:Configuration=Travis LargeList.sln
     branch_pattern: coverity-scan
 
 install:
@@ -21,7 +21,7 @@ install:
 - nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
 
 script:
-- msbuild /p:Configuration=Travis LargeList.sln
+#- msbuild /p:Configuration=Travis LargeList.sln
 - cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
 - mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
 
