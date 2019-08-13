@@ -30,6 +30,13 @@ script:
 after_script:
 - ls /home/travis/build/dlebansais/LargeList/cov-int
 - cat /home/travis/build/dlebansais/LargeList/cov-int/scm_log.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/build-cwd.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/build-id.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/build-log.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/BUILD.metrics.xml
+- cat /home/travis/build/dlebansais/LargeList/cov-int/build-timings.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/cov-import-scm-timings.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/scm_log.txt
 
 deploy:
   provider: pages
