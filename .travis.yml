@@ -28,6 +28,7 @@ script:
 #- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
 
 after_script:
+- ls /home/travis/build/dlebansais/LargeList/cov-int
 - cat /home/travis/build/dlebansais/LargeList/cov-int/scm-log.txt
 
 deploy:
