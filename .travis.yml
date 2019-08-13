@@ -25,6 +25,8 @@ install:
 
 script:
 #- msbuild /p:Configuration=Travis LargeList.sln
+- ls /home/travis/build/dlebansais/LargeList/LargeList/obj/x64/Travis
+- ls /home/travis/build/dlebansais/LargeList/LargeList/bin/x64/Travis
 - cat /home/travis/build/dlebansais/LargeList/cov-int/build-log.txt
 - cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
 - mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
