@@ -23,9 +23,8 @@ install:
 - nuget restore LargeList.sln
 - nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
 - nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
-- ls /home/travis/build/dlebansais/LargeList/LargeList
-- mkdir -f /home/travis/build/dlebansais/LargeList/LargeList/obj
-- mkdir -f /home/travis/build/dlebansais/LargeList/LargeList/obj/x64/Travis
+- mkdir -p /home/travis/build/dlebansais/LargeList/LargeList/obj/x64/Travis
+- mkdir -p /home/travis/build/dlebansais/LargeList/LargeList/bin/x64/Travis
 
 script:
 #- msbuild /p:Configuration=Travis LargeList.sln
