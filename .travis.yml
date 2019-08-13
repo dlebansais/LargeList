@@ -13,23 +13,20 @@ addons:
 
     notification_email: $NOTIFICATION_EMAIL
     build_command_prepend: "cov-configure --template --compiler csc.exe --comptype csc"
-    build_command: /usr/lib/mono/msbuild/Current/bin/Roslyn/csc.exe /noconfig /nowarn:1701,1702 /nostdlib+ /platform:x64 /errorreport:prompt /define:DEBUG /highentropyva+ /reference:/usr/lib/mono/4.5.2-api/Microsoft.CSharp.dll /reference:/usr/lib/mono/4.5.2-api/mscorlib.dll /reference:/usr/lib/mono/4.5.2-api/System.Core.dll /reference:/usr/lib/mono/4.5.2-api/System.Data.DataSetExtensions.dll /reference:/usr/lib/mono/4.5.2-api/System.Data.dll /reference:/usr/lib/mono/4.5.2-api/System.dll /reference:/usr/lib/mono/4.5.2-api/System.Net.Http.dll /reference:/usr/lib/mono/4.5.2-api/System.Xml.dll /reference:/usr/lib/mono/4.5.2-api/System.Xml.Linq.dll /filealign:512 /optimize+ /out:LargeList/obj/x64/Travis/LargeList.dll /subsystemversion:6.00 /target:library /utf8output /home/travis/build/dlebansais/LargeList/LargeList/EnumerableSegmentTable.cs /home/travis/build/dlebansais/LargeList/LargeList/GlobalSuppressions.cs /home/travis/build/dlebansais/LargeList/LargeList/LargeCollection.cs /home/travis/build/dlebansais/LargeList/LargeList/LargeCollectionDebugView.cs /home/travis/build/dlebansais/LargeList/LargeList/LargeList.cs /home/travis/build/dlebansais/LargeList/LargeList/LargeListAssemblyAttribute.cs /home/travis/build/dlebansais/LargeList/LargeList/PartitionAlgorithmCommands.cs /home/travis/build/dlebansais/LargeList/LargeList/PartitionAlgorithmQueries.cs /home/travis/build/dlebansais/LargeList/LargeList/PartitionEnumerator.cs /home/travis/build/dlebansais/LargeList/LargeList/Properties/AssemblyInfo.cs /home/travis/build/dlebansais/LargeList/LargeList/ReadOnlyLargeCollection.cs /home/travis/build/dlebansais/LargeList/LargeList/ReadOnlyLargeList.cs /home/travis/build/dlebansais/LargeList/LargeList/Segment.cs /home/travis/build/dlebansais/LargeList/LargeList/Partition.cs
+    build_command: msbuild /p:Configuration=Travis LargeList.sln
     branch_pattern: coverity-scan
 
 install:
 - nuget restore LargeList.sln
-- nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
-- nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
-- mkdir -p /home/travis/build/dlebansais/LargeList/LargeList/obj/x64/Travis
-- mkdir -p /home/travis/build/dlebansais/LargeList/LargeList/bin/x64/Travis
+#- nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
+#- nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
 
 script:
 #- msbuild /p:Configuration=Travis LargeList.sln
-- ls /home/travis/build/dlebansais/LargeList/LargeList/obj/x64/Travis
-- ls /home/travis/build/dlebansais/LargeList/LargeList/bin/x64/Travis
 - cat /home/travis/build/dlebansais/LargeList/cov-int/build-log.txt
-- cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
-- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
+- cat /home/travis/build/dlebansais/LargeList/cov-int/scm-log.txt
+#- cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
+#- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
 
 deploy:
   provider: pages
