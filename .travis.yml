@@ -15,10 +15,8 @@ addons:
 #    build_command_prepend: "cov-configure --template --compiler csc.exe --comptype csc"
 #    build_command: msbuild /p:Configuration=Travis
 #    branch_pattern: coverity-scan
-    build_command_prepend:
-       - msbuild /t:Clean
-       - nuget restore LargeList.sln
-    build_command: "msbuild /t:Rebuild /p:Configuration=Travis"
+    build_command_prepend: msbuild /t:Clean
+    build_command: msbuild /t:Rebuild /p:Configuration=Travis
     branch_pattern: coverity-scan
 
 install:
