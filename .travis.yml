@@ -29,7 +29,7 @@ script:
 
 after_script:
 - ls /home/travis/build/dlebansais/LargeList/cov-int
-- cat /home/travis/build/dlebansais/LargeList/cov-int/scm-log.txt
+- cat /home/travis/build/dlebansais/LargeList/cov-int/scm_log.txt
 
 deploy:
   provider: pages
