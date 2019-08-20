@@ -1,21 +1,6 @@
 language: csharp
 solution: LargeList.sln
 
-env:
-  global:
-    - secure: $COVERITY_SCAN_TOKEN
-
-addons:
-  coverity_scan:
-    project:
-      name: "dlebansais/LargeList"
-      description: "LargeList"
-
-    notification_email: $NOTIFICATION_EMAIL
-    build_command_prepend: ./configure
-    build_command: msbuild /p:Configuration=Debug LargeList.sln
-    branch_pattern: coverity-scan
-
 install:
 - nuget restore LargeList.sln
 - nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
