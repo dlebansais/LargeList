@@ -1,42 +1,16 @@
 language: csharp
 solution: LargeList.sln
 
-env:
-  global:
-    - secure: $COVERITY_SCAN_TOKEN
-
-addons:
-  coverity_scan:
-    project:
-      name: "dlebansais/LargeList"
-      description: "LargeList"
-
-    notification_email: $NOTIFICATION_EMAIL
-    build_command_prepend: "cov-configure --template --compiler csc.exe --comptype csc"
-    build_command: msbuild /p:Configuration=Travis LargeList.sln
-    branch_pattern: coverity-scan
-
 install:
 - nuget restore LargeList.sln
-#- nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
-#- nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
+- nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
+- nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
+
 
 script:
-#- msbuild /p:Configuration=Travis LargeList.sln
-- cat /home/travis/build/dlebansais/LargeList/cov-int/build-log.txt
-#- cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
-#- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
-
-after_script:
-- ls /home/travis/build/dlebansais/LargeList/cov-int
-- cat /home/travis/build/dlebansais/LargeList/cov-int/scm_log.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/build-cwd.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/build-id.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/build-log.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/BUILD.metrics.xml
-- cat /home/travis/build/dlebansais/LargeList/cov-int/build-timings.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/cov-import-scm-timings.txt
-- cat /home/travis/build/dlebansais/LargeList/cov-int/scm_log.txt
+- msbuild /p:Configuration=Travis LargeList.sln
+- cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
+- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
 
 deploy:
   provider: pages
