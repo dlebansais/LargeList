@@ -231,7 +231,7 @@
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
-        /// Creates an instance with the specified initial capacity, either uninitialized elements or element copied from a collection, and max segment capacity.
+        /// Creates an instance with the specified initial capacity, either uninitialized elements or elements copied from a collection, and max segment capacity.
         /// </summary>
         /// <param name="capacity">The number of elements that the new list can initially store.</param>
         /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
@@ -285,6 +285,35 @@
 #endif
                 Partition.SetItemRange(0, 0, collection);
             }
+
+#if DEBUG
+            AssertInvariant();
+#endif
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LargeList{T}"/> class.
+        /// Creates an instance with the specified initial capacity and number of elements, and max segment capacity.
+        /// This particular constructor is private.
+        /// </summary>
+        /// <param name="count">The number of uninitialized elements that the new list should start with.</param>
+        /// <param name="maxSegmentCapacity">The maximum size of a segment in the partition.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
+        private LargeList(long count, int maxSegmentCapacity)
+        {
+            Debug.Assert(count >= 0);
+            Debug.Assert(maxSegmentCapacity > 0);
+
+#if STRICT
+#else
+            Initialize();
+#endif
+
+#if STRICT
+            Partition = new Partition<T>(capacity, count, maxSegmentCapacity);
+#else
+            Partition = CreatePartition(count, count, maxSegmentCapacity);
+#endif
 
 #if DEBUG
             AssertInvariant();
@@ -541,9 +570,7 @@
             if (converter == null)
                 throw new ArgumentNullException(nameof(converter), "Value cannot be null.");
 
-            Debug.Assert(Count >= 0);
-
-            LargeList<TOutput> Result = new LargeList<TOutput>(Count, Count, Partition.MaxSegmentCapacity, null);
+            LargeList<TOutput> Result = new LargeList<TOutput>(Count, Partition.MaxSegmentCapacity);
 
             int SegmentIndex = 0;
             int ElementIndex = 0;
