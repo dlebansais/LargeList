@@ -1,23 +1,20 @@
 language: csharp
 solution: LargeList.sln
-
 install:
-- nuget restore LargeList.sln
-- nuget install NUnit -Version 3.12.0 -OutputDirectory test-runner
-- nuget install NUnit.ConsoleRunner -Version 3.10.0 -OutputDirectory test-runner
-
-
-script:
-- msbuild /p:Configuration=Travis LargeList.sln
-- cp ./test-runner/NUnit.3.12.0/lib/net45/nunit.framework.dll ./LargeList/bin/x64/Travis/
-- mono ./test-runner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe --trace=Debug --labels=All ./LargeList/bin/x64/Travis/Test-LargeList.dll
-
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  local_dir: ./LargeList/bin/x64/Travis
-  target_branch: gh-pages
-  email: "github-pages-deploy@travis-ci.org"
-  on:
-    branch: master
+  - nuget restore LargeList.sln
+env:
+ global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+ - secure: "Fis6zBAxP3rjC031cDfj/z9+/v41E/adAQeFTYEEjqVZr/UIMZIYSWZ1hQvs9VvaGmxA1eJxWhxxER3JFv7lT+Z0O5lugIawwlkIqF1LUdeh54Hvrut6NAmTogg34aTCyk2KB2C22DUZQwkyhm8EeUm+AqLZY18l8rX3lFhQKFpxFvG/ONmc3jnN2aI0wmlAdxti2E3w+06U8qILuysK3R3sDZvWMIN+LBqCAIpbT0GxGDmctTnvguuOWzrEa69dQ3z5+6HjJXYvo0bWHM5FLEKHJbOEy6SFyPa/XcF+NTreE/gloHyWqM/QZ43mCtPSoEW7wU/+1VK6eW1M1nML0HzUsiqAMm48wnTiqJ0VO0l+rrxmczkB1or8BMh3JJEQGcG/9kwScRrdrhRW2QnDZgOyTGOTLb+aeGSKJ57JzCB3ALxmiKimrHtD6egp5tbga+dhAo2sXjZxXaH4+5DW/hIC3RysI0hT8GexZtsU8QsRqTViRY0PsRtFxQCRfSyC3RbWVBUjGRCf9lwJI/WfNA/IjAW25+9WRpaXWNBvEn8jRVF5RexfzAM0aI1K34ERGDMpYvaQ183k50jDjoJtYcG7EIfs+N/OwThHdoqpuwA8fF419mcv0BIaeWvdlzSo1hQI1RXt30NovNJzn/y4TM15yX7ljDNhdiPntWnC3Ow="
+before_install:
+ - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+addons:
+ coverity_scan:
+  project:
+   name: "dlebansais/LargeList"
+   description: "Build submitted via Travis CI"
+  notification_email: $NOTIFICATION_EMAIL
+  build_command_prepend: "msbuild /t:Clean"
+  build_command: "msbuild /t:Rebuild"
+  branch_pattern: coverity-scan
