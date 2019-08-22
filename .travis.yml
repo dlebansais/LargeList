@@ -16,5 +16,5 @@ addons:
    description: "Build submitted via Travis CI"
   notification_email: $NOTIFICATION_EMAIL
   build_command_prepend: "msbuild /t:Clean"
-  build_command: "msbuild /p:Configuration=Travis /t:Rebuild"
+  build_command: "msbuild /t:Rebuild"
   branch_pattern: coverity-scan
