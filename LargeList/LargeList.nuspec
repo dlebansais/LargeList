@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>dlebansais.LargeList.LargeList</id>
+    <id>CSharp.LargeList</id>
     <version>1.0.0.358</version>
     <title>LargeList</title>
     <authors>David Le Bansais</authors>

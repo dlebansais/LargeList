@@ -15,6 +15,6 @@ cd ..
 
 :pub
 
- ..\Certification\publish .\Nuget\CSharp.LargeList.1.0.0.358.nupkg
+call ..\Certification\publish .\Nuget\CSharp.LargeList.1.0.0.358.nupkg
 
 del .\Nuget\CSharp.LargeList.1.0.0.358.nupkg
