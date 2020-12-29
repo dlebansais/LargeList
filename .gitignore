@@ -22,6 +22,8 @@
 bld/
 [Bb]in/
 [Oo]bj/
+/nuget
+/nuget-debug
 cov-int/
 cov-int.zip
 firstbuild.bat
