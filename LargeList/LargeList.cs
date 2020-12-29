@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Contracts;
 
     /// <summary>
     /// Represents a nongeneric large collection of objects that can be individually accessed by index.
@@ -276,14 +277,15 @@
 
             else
             {
-                long CollectionCount = GetCollectionCount(collection);
+                Contract.RequireNotNull(collection, out IEnumerable<T> Collection);
+                long CollectionCount = GetCollectionCount(Collection);
 
 #if STRICT
                 Partition = new Partition<T>(capacity, CollectionCount, maxSegmentCapacity);
 #else
                 Partition = CreatePartition(capacity, CollectionCount, maxSegmentCapacity);
 #endif
-                Partition.SetItemRange(0, 0, collection);
+                Partition.SetItemRange(0, 0, Collection);
             }
 
 #if DEBUG
@@ -357,7 +359,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index]; }
+            get { return this[index] !; }
             set { this[index] = (T)value; }
         }
 
@@ -804,7 +806,7 @@
                 Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
-            return default(T);
+            return default(T) !;
         }
 
         /// <summary>
@@ -937,7 +939,7 @@
                     return item;
             }
 
-            return default(T);
+            return default(T) !;
         }
 
         /// <summary>
@@ -1004,7 +1006,7 @@
 
             if (startIndex + 1 < count)
             {
-                Exception InnerException = null;
+                Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
             }
 
@@ -1216,7 +1218,7 @@
 
             if (startIndex + count > Count)
             {
-                Exception InnerException = null;
+                Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
             }
 
@@ -1395,7 +1397,7 @@
 
             if (startIndex + 1 < count)
             {
-                Exception InnerException = null;
+                Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection.", InnerException);
             }
 
@@ -1845,9 +1847,9 @@
             /// The element in the <see cref="LargeList{T}"/> at the current position of the enumerator.
             /// </returns>
             public T Current { get { return Enumerator.Current; } }
-#pragma warning disable SA1600
-            object IEnumerator.Current { get { return Current; } }
-#pragma warning restore SA1600
+#pragma warning disable SA1600 // Elements should be documented
+            object IEnumerator.Current { get { return Current !; } }
+#pragma warning restore SA1600 // Elements should be documented
 
             /// <summary>
             /// Sets the enumerator to its initial position, which is before the first element in the collection.
@@ -1884,8 +1886,9 @@
             /// </summary>
             public void Dispose()
             {
-                Partition = null;
-                Enumerator = null;
+                using (Enumerator)
+                {
+                }
             }
             #endregion
 

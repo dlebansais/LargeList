@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LargeList", "LargeList\LargeList.csproj", "{49708123-FFCC-4FDA-9D6A-53D7D07FAC52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test-LargeList", "Test-LargeList\Test-LargeList.csproj", "{C9B82DA8-7D2B-4DB9-8BE5-E4A475C38787}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test-LargeList", "Test\Test-LargeList\Test-LargeList.csproj", "{C9B82DA8-7D2B-4DB9-8BE5-E4A475C38787}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49708123-FFCC-4FDA-9D6A-53D7D07FAC52} = {49708123-FFCC-4FDA-9D6A-53D7D07FAC52}
 	EndProjectSection

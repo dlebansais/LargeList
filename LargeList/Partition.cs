@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Contracts;
 
     /// <summary>
     /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
@@ -575,9 +576,7 @@
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
-            IPartitionEnumerator<T> Result = CreateEnumerator(segmentIndex, elementIndex);
-
-            Debug.Assert(Result != null);
+            Contract.RequireNotNull(CreateEnumerator(segmentIndex, elementIndex), out IPartitionEnumerator<T> Result);
 
 #if DEBUG
             AssertInvariant();
@@ -835,7 +834,7 @@
             elementIndex = (int)LongElementIndex;
         }
 
-        private CacheLine[] Cache;
+        private CacheLine[] Cache = Array.Empty<CacheLine>();
         private int CacheLineExponent;
         private int CacheLineLength;
         private int CacheLineCount;

@@ -13,7 +13,7 @@
 #else
     public
 #endif
-    interface IPartitionEnumerator<T>
+    interface IPartitionEnumerator<T> : IDisposable
     {
         /// <summary>
         /// Gets the element in the <see cref="IPartition{T}"/> at the current position of the enumerator.
@@ -68,7 +68,16 @@
         /// <summary>
         /// Gets the element in the <see cref="IPartition{T}"/> at the current position of the enumerator.
         /// </summary>
-        public T Current { get { return Enumerator.Current; } }
+        public T Current
+        {
+            get
+            {
+                if (Enumerator == null)
+                    throw new InvalidOperationException();
+
+                return Enumerator.Current;
+            }
+        }
 
         /// <summary>
         /// Advances the enumerator to the next element of the <see cref="IPartition{T}"/>. If there are no more elements, does nothing.
@@ -130,9 +139,9 @@
         }
         #endregion
 
-        private IPartition<T> Partition;
+        private IPartition<T>? Partition;
         private int SegmentIndex;
-        private IEnumerator<T> Enumerator;
+        private IEnumerator<T>? Enumerator;
         private int SegmentCount;
     }
 }

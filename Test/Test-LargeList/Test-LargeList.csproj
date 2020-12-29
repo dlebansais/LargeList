@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0-windows</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Test-LargeList</AssemblyName>
@@ -28,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LargeList\LargeList.csproj" />
+    <ProjectReference Include="..\..\LargeList\LargeList.csproj" />
   </ItemGroup>
 
 </Project>

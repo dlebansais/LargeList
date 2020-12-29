@@ -89,7 +89,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index]; }
+            get { return this[index] !; }
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
@@ -179,7 +179,7 @@
             if (arrayIndex + Count > array.Length)
                 throw new ArgumentException();
 
-            ILargeCollection AsCollection = Items as ILargeCollection;
+            ILargeCollection AsCollection = (ILargeCollection)Items;
             AsCollection.CopyTo(array, arrayIndex);
         }
 

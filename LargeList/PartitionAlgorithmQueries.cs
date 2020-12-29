@@ -180,9 +180,10 @@
         /// </returns>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
+            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
             Debug.Assert(index >= 0);
             Debug.Assert(count >= 0);
-            Debug.Assert(comparer != null);
             Debug.Assert(index + count <= Count);
 
             if (count == 0)
@@ -212,7 +213,7 @@
                 Debug.Assert(SegmentIndexUpper > SegmentIndexMiddle || (SegmentIndexUpper == SegmentIndexMiddle && ElementIndexUpper >= ElementIndexMiddle));
                 Debug.Assert(indexUpper >= indexMiddle);
 
-                long comparisonResult = comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
+                long comparisonResult = Comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
 
                 if (comparisonResult == 0)
                     return indexMiddle;
@@ -334,7 +335,7 @@
 
         private void QuickSort(IComparer<T> comparer)
         {
-            Debug.Assert(comparer != null);
+            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
 
             QuickSortRange Range = QuickSortStack.Pop();
             int SegmentIndexLow = Range.SegmentIndexFirst;
@@ -349,13 +350,13 @@
             if (SegmentIndexLow == SegmentIndexHigh)
             {
                 ISegment<T> Segment = SegmentTable[SegmentIndexLow];
-                Segment.Sort(ElementIndexLow, ElementIndexHigh, comparer);
+                Segment.Sort(ElementIndexLow, ElementIndexHigh, Comparer);
             }
             else if (SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow < ElementIndexHigh))
             {
                 int SegmentIndexMiddle;
                 int ElementIndexMiddle;
-                SplitSortInterval(SegmentIndexLow, ElementIndexLow, SegmentIndexHigh, ElementIndexHigh, comparer, out SegmentIndexMiddle, out ElementIndexMiddle);
+                SplitSortInterval(SegmentIndexLow, ElementIndexLow, SegmentIndexHigh, ElementIndexHigh, Comparer, out SegmentIndexMiddle, out ElementIndexMiddle);
 
                 QuickSortRange RangeLow = new QuickSortRange() { SegmentIndexFirst = SegmentIndexLow, ElementIndexFirst = ElementIndexLow, SegmentIndexLast = SegmentIndexMiddle, ElementIndexLast = ElementIndexMiddle };
 
@@ -378,9 +379,10 @@
 
         private void SplitSortInterval(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh, IComparer<T> comparer, out int segmentIndexMiddle, out int elementIndexMiddle)
         {
+            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
             Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
             Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
-            Debug.Assert(comparer != null);
             Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
 
             T pivot = SelectPivot(segmentIndexLow, elementIndexLow, segmentIndexHigh, elementIndexHigh);
@@ -395,8 +397,8 @@
 
             for (;;)
             {
-                SplitSortLoop1(comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
-                SplitSortLoop2(comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
+                SplitSortLoop1(Comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
+                SplitSortLoop2(Comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
 
                 if (SegmentIndexUp > SegmentIndexDown || (SegmentIndexUp == SegmentIndexDown && ElementIndexUp >= ElementIndexDown))
                 {

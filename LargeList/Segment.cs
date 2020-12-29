@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Contracts;
 
     /// <summary>
     /// Supports a linear storage of objects of type <typeparamref name="T"/> and fast operations to copy or move elements from a <see cref="ISegment{T}"/> object to another.
@@ -391,7 +392,7 @@
         public void Clear()
         {
             for (int i = 0; i < Capacity; i++)
-                Content[i] = default(T);
+                Content[i] = default(T) !;
 
             Count = 0;
 
@@ -461,14 +462,13 @@
         /// <param name="count">The number of elements to move.</param>
         public void MoveTo(ISegment<T> destination, int toIndex, int fromIndex, int count)
         {
-            Debug.Assert(destination != null);
+            Contract.RequireNotNull(destination, out Segment<T> Destination);
+
             Debug.Assert(toIndex >= 0 && toIndex <= destination.Count);
             Debug.Assert(fromIndex >= 0 && fromIndex <= Count);
             Debug.Assert(count >= 0);
             Debug.Assert(toIndex + count <= destination.Count);
             Debug.Assert(fromIndex + count <= Count);
-
-            Segment<T> Destination = destination as Segment<T>;
 
             for (int i = 0; i < count; i++)
                 Destination.Content[toIndex + i] = Content[fromIndex + i];
@@ -477,7 +477,7 @@
                 Content[i] = Content[i + count];
 
             for (int i = Count - count; i < Count; i++)
-                Content[i] = default(T);
+                Content[i] = default(T) !;
 
             Count -= count;
 
@@ -502,7 +502,7 @@
                     for (; l + 1 < Count; l++)
                         Content[l] = Content[l + 1];
 
-                    Content[Count - 1] = default(T);
+                    Content[Count - 1] = default(T) !;
                     Count--;
                     Result = true;
                     break;
@@ -530,7 +530,7 @@
                 Content[l] = Content[l + count];
 
             for (; l < Count; l++)
-                Content[l] = default(T);
+                Content[l] = default(T) !;
 
             Count -= count;
         }
@@ -544,17 +544,17 @@
         /// </returns>
         public int RemoveAll(Predicate<T> match)
         {
-            Debug.Assert(match != null);
+            Contract.RequireNotNull(match, out Predicate<T> Match);
 
             int RemovedCount = 0;
 
             for (int l = 0; l < Count; l++)
-                if (match(Content[l]))
+                if (Match(Content[l]))
                 {
                     for (int n = l; n + 1 < Count; n++)
                         Content[n] = Content[n + 1];
 
-                    Content[Count - 1] = default(T);
+                    Content[Count - 1] = default(T) !;
                     Count--;
 
                     l--;

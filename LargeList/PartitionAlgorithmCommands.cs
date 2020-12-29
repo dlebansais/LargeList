@@ -3,17 +3,19 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Contracts;
 
     /// <summary>
-    /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
+    /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of <typeparamref name="T"/> objects.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the partition.</typeparam>
 #if STRICT
     internal
 #else
     public
 #endif
+#pragma warning disable SA1619 // Generic type parameters should be documented
     partial class Partition<T> : IPartition<T>
+#pragma warning restore SA1619 // Generic type parameters should be documented
     {
         #region Commands
         /// <summary>
@@ -488,6 +490,8 @@
         /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
         public void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer)
         {
+            Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
             Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
             Debug.Assert(IsValidPosition(segmentIndexEnd, elementIndexEnd, true));
             Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
@@ -510,7 +514,7 @@
                 QuickSortStack.Push(Range);
 
                 while (QuickSortStack.Count > 0)
-                    QuickSort(comparer);
+                    QuickSort(Comparer);
 
                 Debug.Assert(QuickSortStack.Count == 0);
             }

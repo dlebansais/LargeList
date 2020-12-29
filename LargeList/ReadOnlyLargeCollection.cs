@@ -87,7 +87,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index]; }
+            get { return this[index] !; }
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
@@ -185,7 +185,7 @@
             if (index + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check " + nameof(index) + " and length, and the array's lower bounds.");
 
-            ILargeCollection AsCollection = Items as ILargeCollection;
+            ILargeCollection AsCollection = (ILargeCollection)Items;
             AsCollection.CopyTo(array, index);
         }
         /// <summary>
