@@ -1,5 +1,5 @@
 # LargeList
-[![Build Status](https://travis-ci.com/dlebansais/LargeList.svg?branch=master)](https://travis-ci.com/dlebansais/LargeList)
+[![Build status](https://ci.appveyor.com/api/projects/status/f4xt6two9yjf597i?svg=true)](https://ci.appveyor.com/project/dlebansais/largelist)
 [![NuGet](https://img.shields.io/nuget/v/CSharp.Largelist.svg)](https://www.nuget.org/packages/CSharp.Largelist)
 [![CodeFactor](https://www.codefactor.io/repository/github/dlebansais/largelist/badge)](https://www.codefactor.io/repository/github/dlebansais/largelist)
 [![codecov](https://codecov.io/gh/dlebansais/LargeList/branch/master/graph/badge.svg)](https://codecov.io/gh/dlebansais/LargeList)
