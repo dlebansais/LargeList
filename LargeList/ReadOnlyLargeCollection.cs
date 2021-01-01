@@ -87,7 +87,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index] !; }
+            get { return this[index]!; }
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }

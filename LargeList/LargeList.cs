@@ -359,7 +359,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index] !; }
+            get { return this[index]!; }
             set { this[index] = (T)value; }
         }
 
@@ -806,7 +806,7 @@
                 Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
-            return default(T) !;
+            return default(T)!;
         }
 
         /// <summary>
@@ -939,7 +939,7 @@
                     return item;
             }
 
-            return default(T) !;
+            return default(T)!;
         }
 
         /// <summary>

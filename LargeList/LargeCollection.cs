@@ -201,7 +201,7 @@
         object ILargeList.this[long index]
 #pragma warning restore SA1600
         {
-            get { return this[index] !; }
+            get { return this[index]!; }
             set { this[index] = (T)value; }
         }
 

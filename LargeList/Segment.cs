@@ -392,7 +392,7 @@
         public void Clear()
         {
             for (int i = 0; i < Capacity; i++)
-                Content[i] = default(T) !;
+                Content[i] = default(T)!;
 
             Count = 0;
 
@@ -477,7 +477,7 @@
                 Content[i] = Content[i + count];
 
             for (int i = Count - count; i < Count; i++)
-                Content[i] = default(T) !;
+                Content[i] = default(T)!;
 
             Count -= count;
 
@@ -502,7 +502,7 @@
                     for (; l + 1 < Count; l++)
                         Content[l] = Content[l + 1];
 
-                    Content[Count - 1] = default(T) !;
+                    Content[Count - 1] = default(T)!;
                     Count--;
                     Result = true;
                     break;
@@ -530,7 +530,7 @@
                 Content[l] = Content[l + count];
 
             for (; l < Count; l++)
-                Content[l] = default(T) !;
+                Content[l] = default(T)!;
 
             Count -= count;
         }
@@ -554,7 +554,7 @@
                     for (int n = l; n + 1 < Count; n++)
                         Content[n] = Content[n + 1];
 
-                    Content[Count - 1] = default(T) !;
+                    Content[Count - 1] = default(T)!;
                     Count--;
 
                     l--;
