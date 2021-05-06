@@ -4981,9 +4981,9 @@
 #if DEBUG
             Debug.Print(line);
 #else
-            Debug.WriteLine(Line);
             //Console.Write(Line);
             //Console.WriteLine();
+            Debug.WriteLine(Line);
 #endif
         }
 
