@@ -123,7 +123,7 @@
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-            for (;;)
+            for (; ;)
             {
                 Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
                 Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
@@ -217,7 +217,6 @@
 
                 if (comparisonResult == 0)
                     return indexMiddle;
-
                 else if (comparisonResult < 0)
                 {
                     GetPreviousPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexUpper, out ElementIndexUpper);
@@ -266,7 +265,6 @@
                     elementIndexLower = 0;
                     elementIndexUpper = Difference - 1;
                 }
-
                 else if (Difference < 0)
                 {
                     Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
@@ -277,7 +275,6 @@
                     segmentIndexUpper--;
                     elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
                 }
-
                 else
                 {
                     int LowerSegmentIndex = segmentIndexLower + 1;
@@ -362,7 +359,6 @@
 
                 if (ElementIndexMiddle + 1 < SegmentTable[SegmentIndexMiddle].Count)
                     ElementIndexMiddle++;
-
                 else
                 {
                     SegmentIndexMiddle++;
@@ -395,7 +391,7 @@
             GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
             GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
 
-            for (;;)
+            for (; ;)
             {
                 SplitSortLoop1(Comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
                 SplitSortLoop2(Comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
@@ -440,6 +436,7 @@
         private void SplitSortLoop1(IComparer<T> comparer, T pivot, ref int segmentIndexUp, ref int elementIndexUp)
         {
             do
+            {
                 if (segmentIndexUp < 0)
                 {
                     segmentIndexUp = 0;
@@ -449,7 +446,6 @@
                 {
                     if (elementIndexUp + 1 < SegmentTable[segmentIndexUp].Count)
                         elementIndexUp++;
-
                     else
                     {
                         segmentIndexUp++;
@@ -457,6 +453,7 @@
                         elementIndexUp = 0;
                     }
                 }
+            }
             while (comparer.Compare(SegmentTable[segmentIndexUp][elementIndexUp], pivot) < 0);
         }
 
@@ -466,7 +463,6 @@
             {
                 if (elementIndexDown > 0)
                     elementIndexDown--;
-
                 else
                 {
                     segmentIndexDown--;

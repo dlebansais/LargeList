@@ -1,17 +1,18 @@
-﻿using LargeList;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-
-namespace Test
+﻿namespace TestLargeList
 {
-    public delegate T CreationHandler<T>(Random rand, int MaxIntValue);
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using LargeList;
 
-    public class TestLargeList<T> where T: IComparable
+    public delegate T CreationHandler<T>(Random rand, int maxIntValue);
+
+    public class TestLargeList<T>
+        where T : IComparable
     {
-        public static bool IsStrict = false;
+        public static bool IsStrict { get; set; } = false;
 
         #region LargeCollection
         public static TestStatus Test_collection()
@@ -1355,7 +1356,7 @@ namespace Test
             {
                 int BaseCount = initCount >= 0 ? initCount : firstItems.Count;
 
-                ILargeList <T> initlist = new LargeList<T>(100, initCount, 10, firstItems);
+                ILargeList<T> initlist = new LargeList<T>(100, initCount, 10, firstItems);
                 ILargeList AsInterface = initlist as ILargeList;
 
                 initlist.Add(default(T));
@@ -2140,8 +2141,8 @@ namespace Test
                 }
                 catch (ArgumentException e)
                 {
-                    //if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
-                    //    return TestStatus.Failed("CopyTo(0, TestArray, 0, TestArray.Length + 1) exception: " + e.Message);
+                    // if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
+                    //     return TestStatus.Failed("CopyTo(0, TestArray, 0, TestArray.Length + 1) exception: " + e.Message);
                     if (!IsExceptionEqual(e, "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection."))
                         return TestStatus.Failed("CopyTo(0, TestArray, 0, TestArray.Length + 1) exception: " + e.Message);
                 }
@@ -4975,10 +4976,10 @@ namespace Test
         #endregion
 
         #region Test
-        private static void PrintDiagnostic(string Line)
+        private static void PrintDiagnostic(string line)
         {
 #if DEBUG
-            Debug.Print(Line);
+            Debug.Print(line);
 #else
             Debug.WriteLine(Line);
             //Console.Write(Line);
@@ -4986,25 +4987,25 @@ namespace Test
 #endif
         }
 
-        private static void PassTest(string TestName)
+        private static void PassTest(string testName)
         {
-            PrintDiagnostic("Pass: " + TestName);
+            PrintDiagnostic("Pass: " + testName);
         }
 
-        private static void FailTest(string TestName)
+        private static void FailTest(string testName)
         {
-            PrintDiagnostic("Fail: " + TestName);
+            PrintDiagnostic("Fail: " + testName);
         }
 
-        private static bool IsExceptionEqual(Exception e, string Message)
+        private static bool IsExceptionEqual(Exception e, string message)
         {
-            return e.Message.Replace("\r\n", "\n") == Message;
+            return e.Message.Replace("\r\n", "\n") == message;
         }
 
-        public static void Init(bool AssemblyIsStrict, int DefaultMaxSegmentCapacity)
+        public static void Init(bool assemblyIsStrict, int defaultMaxSegmentCapacity)
         {
-            IsStrict = AssemblyIsStrict;
-            //IsStrict = true;
+            // IsStrict = true;
+            IsStrict = assemblyIsStrict;
         }
 
         public static TestStatus TestAll(CreationHandler<T> handler)
@@ -5036,9 +5037,9 @@ namespace Test
                 return TestStatus.Success;
         }
 
-        private static void InitSeed(int Loop, out Random rand)
+        private static void InitSeed(int loop, out Random rand)
         {
-            rand = new Random(Loop);
+            rand = new Random(loop);
         }
 
         private static int CompareTwoObjects(T o1, T o2)
@@ -5080,19 +5081,19 @@ namespace Test
             RemoveAt,
         }
 
-        private static TestStatus SimultaneousTest_collections(int MaxLoops, CreationHandler<T> handler)
+        private static TestStatus SimultaneousTest_collections(int maxLoops, CreationHandler<T> handler)
         {
             PrintDiagnostic("Comparing Collection<T> and LargeCollection<T>");
 
             TestStatus Status;
-            for (int Loop = 0; Loop < MaxLoops; Loop++)
-                if (!(Status = SimultaneousTest_collections(Loop, MaxLoops, handler)).Succeeded)
+            for (int Loop = 0; Loop < maxLoops; Loop++)
+                if (!(Status = SimultaneousTest_collections(Loop, maxLoops, handler)).Succeeded)
                     return Status;
 
             return TestStatus.Success;
         }
 
-        public static TestStatus SimultaneousTest_collections(int Loop, int MaxLoops, CreationHandler<T> handler)
+        public static TestStatus SimultaneousTest_collections(int loop, int maxLoops, CreationHandler<T> handler)
         {
             TestStatus Status;
             int MaxSteps = 50;
@@ -5100,32 +5101,32 @@ namespace Test
             int OldExecuted = 0;
             int ExpectedExecuted = 0x3F;
 
-            if (MaxLoops > 0)
-                PrintDiagnostic("Loop #" + (Loop + 1) + "/" + MaxLoops);
+            if (maxLoops > 0)
+                PrintDiagnostic("Loop #" + (loop + 1) + "/" + maxLoops);
             else
-                PrintDiagnostic("Loop #" + (Loop + 1));
+                PrintDiagnostic("Loop #" + (loop + 1));
 
             Collection<T> small_collection = new Collection<T>();
             LargeCollection<T> large_collection = new LargeCollection<T>();
 
             Random rand;
-            InitSeed(Loop, out rand);
+            InitSeed(loop, out rand);
 
             for (int Step = 0; Step < MaxSteps || Executed < ExpectedExecuted; Step++)
             {
                 OldExecuted = Executed;
-                if (!(Status = UpdateTest_collection(small_collection, large_collection, Loop, Step, rand, handler, ref Executed)).Succeeded)
+                if (!(Status = UpdateTest_collection(small_collection, large_collection, loop, Step, rand, handler, ref Executed)).Succeeded)
                     return Status;
 
                 if (Step < MaxSteps || OldExecuted != Executed)
-                    if (!(Status = IsEqual_collections(small_collection, large_collection, Loop, Step)).Succeeded)
+                    if (!(Status = IsEqual_collections(small_collection, large_collection, loop, Step)).Succeeded)
                         return Status;
             }
 
             return TestStatus.Success;
         }
 
-        private static TestStatus UpdateTest_collection(Collection<T> small_collection, LargeCollection<T> large_collection, int Loop, int Step, Random rand, CreationHandler<T> handler, ref int Executed)
+        private static TestStatus UpdateTest_collection(Collection<T> small_collection, LargeCollection<T> large_collection, int loop, int step, Random rand, CreationHandler<T> handler, ref int executed)
         {
             int Count = small_collection.Count;
             int OperationMax = typeof(CollectionOperation).GetEnumValues().Length;
@@ -5138,53 +5139,57 @@ namespace Test
                 case CollectionOperation.Set:
                     if (Count > 0)
                     {
-                        Executed |= 0x01;
+                        executed |= 0x01;
 
                         Index = rand.Next(Count);
                         Item = handler(rand, MaxIntValue);
                         small_collection[Index] = Item;
                         large_collection[Index] = Item;
                     }
+
                     return TestStatus.Success;
 
                 case CollectionOperation.Add:
                     if (Count < MaxSize)
                     {
-                        Executed |= 0x02;
+                        executed |= 0x02;
 
                         Item = handler(rand, MaxIntValue);
                         small_collection.Add(Item);
                         large_collection.Add(Item);
                     }
+
                     return TestStatus.Success;
 
                 case CollectionOperation.Clear:
                     Odds = rand.Next(ClearOperationOdds);
                     if (Odds == 0)
                     {
-                        Executed |= 0x04;
+                        executed |= 0x04;
 
                         small_collection.Clear();
                         large_collection.Clear();
                     }
+
                     return TestStatus.Success;
 
                 case CollectionOperation.Insert:
                     if (Count < MaxSize)
                     {
-                        Executed |= 0x08;
+                        executed |= 0x08;
 
                         Index = rand.Next(Count + 1);
                         Item = handler(rand, MaxIntValue);
                         small_collection.Insert(Index, Item);
                         large_collection.Insert(Index, Item);
                     }
+
                     return TestStatus.Success;
 
                 case CollectionOperation.Remove:
                     if (Count > 0)
                     {
-                        Executed |= 0x10;
+                        executed |= 0x10;
 
                         Index = rand.Next(Count * 2);
                         if (Index < Count)
@@ -5194,19 +5199,21 @@ namespace Test
                         bool SmallRemoved = small_collection.Remove(Item);
                         bool LargeRemoved = large_collection.Remove(Item);
                         if (SmallRemoved != LargeRemoved)
-                            return TestStatus.Failed("Collection<" + typeof(T).Name + ">, Remove, " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("Collection<" + typeof(T).Name + ">, Remove, " + "Loop#" + loop + ", Step#" + step);
                     }
+
                     return TestStatus.Success;
 
                 case CollectionOperation.RemoveAt:
                     if (Count > 0)
                     {
-                        Executed |= 0x20;
+                        executed |= 0x20;
 
                         Index = rand.Next(Count);
                         small_collection.RemoveAt(Index);
                         large_collection.RemoveAt(Index);
                     }
+
                     return TestStatus.Success;
 
                 default:
@@ -5214,24 +5221,24 @@ namespace Test
             }
         }
 
-        private static TestStatus IsEqual_collections(Collection<T> small_collection, LargeCollection<T> large_collection, int Loop, int Step)
+        private static TestStatus IsEqual_collections(Collection<T> small_collection, LargeCollection<T> large_collection, int loop, int step)
         {
             if (small_collection.Count != large_collection.Count)
-                return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Count, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Count, " + "Loop#" + loop + ", Step#" + step);
 
             int Count = small_collection.Count;
 
             for (int i = 0; i < Count; i++)
                 if (CompareTwoObjects(small_collection[i], large_collection[i]) != 0)
-                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare getter, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare getter, " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 if (small_collection.Contains(small_collection[i]) != large_collection.Contains(large_collection[i]))
-                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + loop + ", Step#" + step);
 
             T t = default(T);
             if (small_collection.Contains(t) != large_collection.Contains(t))
-                return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + loop + ", Step#" + step);
 
             T[] small_array = new T[Count];
             T[] large_array = new T[Count];
@@ -5239,12 +5246,12 @@ namespace Test
             large_collection.CopyTo(large_array, 0);
 
             for (int i = 0; i < Count; i++)
-                if (CompareTwoObjects(small_array[i],large_array[i]) != 0)
-                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare CopyTo, " + "Loop#" + Loop + ", Step#" + Step);
+                if (CompareTwoObjects(small_array[i], large_array[i]) != 0)
+                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare CopyTo, " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 if (small_collection.IndexOf(small_collection[i]) != large_collection.IndexOf(large_collection[i]))
-                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("Collection<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + loop + ", Step#" + step);
 
             return TestStatus.Success;
         }
@@ -5269,20 +5276,20 @@ namespace Test
             TrimExcess,
         }
 
-        private static TestStatus SimultaneousTest_lists(int MaxLoops, CreationHandler<T> handler)
+        private static TestStatus SimultaneousTest_lists(int maxLoops, CreationHandler<T> handler)
         {
             PrintDiagnostic("Comparing List<T> and LargeList<T>");
 
             TestStatus Status;
 
-            for (int Loop = 0; Loop < MaxLoops; Loop++)
-                if (!(Status = SimultaneousTest_lists(Loop, MaxLoops, handler)).Succeeded)
+            for (int Loop = 0; Loop < maxLoops; Loop++)
+                if (!(Status = SimultaneousTest_lists(Loop, maxLoops, handler)).Succeeded)
                     return Status;
 
             return TestStatus.Success;
         }
 
-        public static TestStatus SimultaneousTest_lists(int Loop, int MaxLoops, CreationHandler<T> handler)
+        public static TestStatus SimultaneousTest_lists(int loop, int maxLoops, CreationHandler<T> handler)
         {
             TestStatus Status;
             int MaxSteps = 1;
@@ -5294,32 +5301,32 @@ namespace Test
             int ExpectedExecuted = 0x3FFF;
 #endif
 
-            if (MaxLoops > 0)
-                PrintDiagnostic("Loop #" + (Loop + 1) + "/" + MaxLoops);
+            if (maxLoops > 0)
+                PrintDiagnostic("Loop #" + (loop + 1) + "/" + maxLoops);
             else
-                PrintDiagnostic("Loop #" + (Loop + 1));
+                PrintDiagnostic("Loop #" + (loop + 1));
 
             List<T> small_list = new List<T>();
             LargeList<T> large_list = new LargeList<T>();
 
             Random rand;
-            InitSeed(Loop, out rand);
+            InitSeed(loop, out rand);
 
             for (int Step = 0; Step < MaxSteps || Executed < ExpectedExecuted; Step++)
             {
                 OldExecuted = Executed;
-                if (!(Status = UpdateTest_list(small_list, large_list, Loop, Step, rand, handler, ref Executed)).Succeeded)
+                if (!(Status = UpdateTest_list(small_list, large_list, loop, Step, rand, handler, ref Executed)).Succeeded)
                     return Status;
 
                 if (Step < MaxSteps || OldExecuted != Executed)
-                    if (!(Status = IsEqual_lists(small_list, large_list, Loop, Step)).Succeeded)
+                    if (!(Status = IsEqual_lists(small_list, large_list, loop, Step)).Succeeded)
                         return Status;
             }
 
             return TestStatus.Success;
         }
 
-        private static TestStatus UpdateTest_list(List<T> small_list, LargeList<T> large_list, int Loop, int Step, Random rand, CreationHandler<T> handler, ref int Executed)
+        private static TestStatus UpdateTest_list(List<T> small_list, LargeList<T> large_list, int loop, int step, Random rand, CreationHandler<T> handler, ref int executed)
         {
             int Count = small_list.Count;
             int OperationMax = typeof(ListOperation).GetEnumValues().Length;
@@ -5327,42 +5334,44 @@ namespace Test
             T Item;
             int Odds, Index, Size;
 
-            //PrintDiagnostic("Executing: " + Operation);
-
+            // PrintDiagnostic("Executing: " + Operation);
             switch (Operation)
             {
                 case ListOperation.Set:
                     if (Count > 0)
                     {
-                        Executed |= 0x01;
+                        executed |= 0x01;
 
                         Index = rand.Next(Count);
                         Item = handler(rand, MaxIntValue);
                         small_list[Index] = Item;
                         large_list[Index] = Item;
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.SetCapacity:
                     if (Count < MaxSize)
                     {
-                        Executed |= 0x02;
+                        executed |= 0x02;
 
                         Size = Count + rand.Next(MaxSize - Count);
                         small_list.Capacity = Size;
                         large_list.Capacity = Size;
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Add:
                     if (Count < MaxSize)
                     {
-                        Executed |= 0x04;
+                        executed |= 0x04;
 
                         Item = handler(rand, MaxIntValue);
                         small_list.Add(Item);
                         large_list.Add(Item);
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.AddRange:
@@ -5371,7 +5380,7 @@ namespace Test
                         Size = rand.Next(MaxSize - Count);
                         if (Size > 0)
                         {
-                            Executed |= 0x08;
+                            executed |= 0x08;
 
                             List<T> collection = new List<T>();
                             for (int i = 0; i < Size; i++)
@@ -5379,33 +5388,37 @@ namespace Test
                                 Item = handler(rand, MaxIntValue);
                                 collection.Add(Item);
                             }
+
                             small_list.AddRange(collection);
                             large_list.AddRange(collection);
                         }
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Clear:
                     Odds = rand.Next(ClearOperationOdds);
                     if (Odds == 0)
                     {
-                        Executed |= 0x10;
+                        executed |= 0x10;
 
                         small_list.Clear();
                         large_list.Clear();
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Insert:
                     if (Count < MaxSize)
                     {
-                        Executed |= 0x20;
+                        executed |= 0x20;
 
                         Index = rand.Next(Count + 1);
                         Item = handler(rand, MaxIntValue);
                         small_list.Insert(Index, Item);
                         large_list.Insert(Index, Item);
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.InsertRange:
@@ -5414,7 +5427,7 @@ namespace Test
                         Size = rand.Next(MaxSize - Count);
                         if (Size > 0)
                         {
-                            Executed |= 0x40;
+                            executed |= 0x40;
 
                             Index = rand.Next(Count + 1);
                             List<T> collection = new List<T>();
@@ -5423,16 +5436,18 @@ namespace Test
                                 Item = handler(rand, MaxIntValue);
                                 collection.Add(Item);
                             }
+
                             small_list.InsertRange(Index, collection);
                             large_list.InsertRange(Index, collection);
                         }
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Remove:
                     if (Count > 0)
                     {
-                        Executed |= 0x80;
+                        executed |= 0x80;
 
                         Index = rand.Next(Count * 2);
                         if (Index < Count)
@@ -5442,32 +5457,35 @@ namespace Test
                         bool SmallRemoved = small_list.Remove(Item);
                         bool LargeRemoved = large_list.Remove(Item);
                         if (SmallRemoved != LargeRemoved)
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, Remove, " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, Remove, " + "Loop#" + loop + ", Step#" + step);
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.RemoveAll:
                     if (Count > 0)
                     {
-                        Executed |= 0x100;
+                        executed |= 0x100;
 
                         T MaxItem = handler(rand, MaxSize);
                         long SmallRemoved = small_list.RemoveAll((item) => { return CompareTwoObjects(item, MaxItem) > 0; });
                         long LargeRemoved = large_list.RemoveAll((item) => { return CompareTwoObjects(item, MaxItem) > 0; });
                         if (SmallRemoved != LargeRemoved)
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, RemoveAll, " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, RemoveAll, " + "Loop#" + loop + ", Step#" + step);
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.RemoveAt:
                     if (Count > 0)
                     {
-                        Executed |= 0x200;
+                        executed |= 0x200;
 
                         Index = rand.Next(Count);
                         small_list.RemoveAt(Index);
                         large_list.RemoveAt(Index);
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.RemoveRange:
@@ -5477,12 +5495,13 @@ namespace Test
                         Size = rand.Next(Count - Index);
                         if (Size > 0)
                         {
-                            Executed |= 0x400;
+                            executed |= 0x400;
 
                             small_list.RemoveRange(Index, Size);
                             large_list.RemoveRange(Index, Size);
                         }
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Reverse:
@@ -5494,7 +5513,7 @@ namespace Test
                     }
                     else
                     {
-                        Executed |= 0x800;
+                        executed |= 0x800;
 
                         Index = rand.Next(Count);
                         Size = rand.Next(Count - Index);
@@ -5504,6 +5523,7 @@ namespace Test
                             large_list.Reverse(Index, Size);
                         }
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.Sort:
@@ -5515,7 +5535,7 @@ namespace Test
                     }
                     else
                     {
-                        Executed |= 0x1000;
+                        executed |= 0x1000;
 
                         Comparer<T> comparer;
                         if (Odds > SortOperationOdds / 2)
@@ -5530,10 +5550,11 @@ namespace Test
                             large_list.Sort(Index, Size, comparer);
                         }
                     }
+
                     return TestStatus.Success;
 
                 case ListOperation.TrimExcess:
-                    Executed |= 0x2000;
+                    executed |= 0x2000;
                     small_list.TrimExcess();
                     large_list.TrimExcess();
                     return TestStatus.Success;
@@ -5543,19 +5564,19 @@ namespace Test
             }
         }
 
-        private static TestStatus IsEqual_lists(List<T> small_list, LargeList<T> large_list, int Loop, int Step)
+        private static TestStatus IsEqual_lists(List<T> small_list, LargeList<T> large_list, int loop, int step)
         {
             if (small_list.Capacity >= 4 && small_list.Capacity * 3 < large_list.Capacity)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Capacity, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Capacity, " + "Loop#" + loop + ", Step#" + step);
 
             if (small_list.Count != large_list.Count)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Count, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Count, " + "Loop#" + loop + ", Step#" + step);
 
             int Count = small_list.Count;
 
             for (int i = 0; i < Count; i++)
                 if (CompareTwoObjects(small_list[i], large_list[i]) != 0)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare getter, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare getter, " + "Loop#" + loop + ", Step#" + step);
 
             List<T> small_sorted_list = new List<T>(small_list);
             LargeList<T> large_sorted_list = new LargeList<T>(large_list);
@@ -5566,14 +5587,14 @@ namespace Test
             long SmallSearchresult = small_sorted_list.BinarySearch(t);
             long LargeSearchresult = large_sorted_list.BinarySearch(t);
             if (SmallSearchresult != LargeSearchresult)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
             {
                 SmallSearchresult = small_sorted_list.BinarySearch(small_sorted_list[i]);
                 LargeSearchresult = large_sorted_list.BinarySearch(large_sorted_list[i]);
                 if (SmallSearchresult != LargeSearchresult)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item#" + i +") (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item#" + i + ") (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + loop + ", Step#" + step);
             }
 
             Comparer<T> comparer;
@@ -5584,43 +5605,44 @@ namespace Test
             SmallSearchresult = small_list.BinarySearch(t, comparer);
             LargeSearchresult = large_list.BinarySearch(t, comparer);
             if (SmallSearchresult != LargeSearchresult)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item, comparer) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item, comparer) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
             {
                 SmallSearchresult = small_list.BinarySearch(small_list[i], comparer);
                 LargeSearchresult = large_list.BinarySearch(large_list[i], comparer);
                 if (SmallSearchresult != LargeSearchresult)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item#" + i + ", comparer) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(item#" + i + ", comparer) (" + SmallSearchresult + ", " + LargeSearchresult + "), " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int j = 0; j < Count; j++)
                 for (int k = 0; j + k < Count; k++)
                     if (small_list.BinarySearch(j, k, t, comparer) != large_list.BinarySearch(j, k, t, comparer))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(index, count, item, comparer), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(index, count, item, comparer), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 for (int j = 0; j < Count; j++)
                     for (int k = 0; j + k < Count; k++)
                         if (small_list.BinarySearch(j, k, small_list[i], comparer) != large_list.BinarySearch(j, k, large_list[i], comparer))
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(index, count, item, comparer), " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare BinarySearch(index, count, item, comparer), " + "Loop#" + loop + ", Step#" + step);
 
             if (small_list.Contains(t) != large_list.Contains(t))
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 if (small_list.Contains(small_list[i]) != large_list.Contains(large_list[i]))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Contains, " + "Loop#" + loop + ", Step#" + step);
 
             Converter<T, int> converter = (T item) => { return MaxSize - 1 - ItemToInt(item); };
 
-            //small_list.Add(default(T));
+            // small_list.Add(default(T));
             List<int> small_converted = small_list.ConvertAll(converter);
-            //large_list.Add(default(T));
+
+            // large_list.Add(default(T));
             LargeList<int> large_converted = large_list.ConvertAll(converter);
             for (int i = 0; i < Count; i++)
                 if (small_converted[i] != large_converted[i])
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ConvertAll, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ConvertAll, " + "Loop#" + loop + ", Step#" + step);
 
             T[] small_array;
             T[] large_array;
@@ -5634,7 +5656,7 @@ namespace Test
 
             for (int i = 0; i < Count; i++)
                 if (CompareTwoObjects(small_array[i], large_array[i]) != 0)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(array), " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(array), " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
             {
@@ -5645,7 +5667,7 @@ namespace Test
 
                 for (int i = 0; i < Count; i++)
                     if (CompareTwoObjects(small_array[j + i], large_array[j + i]) != 0)
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(array,index), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(array,index), " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int j = 0; j < Count; j++)
@@ -5659,7 +5681,7 @@ namespace Test
 
                         for (int i = 0; i < k; i++)
                             if (CompareTwoObjects(small_array[l + i], large_array[l + i]) != 0)
-                                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(index,array,index,count), " + "Loop#" + Loop + ", Step#" + Step);
+                                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare CopyTo(index,array,index,count), " + "Loop#" + loop + ", Step#" + step);
                     }
 
             Predicate<T> match;
@@ -5668,14 +5690,14 @@ namespace Test
             {
                 match = (item) => { return (ItemToInt(item) & 0xF) == i; };
                 if (small_list.Exists(match) != large_list.Exists(match))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Exists, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Exists, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int i = 0; i < MaxIntValue; i++)
             {
                 match = (item) => { return item != null && (ItemToInt(item) % MaxIntValue) == i; };
                 if (CompareTwoObjects(small_list.Find(match), large_list.Find(match)) != 0)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Find, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Find, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int j = 0; j < MaxIntValue; j++)
@@ -5685,13 +5707,13 @@ namespace Test
                 LargeList<T> large_find = large_list.FindAll(match);
 
                 if (small_find.Count != large_find.Count)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindAll, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindAll, " + "Loop#" + loop + ", Step#" + step);
                 else
                 {
                     int FindCount = small_find.Count;
                     for (int i = 0; i < FindCount; i++)
                         if (CompareTwoObjects(small_find[i], large_find[i]) != 0)
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindAll, " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindAll, " + "Loop#" + loop + ", Step#" + step);
                 }
             }
 
@@ -5699,7 +5721,7 @@ namespace Test
             {
                 match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                 if (small_list.FindIndex(match) != large_list.FindIndex(match))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int j = 0; j < Count; j++)
@@ -5707,7 +5729,7 @@ namespace Test
                 {
                     match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                     if (small_list.FindIndex(j, match) != large_list.FindIndex(j, match))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex(index,match), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex(index,match), " + "Loop#" + loop + ", Step#" + step);
                 }
 
             for (int j = 0; j < Count; j++)
@@ -5716,21 +5738,21 @@ namespace Test
                     {
                         match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                         if (small_list.FindIndex(j, k, match) != large_list.FindIndex(j, k, match))
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex(index,count,match), " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindIndex(index,count,match), " + "Loop#" + loop + ", Step#" + step);
                     }
 
             for (int i = 0; i < MaxIntValue; i++)
             {
                 match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                 if (CompareTwoObjects(small_list.FindLast(match), large_list.FindLast(match)) != 0)
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLast, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLast, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int i = 0; i < MaxIntValue; i++)
             {
                 match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                 if (small_list.FindLastIndex(match) != large_list.FindLastIndex(match))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int j = 0; j < Count; j++)
@@ -5741,7 +5763,7 @@ namespace Test
                     long LargeFindResult = large_list.FindLastIndex(Count - 1 - j, match);
 
                     if (SmallFindResult != LargeFindResult)
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex(index,match), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex(index,match), " + "Loop#" + loop + ", Step#" + step);
                 }
 
             for (int j = 0; j < Count; j++)
@@ -5750,11 +5772,11 @@ namespace Test
                     {
                         match = (item) => { return (ItemToInt(item) % MaxIntValue) == i; };
                         if (small_list.FindLastIndex(Count - 1 - j, k, match) != large_list.FindLastIndex(Count - 1 - j, k, match))
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex(index,count,match), " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindLastIndex(index,count,match), " + "Loop#" + loop + ", Step#" + step);
                     }
 
             int Total;
-            Action<T> action = (item) => { Total = (ItemToInt(item) % MaxIntValue) * 1103515245 + 12345; };
+            Action<T> action = (item) => { Total = ((ItemToInt(item) % MaxIntValue) * 1103515245) + 12345; };
             Total = 1;
             small_list.ForEach(action);
             int SmallTotal = Total;
@@ -5763,7 +5785,7 @@ namespace Test
             int LargeTotal = Total;
 
             if (SmallTotal != LargeTotal)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ForEach, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ForEach, " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
                 for (int k = 0; j + k < Count; k++)
@@ -5772,87 +5794,87 @@ namespace Test
                     LargeList<T> large_range = large_list.GetRange(j, k);
 
                     if (small_range.Count != large_range.Count)
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare GetRange, " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare GetRange, " + "Loop#" + loop + ", Step#" + step);
                     else
                     {
                         int FindCount = small_range.Count;
                         for (int i = 0; i < FindCount; i++)
                             if (CompareTwoObjects(small_range[i], large_range[i]) != 0)
-                                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare GetRange, " + "Loop#" + Loop + ", Step#" + Step);
+                                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare GetRange, " + "Loop#" + loop + ", Step#" + step);
                     }
                 }
 
             if (small_list.IndexOf(t) != large_list.IndexOf(t))
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 if (small_list.IndexOf(small_list[i]) != large_list.IndexOf(large_list[i]))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf, " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
                 if (small_list.IndexOf(t, j) != large_list.IndexOf(t, j))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index), " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 for (int j = 0; j < Count; j++)
                     if (small_list.IndexOf(small_list[i], j) != large_list.IndexOf(large_list[i], j))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index), " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
                 for (int k = 0; j + k < Count; k++)
                     if (small_list.IndexOf(t, j, k) != large_list.IndexOf(t, j, k))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index,count), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index,count), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 for (int j = 0; j < Count; j++)
                     for (int k = 0; j + k < Count; k++)
                         if (small_list.IndexOf(small_list[i], j, k) != large_list.IndexOf(large_list[i], j, k))
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index,count), " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare IndexOf(item,index,count), " + "Loop#" + loop + ", Step#" + step);
 
             if (small_list.LastIndexOf(t) != large_list.LastIndexOf(t))
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf, " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 if (small_list.LastIndexOf(small_list[i]) != large_list.LastIndexOf(large_list[i]))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf, " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
                 if (small_list.LastIndexOf(t, Count - 1 - j) != large_list.LastIndexOf(t, Count - 1 - j))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index), " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 for (int j = 0; j < Count; j++)
                     if (small_list.LastIndexOf(small_list[i], Count - 1 - j) != large_list.LastIndexOf(large_list[i], Count - 1 - j))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index), " + "Loop#" + loop + ", Step#" + step);
 
             for (int j = 0; j < Count; j++)
                 for (int k = 0; j + k < Count; k++)
                     if (small_list.LastIndexOf(t, Count - 1 - j, k) != large_list.LastIndexOf(t, Count - 1 - j, k))
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index,count), " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index,count), " + "Loop#" + loop + ", Step#" + step);
 
             for (int i = 0; i < Count; i++)
                 for (int j = 0; j < Count; j++)
                     for (int k = 0; j + k < Count; k++)
                         if (small_list.LastIndexOf(small_list[i], Count - 1 - j, k) != large_list.LastIndexOf(large_list[i], Count - 1 - j, k))
-                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index,count), " + "Loop#" + Loop + ", Step#" + Step);
+                            return TestStatus.Failed("List<" + typeof(T).Name + ">, compare LastIndexOf(item,index,count), " + "Loop#" + loop + ", Step#" + step);
 
             small_array = small_list.ToArray();
             large_array = large_list.ToArray();
             if (small_array.Length != large_array.Length)
-                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ToArray, " + "Loop#" + Loop + ", Step#" + Step);
+                return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ToArray, " + "Loop#" + loop + ", Step#" + step);
             else
             {
                 int ArrayLength = small_array.Length;
                 for (int i = 0; i < ArrayLength; i++)
                     if (CompareTwoObjects(small_array[i], large_array[i]) != 0)
-                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ToArray, " + "Loop#" + Loop + ", Step#" + Step);
+                        return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ToArray, " + "Loop#" + loop + ", Step#" + step);
             }
 
             for (int i = 0; i < MaxIntValue; i++)
             {
                 match = (item) => { return (ItemToInt(item) % MaxIntValue) != i; };
                 if (small_list.TrueForAll(match) != large_list.TrueForAll(match))
-                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare TrueForAll, " + "Loop#" + Loop + ", Step#" + Step);
+                    return TestStatus.Failed("List<" + typeof(T).Name + ">, compare TrueForAll, " + "Loop#" + loop + ", Step#" + step);
             }
 
             return TestStatus.Success;

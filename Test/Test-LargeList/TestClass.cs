@@ -1,13 +1,13 @@
-﻿using System;
-
-namespace Test
+﻿namespace TestLargeList
 {
+    using System;
+
     public class TestClass : IComparable, IComparable<TestClass>
     {
-        public TestClass(int IntegerValue, string StringValue)
+        public TestClass(int integerValue, string stringValue)
         {
-            this.IntegerValue = IntegerValue;
-            this.StringValue = StringValue;
+            IntegerValue = integerValue;
+            StringValue = stringValue;
         }
 
         public int IntegerValue { get; private set; }
@@ -27,13 +27,10 @@ namespace Test
         {
             if (other == null)
                 return 1;
-
             else if (IntegerValue > other.IntegerValue)
                 return 1;
-
             else if (IntegerValue < other.IntegerValue)
                 return -1;
-
             else
                 return StringValue.CompareTo(other.StringValue);
         }

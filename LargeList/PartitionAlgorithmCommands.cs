@@ -160,7 +160,6 @@
                 SegmentTable[segmentIndex].MakeRoom(elementIndex, (int)RemainingCount, out effectiveExtended);
                 Capacity += effectiveExtended;
             }
-
             else
             {
                 // Otherwise, we're going to need to move elements upward.
@@ -322,6 +321,7 @@
                         SegmentTable.Remove(Segment);
                         SegmentTable.Add(Segment);
                     }
+
                     break;
                 }
 

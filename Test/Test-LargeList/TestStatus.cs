@@ -1,14 +1,14 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Test
+﻿namespace TestLargeList
 {
+    using System.Runtime.CompilerServices;
+
     public class TestStatus
     {
-        public static TestStatus Success = new TestStatus();
+        public static TestStatus Success { get; } = new TestStatus();
 
-        public static TestStatus Failed(string Name, [CallerFilePath] string File = "", [CallerLineNumber] int Line = 0)
+        public static TestStatus Failed(string name, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
         {
-            return new TestStatus(Name, File, Line);
+            return new TestStatus(name, file, line);
         }
 
         private TestStatus()
@@ -18,12 +18,12 @@ namespace Test
             Line = -1;
         }
 
-        private TestStatus(string Name, string File, int Line)
+        private TestStatus(string name, string file, int line)
         {
             Succeeded = false;
-            this.Name = Name;
-            this.File = File;
-            this.Line = Line;
+            Name = name;
+            File = file;
+            Line = line;
         }
 
         public bool Succeeded { get; private set; }

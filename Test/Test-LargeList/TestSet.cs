@@ -1,12 +1,12 @@
-﻿using LargeList;
-using NUnit.Framework;
-using System;
-using System.Globalization;
-using System.Reflection;
-using System.Threading;
-
-namespace Test
+﻿namespace TestLargeList
 {
+    using System;
+    using System.Globalization;
+    using System.Reflection;
+    using System.Threading;
+    using LargeList;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestSet
     {
@@ -29,6 +29,7 @@ namespace Test
             {
                 LargeListAssembly = null;
             }
+
             Assume.That(LargeListAssembly != null);
 
             LargeListAssemblyAttribute Attribute = LargeListAssembly.GetCustomAttribute(typeof(LargeListAssemblyAttribute)) as LargeListAssemblyAttribute;
@@ -42,11 +43,11 @@ namespace Test
             TestLargeList<TestClass>.Init(IsStrict, DefaultMaxSegmentCapacity);
         }
 
-        const int MaxCollectionLoops = 10;
+        private const int MaxCollectionLoops = 10;
 #if DEBUG
-        const int MaxListLoops = 100;
+        private const int MaxListLoops = 100;
 #else
-        const int MaxListLoops = 7;
+        private const int MaxListLoops = 7;
 #endif
 
         #region int
@@ -86,12 +87,13 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionIntegerSimultaneous_collections(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1, 
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxCollectionLoops)
@@ -102,15 +104,16 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionIntegerSimultaneous_lists(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1,
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            if (LoopDigit1 > 2 || LoopDigit0 > 2)
+            if (loopDigit1 > 2 || loopDigit0 > 2)
                 return;
 
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxListLoops)
@@ -121,9 +124,9 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        private static int CreateInt(Random rand, int MaxIntValue)
+        private static int CreateInt(Random rand, int maxIntValue)
         {
-            return rand.Next(MaxIntValue);
+            return rand.Next(maxIntValue);
         }
         #endregion
 
@@ -164,12 +167,13 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionStringSimultaneous_collections(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1,
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxCollectionLoops)
@@ -180,15 +184,16 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionStringSimultaneous_lists(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1,
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            if (LoopDigit1 > 2 || LoopDigit0 > 2)
+            if (loopDigit1 > 2 || loopDigit0 > 2)
                 return;
 
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxListLoops)
@@ -199,9 +204,9 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        private static string CreateString(Random rand, int MaxIntValue)
+        private static string CreateString(Random rand, int maxIntValue)
         {
-            return rand.Next(MaxIntValue).ToString();
+            return rand.Next(maxIntValue).ToString();
         }
         #endregion
 
@@ -242,12 +247,13 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionTestClassSimultaneous_collections(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1,
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxCollectionLoops)
@@ -258,15 +264,16 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        [Test, Combinatorial]
+        [Test]
+        [Combinatorial]
         public static void TestSessionTestClassSimultaneous_lists(
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit1,
-            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int LoopDigit0)
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit1,
+            [Values(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)] int loopDigit0)
         {
-            if (LoopDigit1 > 2 || LoopDigit0 > 2)
+            if (loopDigit1 > 2 || loopDigit0 > 2)
                 return;
 
-            int Loop = LoopDigit1 * 10 + LoopDigit0;
+            int Loop = (loopDigit1 * 10) + loopDigit0;
             TestStatus Status;
 
             if (Loop < MaxListLoops)
@@ -277,10 +284,10 @@ namespace Test
             Assert.That(Status.Succeeded, Status.Name);
         }
 
-        private static TestClass CreateTestClass(Random rand, int MaxIntValue)
+        private static TestClass CreateTestClass(Random rand, int maxIntValue)
         {
-            int IntegerValue = rand.Next(MaxIntValue);
-            string StringValue = rand.Next(MaxIntValue).ToString();
+            int IntegerValue = rand.Next(maxIntValue);
+            string StringValue = rand.Next(maxIntValue).ToString();
             return new TestClass(IntegerValue, StringValue);
         }
         #endregion

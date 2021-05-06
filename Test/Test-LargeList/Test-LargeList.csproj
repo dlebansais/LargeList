@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0-windows</TargetFrameworks>
@@ -6,19 +6,30 @@
     <Platforms>x64</Platforms>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Test-LargeList</AssemblyName>
+    <RootNamespace>TestLargeList</RootNamespace>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>SA0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Codecov" Version="1.12.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1">
+    <PackageReference Include="Codecov" Version="1.13.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.333">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NUnit" Version="3.12.0">
+    <PackageReference Include="NUnit" Version="3.13.2">
         <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="NUnit.ConsoleRunner" Version="3.11.1">
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.12.0">
         <NoWarn>NU1701</NoWarn>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
