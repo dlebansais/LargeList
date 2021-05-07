@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0-windows</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
     <Platforms>x64</Platforms>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Test-LargeList</AssemblyName>
@@ -14,6 +15,10 @@
   <PropertyGroup>
     <NoWarn>SA0001</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Codecov" Version="1.13.0" />
