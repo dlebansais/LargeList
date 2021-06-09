@@ -216,13 +216,14 @@
                 Partition.SetItem(SegmentIndex, ElementIndex, value);
             }
         }
+
 #pragma warning disable SA1600
         object ILargeList.this[long index]
-#pragma warning restore SA1600
         {
             get { return this[index]!; }
             set { this[index] = (T)value; }
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Gets or sets the total number of elements the internal data structure can hold without resizing.
@@ -282,14 +283,15 @@
             AssertInvariant();
 #endif
         }
+
 #pragma warning disable SA1600
         long ILargeList.Add(object value)
-#pragma warning restore SA1600
         {
             long Index = Count;
             Add((T)value);
             return Index;
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Adds the elements of the specified collection to the end of the <see cref="LargeList{T}"/>.
@@ -411,12 +413,13 @@
         {
             return Partition.Contains(item);
         }
+
 #pragma warning disable SA1600
         bool ILargeList.Contains(object item)
-#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Converts the elements in the current <see cref="LargeList{T}"/> to another type, and returns a list containing the converted elements.
@@ -505,9 +508,9 @@
 
             CopyTo(0, array, arrayIndex, Count);
         }
+
 #pragma warning disable SA1600
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
-#pragma warning restore SA1600
         {
 #if STRICT
             if (array == null)
@@ -545,6 +548,7 @@
             AssertInvariant();
 #endif
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Copies a range of elements from the <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the specified index of the target array.
@@ -925,18 +929,20 @@
         {
             return new LargeEnumerator(Partition, 0, Count);
         }
+
 #pragma warning disable SA1600
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
-#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
+#pragma warning restore SA1600
+
 #pragma warning disable SA1600
         IEnumerator IEnumerable.GetEnumerator()
-#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Creates a shallow copy of a range of elements in the source <see cref="LargeList{T}"/>.
@@ -1085,12 +1091,13 @@
 
             return Partition.IndexOf(item, startIndex, count);
         }
+
 #pragma warning disable SA1600
         long ILargeList.IndexOf(object item)
-#pragma warning restore SA1600
         {
             return IndexOf((T)item, 0, Count);
         }
+#pragma warning restore SA1600
 #endif
 
         /// <summary>
@@ -1119,12 +1126,13 @@
             AssertInvariant();
 #endif
         }
+
 #pragma warning disable SA1600
         void ILargeList.Insert(long index, object item)
-#pragma warning restore SA1600
         {
             Insert(index, (T)item);
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Inserts the elements of a collection into the <see cref="LargeList{T}"/> at the specified index.
@@ -1289,10 +1297,10 @@
 
 #pragma warning disable SA1600
         void ILargeList.Remove(object item)
-#pragma warning restore SA1600
         {
             Remove((T)item);
         }
+#pragma warning restore SA1600
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -1540,6 +1548,7 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
         bool ILargeCollection<T>.IsReadOnly { get { return false; } }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
+
 #pragma warning disable SA1600
         bool ILargeList.IsReadOnly { get { return false; } }
 #pragma warning restore SA1600
@@ -1709,6 +1718,7 @@
             /// The element in the <see cref="LargeList{T}"/> at the current position of the enumerator.
             /// </returns>
             public T Current { get { return Enumerator.Current; } }
+
 #pragma warning disable SA1600 // Elements should be documented
             object IEnumerator.Current { get { return Current !; } }
 #pragma warning restore SA1600 // Elements should be documented
