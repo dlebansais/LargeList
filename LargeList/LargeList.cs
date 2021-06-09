@@ -1286,6 +1286,7 @@
 
             return Result;
         }
+
 #pragma warning disable SA1600
         void ILargeList.Remove(object item)
 #pragma warning restore SA1600

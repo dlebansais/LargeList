@@ -123,7 +123,7 @@
             long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
 
-            for (; ;)
+            while (true)
             {
                 Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
                 Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
@@ -391,7 +391,7 @@
             GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
             GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
 
-            for (; ;)
+            while (true)
             {
                 SplitSortLoop1(Comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
                 SplitSortLoop2(Comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
