@@ -60,7 +60,7 @@ after_build:
 test: off
 
 artifacts:
-  - path: $(APPVEYOR_PROJECT_NAME)/bin/x64/Release/net48/$(APPVEYOR_PROJECT_NAME).exe
+  - path: $(APPVEYOR_PROJECT_NAME)/bin/x64/Release/net48/$(APPVEYOR_PROJECT_NAME).dll
     name: $(APPVEYOR_PROJECT_NAME)
   - path: $(APPVEYOR_PROJECT_NAME)-Debug.*.nupkg
     name: $(APPVEYOR_PROJECT_NAME)-Package-Debug
