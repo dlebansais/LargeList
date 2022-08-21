@@ -3,10 +3,10 @@
 set PROJECTNAME=LargeList
 set TESTPROJECTNAME=Test-%PROJECTNAME%
 
-set OPENCOVER_VERSION=4.7.1189
+set OPENCOVER_VERSION=4.7.1221
 set OPENCOVER=OpenCover.%OPENCOVER_VERSION%
-set CODECOV_VERSION=1.12.2
-set CODECOV=Codecov.%CODECOV_VERSION%
+set CODECOV_VERSION=0.2.4
+set CODECOV=CodecovUploader.%CODECOV_VERSION%
 set NUINT_CONSOLE_VERSION=3.11.1
 set NUINT_CONSOLE=NUnit.ConsoleRunner.%NUINT_CONSOLE_VERSION%
 
@@ -15,7 +15,7 @@ set FRAMEWORK=net48
 
 nuget install OpenCover -Version %OPENCOVER_VERSION% -OutputDirectory packages
 if not exist ".\packages\%OPENCOVER%\tools\OpenCover.Console.exe" goto error_console1
-nuget install CodeCov -Version %CODECOV_VERSION% -OutputDirectory packages
+nuget install CodecovUploader -Version %CODECOV_VERSION% -OutputDirectory packages
 if not exist ".\packages\%CODECOV%\tools\codecov.exe" goto error_console2
 nuget install NUnit.ConsoleRunner -Version %NUINT_CONSOLE_VERSION% -OutputDirectory packages
 if not exist ".\packages\%NUINT_CONSOLE%\tools\nunit3-console.exe" goto error_console3

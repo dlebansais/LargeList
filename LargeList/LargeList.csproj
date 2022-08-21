@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0-windows7.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.333">
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.435">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -47,16 +47,16 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionDir)'!='*Undefined*'">
     <Exec Command="if exist &quot;$(SolutionDir)updatecommit.bat&quot; call &quot;$(SolutionDir)updatecommit.bat&quot; &quot;$(SolutionDir)&quot; &quot;$(TargetPath)&quot;" />
     <Exec Command="if exist &quot;$(SolutionDir)signfile.bat&quot; call &quot;$(SolutionDir)signfile.bat&quot; &quot;$(SolutionDir)&quot; &quot;$(Configuration)-$(Platform)&quot; &quot;$(TargetPath)&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <Exec Command="if not exist &quot;$(SolutionDir)nuget-debug\lib\net5.0&quot; mkdir &quot;$(SolutionDir)nuget-debug\lib\net5.0&quot;" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'=='net5.0-windows'" />
-    <Exec Command="if not exist &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)&quot; mkdir &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)&quot;" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'!='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)nuget-debug\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'=='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'!='net5.0-windows'" />
-    <Exec Command="if not exist &quot;$(SolutionDir)nuget\lib\net5.0&quot; mkdir &quot;$(SolutionDir)nuget\lib\net5.0&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows'" />
-    <Exec Command="if not exist &quot;$(SolutionDir)nuget\lib\$(TargetFramework)&quot; mkdir &quot;$(SolutionDir)nuget\lib\$(TargetFramework)&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)nuget\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.xml&quot; &quot;$(SolutionDir)nuget\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)nuget\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows'" />
-    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.xml&quot; &quot;$(SolutionDir)nuget\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows'" />
+    <Exec Command="if not exist &quot;$(SolutionDir)nuget-debug\lib\net5.0&quot; mkdir &quot;$(SolutionDir)nuget-debug\lib\net5.0&quot;" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'=='net5.0-windows7.0'" />
+    <Exec Command="if not exist &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)&quot; mkdir &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)&quot;" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'!='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)nuget-debug\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'=='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)nuget-debug\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Debug|x64' And '$(TargetFramework)'!='net5.0-windows7.0'" />
+    <Exec Command="if not exist &quot;$(SolutionDir)nuget\lib\net5.0&quot; mkdir &quot;$(SolutionDir)nuget\lib\net5.0&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows7.0'" />
+    <Exec Command="if not exist &quot;$(SolutionDir)nuget\lib\$(TargetFramework)&quot; mkdir &quot;$(SolutionDir)nuget\lib\$(TargetFramework)&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)nuget\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.xml&quot; &quot;$(SolutionDir)nuget\lib\net5.0\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'=='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)nuget\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows7.0'" />
+    <Exec Command="if exist &quot;$(TargetPath)&quot; copy &quot;$(TargetDir)*.xml&quot; &quot;$(SolutionDir)nuget\lib\$(TargetFramework)\&quot; &gt; nul" Condition="'$(Configuration)|$(Platform)'=='Release|x64' And '$(TargetFramework)'!='net5.0-windows7.0'" />
   </Target>
 
 </Project>
