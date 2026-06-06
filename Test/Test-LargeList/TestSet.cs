@@ -1,14 +1,17 @@
-﻿namespace TestLargeList
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA5394 // Do not use insecure randomness
+
+namespace TestLargeList
 {
     using System;
     using System.Globalization;
     using System.Reflection;
     using System.Threading;
-    using LargeList;
+    using LargeCollections;
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestSet
+    internal sealed class TestSet
     {
         [OneTimeSetUp]
         public static void InitTestSession()
@@ -30,10 +33,10 @@
                 LargeListAssembly = null;
             }
 
-            Assume.That(LargeListAssembly != null);
+            Assume.That(LargeListAssembly is not null);
 
-            LargeListAssemblyAttribute Attribute = LargeListAssembly.GetCustomAttribute(typeof(LargeListAssemblyAttribute)) as LargeListAssemblyAttribute;
-            Assume.That(Attribute != null);
+            LargeListAssemblyAttribute Attribute = LargeListAssembly.GetCustomAttribute<LargeListAssemblyAttribute>() as LargeListAssemblyAttribute;
+            Assume.That(Attribute is not null);
 
             bool IsStrict = Attribute.IsStrict;
             int DefaultMaxSegmentCapacity = Attribute.DefaultMaxSegmentCapacity;
@@ -206,7 +209,7 @@
 
         private static string CreateString(Random rand, int maxIntValue)
         {
-            return rand.Next(maxIntValue).ToString();
+            return rand.Next(maxIntValue).ToString(CultureInfo.InvariantCulture);
         }
         #endregion
 
@@ -287,7 +290,7 @@
         private static TestClass CreateTestClass(Random rand, int maxIntValue)
         {
             int IntegerValue = rand.Next(maxIntValue);
-            string StringValue = rand.Next(maxIntValue).ToString();
+            string StringValue = rand.Next(maxIntValue).ToString(CultureInfo.InvariantCulture);
             return new TestClass(IntegerValue, StringValue);
         }
         #endregion

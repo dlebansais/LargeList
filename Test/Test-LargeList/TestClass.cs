@@ -1,23 +1,18 @@
 ﻿namespace TestLargeList
 {
     using System;
+    using System.Globalization;
 
-    public class TestClass : IComparable, IComparable<TestClass>
+    internal sealed class TestClass(int integerValue, string stringValue) : IComparable, IComparable<TestClass>
     {
-        public TestClass(int integerValue, string stringValue)
-        {
-            IntegerValue = integerValue;
-            StringValue = stringValue;
-        }
-
-        public int IntegerValue { get; private set; }
-        public string StringValue { get; private set; }
+        public int IntegerValue { get; } = integerValue;
+        public string StringValue { get; } = stringValue;
 
         public int CompareTo(object obj)
         {
             TestClass Other = obj as TestClass;
 
-            if (Other == null)
+            if (Other is null)
                 return 1;
             else
                 return CompareTo(Other);
@@ -25,19 +20,19 @@
 
         public int CompareTo(TestClass other)
         {
-            if (other == null)
+            if (other is null)
                 return 1;
             else if (IntegerValue > other.IntegerValue)
                 return 1;
             else if (IntegerValue < other.IntegerValue)
                 return -1;
             else
-                return StringValue.CompareTo(other.StringValue);
+                return StringValue.CompareTo(other.StringValue, StringComparison.InvariantCulture);
         }
 
         public override string ToString()
         {
-            return IntegerValue.ToString() + StringValue;
+            return IntegerValue.ToString(CultureInfo.InvariantCulture) + StringValue;
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using LargeList;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using LargeCollections;
 
 #if STRICT
 [assembly: LargeListAssembly(IsStrict = true)]
+[assembly: InternalsVisibleTo("Test-LargeList")]
 #else
 [assembly: LargeListAssembly(IsStrict = false, DefaultMaxSegmentCapacity = LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity)]
 #endif

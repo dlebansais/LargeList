@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections.Generic;
@@ -18,9 +18,7 @@
 #pragma warning restore SA1619 // Generic type parameters should be documented
     {
         #region Commands
-        /// <summary>
-        /// Removes all elements from the <see cref="Partition{T}"/>.
-        /// </summary>
+        /// <inheritdoc cref="IPartition{T}.Clear" />
         public void Clear()
         {
             foreach (ISegment<T> Segment in SegmentTable)
@@ -34,10 +32,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Increases the <see cref="Partition{T}"/>.Capacity by the given amount.
-        /// </summary>
-        /// <param name="extended">The number of elements added to the <see cref="Partition{T}"/>.Capacity.</param>
+        /// <inheritdoc cref="IPartition{T}.ExtendCapacity(long)" />
         public void ExtendCapacity(long extended)
         {
             Debug.Assert(extended >= 0);
@@ -79,10 +74,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Decreases the <see cref="Partition{T}"/>.Capacity by the given amount.
-        /// </summary>
-        /// <param name="trimed">The number of elements substracted to the <see cref="Partition{T}"/>.Capacity.</param>
+        /// <inheritdoc cref="IPartition{T}.TrimCapacity(long)" />
         public void TrimCapacity(long trimed)
         {
             Debug.Assert(trimed >= 0);
@@ -112,7 +104,9 @@
                     Debug.Assert(EmptySegment);
 
                     if (i > 1 && Trimmable == Segment.Capacity)
+                    {
                         RemoveIndex = i - 1;
+                    }
                     else
                     {
                         Debug.Assert(RemainingTrim == Trimmable);
@@ -137,13 +131,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Makes room for a number of elements starting at the specified position. Elements already the specified position and beyond are moved toward the end of the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position at which uninitialized elements should be inserted.</param>
-        /// <param name="elementIndex">The element index of the position at which uninitialized elements should be inserted.</param>
-        /// <param name="cacheIndex">The cache index of the position at which uninitialized elements should be inserted.</param>
-        /// <param name="count">The number of elements to insert.</param>
+        /// <inheritdoc cref="IPartition{T}.MakeRoom(int, int, int, long)" />
         public void MakeRoom(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -252,12 +240,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Replaces the element at the specified position with a new item.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of the replaced element.</param>
-        /// <param name="elementIndex">The element index of the position of the replaced element.</param>
-        /// <param name="item">The item to set.</param>
+        /// <inheritdoc cref="IPartition{T}.SetItem(int, int, T)" />
         public void SetItem(int segmentIndex, int elementIndex, T item)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -269,14 +252,16 @@
 #endif
         }
 
-        /// <summary>
-        /// Replaces a range of elements at the specified position with new items from a collection.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of replaced elements.</param>
-        /// <param name="elementIndex">The element index of the position of replaced elements.</param>
-        /// <param name="collection">The collection containing items to set.</param>
+        /// <inheritdoc cref="IPartition{T}.SetItemRange(int, int, IEnumerable{T})" />
         public void SetItemRange(int segmentIndex, int elementIndex, IEnumerable<T> collection)
         {
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(collection);
+#else
+            if (collection is null)
+                throw new ArgumentNullException(nameof(collection));
+#endif
+
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
             foreach (T item in collection)
@@ -286,7 +271,9 @@
                 SegmentTable[segmentIndex][elementIndex] = item;
 
                 if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+                {
                     elementIndex++;
+                }
                 else
                 {
                     segmentIndex++;
@@ -299,13 +286,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="Partition{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.Remove(T)" />
         public bool Remove(T item)
         {
             bool Result = false;
@@ -334,13 +315,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Removes a range of elements from the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of the first element to remove.</param>
-        /// <param name="elementIndex">The element index of the position of the first element to remove.</param>
-        /// <param name="cacheIndex">The cache index of the position of the first element to remove.</param>
-        /// <param name="count">The number of elements to remove.</param>
+        /// <inheritdoc cref="IPartition{T}.RemoveRange(int, int, int, long)" />
         public void RemoveRange(int segmentIndex, int elementIndex, int cacheIndex, long count)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -360,7 +335,9 @@
                 SegmentTable[segmentIndex].RemoveRange(elementIndex, Removable);
 
                 if (SegmentTable[segmentIndex].Count > 0)
+                {
                     segmentIndex++;
+                }
                 else
                 {
                     ISegment<T> Segment = SegmentTable[segmentIndex];
@@ -383,13 +360,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Removes all the elements that match the conditions defined by the specified predicate.
-        /// </summary>
-        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
-        /// <returns>
-        /// The number of elements removed from the <see cref="Partition{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.RemoveAll(Predicate{T})" />
         public long RemoveAll(Predicate<T> match)
         {
             long RemovedCount = 0;
@@ -409,7 +380,9 @@
                     SegmentCount--;
                 }
                 else
+                {
                     SegmentIndex++;
+                }
             }
 
             Count -= RemovedCount;
@@ -422,14 +395,7 @@
             return RemovedCount;
         }
 
-        /// <summary>
-        /// Reverses the order of the elements in the specified range of the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
-        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
-        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
-        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
-        /// <param name="count">The number of elements in the range.</param>
+        /// <inheritdoc cref="IPartition{T}.Reverse(int, int, int, int, long)" />
         public void Reverse(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count)
         {
             Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
@@ -455,7 +421,9 @@
         private void ReverseLoop(ref int segmentIndexBegin, ref int elementIndexBegin, ref int segmentIndexEnd, ref int elementIndexEnd)
         {
             if (elementIndexEnd > 0)
+            {
                 elementIndexEnd--;
+            }
             else
             {
                 segmentIndexEnd--;
@@ -470,7 +438,9 @@
             SegmentTable[segmentIndexEnd][elementIndexEnd] = item;
 
             if (elementIndexBegin + 1 < SegmentTable[segmentIndexBegin].Count)
+            {
                 elementIndexBegin++;
+            }
             else
             {
                 segmentIndexBegin++;
@@ -479,15 +449,7 @@
             }
         }
 
-        /// <summary>
-        /// Sorts the elements in a range of elements in <see cref="Partition{T}"/> using the specified comparer.
-        /// </summary>
-        /// <param name="segmentIndexBegin">The segment index of the position of the first item in the range.</param>
-        /// <param name="elementIndexBegin">The element index of the position of the first item in the range.</param>
-        /// <param name="segmentIndexEnd">The segment index of the position after the last item in the range.</param>
-        /// <param name="elementIndexEnd">The element index of the position after the last item in the range.</param>
-        /// <param name="count">The number of elements in the range.</param>
-        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
+        /// <inheritdoc cref="IPartition{T}.Sort(int, int, int, int, long, IComparer{T})" />
         public void Sort(int segmentIndexBegin, int elementIndexBegin, int segmentIndexEnd, int elementIndexEnd, long count, IComparer<T> comparer)
         {
             Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
@@ -495,14 +457,16 @@
             Debug.Assert(IsValidPosition(segmentIndexBegin, elementIndexBegin, true));
             Debug.Assert(IsValidPosition(segmentIndexEnd, elementIndexEnd, true));
             Debug.Assert((count == 0 && segmentIndexBegin == segmentIndexEnd && elementIndexBegin == elementIndexEnd) || (count > 0 && ((segmentIndexBegin < segmentIndexEnd) || (segmentIndexBegin == segmentIndexEnd && elementIndexBegin < elementIndexEnd))));
-            Debug.Assert(comparer != null);
+            Debug.Assert(comparer is not null);
 
             if (count > 0)
             {
                 Debug.Assert(QuickSortStack.Count == 0);
 
                 if (elementIndexEnd > 0)
+                {
                     elementIndexEnd--;
+                }
                 else
                 {
                     segmentIndexEnd--;

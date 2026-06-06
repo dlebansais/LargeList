@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -22,20 +22,17 @@
         /// <exception cref="ArgumentNullException"><paramref name="list"/> is null.</exception>
         public ReadOnlyLargeList(LargeList<T> list)
         {
-            if (list == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(list);
+#else
+            if (list is null)
                 throw new ArgumentNullException(nameof(list));
+#endif
 
             List = list;
         }
 
-        /// <summary>
-        /// Gets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>
-        /// The element at the specified index.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="ReadOnlyLargeList{T}.Count"/>.</para></exception>
+        /// <inheritdoc cref="IReadOnlyLargeList{T}.this[long]" />
         public T this[long index]
         {
             get
@@ -46,30 +43,26 @@
                 return List[index];
             }
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList{T}.this[long]" />
         T ILargeList<T>.this[long index]
-#pragma warning restore SA1600
         {
             get { return this[index]; }
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
             set { throw new NotSupportedException(); }
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.this[long]" />
         object ILargeList.this[long index]
-#pragma warning restore SA1600
         {
-            get { return this[index]!; }
+            // ! The interface is not null-aware.
+            get => this[index]!;
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="ReadOnlyLargeList{T}"/> instance.
-        /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="ReadOnlyLargeList{T}"/> instance.
-        /// </returns>
-        public long Count { get { return List.Count; } }
+        /// <inheritdoc cref="ILargeCollection{T}.Count" />
+        public long Count => List.Count;
 
         /// <summary>
         /// Gets the <see cref="ILargeList{T}"/> that the <see cref="ReadOnlyLargeList{T}"/> wraps.
@@ -77,22 +70,16 @@
         /// <returns>
         /// The <see cref="ILargeList{T}"/> that the <see cref="ReadOnlyLargeList{T}"/> wraps.
         /// </returns>
-        protected virtual ILargeList<T> Items { get { return List; } }
+        protected virtual ILargeList<T> Items => List;
 
-        /// <summary>
-        /// Determines whether an element is in the <see cref="ReadOnlyLargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ReadOnlyLargeList{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="ReadOnlyLargeList{T}"/>; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.Contains(T)" />
         public bool Contains(T item)
         {
             return List.Contains(item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.Contains(object)" />
         bool ILargeList.Contains(object item)
-#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
@@ -105,48 +92,61 @@
         /// <exception cref="ArgumentException">The number of elements in the source <see cref="ReadOnlyLargeList{T}"/> is greater than the number of elements that the destination array can contain.</exception>
         public void CopyTo(T[] array)
         {
-            if (array == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(array);
+#else
+            if (array is null)
                 throw new ArgumentNullException(nameof(array));
+#endif
 
             if (Count > array.Length)
-                throw new ArgumentException();
+                throw new ArgumentException("Destination array was not long enough. Check the array's lower bounds.");
 
             List.CopyTo(array);
         }
 
-        /// <summary>
-        /// Copies the entire <see cref="ReadOnlyLargeList{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="ReadOnlyLargeList{T}"/>. The System.Array must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ReadOnlyLargeList{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.CopyTo(T[], int)" />
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (array == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(array);
+#else
+            if (array is null)
                 throw new ArgumentNullException(nameof(array));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(arrayIndex);
+#else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+#endif
 
             if (arrayIndex + Count > array.Length)
-                throw new ArgumentException();
+                throw new ArgumentException("Destination array was not long enough. Check arrayIndex, and the array's lower bounds.");
 
             List.CopyTo(array, arrayIndex);
         }
-#pragma warning disable SA1600
-        void ILargeCollection.CopyTo(Array array, int arrayIndex)
-#pragma warning restore SA1600
-        {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
 
+        /// <inheritdoc cref="ILargeCollection.CopyTo(Array, int)" />
+        void ILargeCollection.CopyTo(Array array, int arrayIndex)
+        {
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(array);
+#else
+            if (array is null)
+                throw new ArgumentNullException(nameof(array));
+#endif
+
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(arrayIndex);
+#else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+#endif
 
             if (arrayIndex + Count > array.Length)
-                throw new ArgumentException();
+                throw new ArgumentException("Destination array was not long enough. Check arrayIndex, and the array's lower bounds.");
 
             ILargeCollection AsCollection = (ILargeCollection)Items;
             AsCollection.CopyTo(array, arrayIndex);
@@ -164,17 +164,29 @@
         /// <exception cref="ArgumentException"><para><paramref name="index"/> is equal to or greater than the <see cref="ReadOnlyLargeList{T}.Count"/> of the source <see cref="ReadOnlyLargeList{T}"/>.</para><para>-or-</para><para>The number of elements from <paramref name="index"/> to the end of the source <see cref="ReadOnlyLargeList{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</para></exception>
         public void CopyTo(long index, T[] array, int arrayIndex, long count)
         {
-            if (array == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(array);
+#else
+            if (array is null)
                 throw new ArgumentNullException(nameof(array));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(arrayIndex);
+#else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (arrayIndex + count > array.Length)
-                throw new ArgumentException();
+                throw new ArgumentException("Destination array was not long enough. Check arrayIndex, and the array's lower bounds.");
 
             List.CopyTo(index, array, arrayIndex, count);
         }
@@ -189,33 +201,27 @@
         {
             return List.GetEnumerator();
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator" />
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
-#pragma warning restore SA1600
-        {
-            return GetEnumerator();
-        }
-#pragma warning disable SA1600
-        IEnumerator IEnumerable.GetEnumerator()
-#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ReadOnlyLargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ReadOnlyLargeList{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="ReadOnlyLargeList{T}"/>, if found; otherwise, -1.
-        /// </returns>
+        /// <inheritdoc cref="IEnumerable.GetEnumerator" />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <inheritdoc cref="ILargeList{T}.IndexOf(T)" />
         public long IndexOf(T item)
         {
             return List.IndexOf(item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.IndexOf(object)" />
         long ILargeList.IndexOf(object item)
-#pragma warning restore SA1600
         {
             return IndexOf((T)item);
         }
@@ -249,14 +255,25 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the <see cref="ReadOnlyLargeList{T}"/>.</para></exception>
         public long IndexOf(T item, long index, long count)
         {
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+#else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (index + count >= Count)
-                throw new ArgumentOutOfRangeException();
+            {
+                const Exception? InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             return List.IndexOf(item, index, count);
         }
@@ -300,14 +317,22 @@
         /// <exception cref="ArgumentException"><paramref name="index"/> and <paramref name="count"/> do not denote a valid range in the <see cref="ReadOnlyLargeList{T}"/>.</exception>
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+#else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (index + count > Count)
-                throw new ArgumentException();
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
             return List.BinarySearch(index, count, item, comparer);
         }
@@ -323,8 +348,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="converter"/> is null.</exception>
         public LargeList<TOutput> ConvertAll<TOutput>(Converter<T, TOutput> converter)
         {
-            if (converter == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(converter);
+#else
+            if (converter is null)
                 throw new ArgumentNullException(nameof(converter));
+#endif
 
             return List.ConvertAll<TOutput>(converter);
         }
@@ -339,8 +368,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool Exists(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.Exists(match);
         }
@@ -355,8 +388,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public T Find(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.Find(match);
         }
@@ -371,8 +408,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public LargeList<T> FindAll(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.FindAll(match);
         }
@@ -387,8 +428,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long FindIndex(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.FindIndex(match);
         }
@@ -405,8 +450,12 @@
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</exception>
         public long FindIndex(long startIndex, Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             if (startIndex < 0 || startIndex >= Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -427,17 +476,25 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</para><para>-or-</para><para>count is less than 0.</para><para>-or-</para><para>startIndex and count do not specify a valid section in the <see cref="ReadOnlyLargeList{T}"/>.</para></exception>
         public long FindIndex(long startIndex, long count, Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+#else
             if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+#endif
 
             if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be positive and count must refer to a location within the string/array/collection.");
 
             if (startIndex + count > Count)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
             return List.FindIndex(startIndex, count, match);
         }
@@ -452,8 +509,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public T FindLast(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.FindLast(match);
         }
@@ -468,8 +529,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long FindLastIndex(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.FindLastIndex(match);
         }
@@ -486,8 +551,12 @@
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</exception>
         public long FindLastIndex(long startIndex, Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             if (startIndex < 0 || startIndex >= Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -508,17 +577,32 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="ReadOnlyLargeList{T}"/>.</para></exception>
         public long FindLastIndex(long startIndex, long count, Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+#else
             if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (startIndex + count > Count)
-                throw new ArgumentOutOfRangeException();
+            {
+                const Exception? InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             return List.FindLastIndex(startIndex, count, match);
         }
@@ -530,8 +614,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
         public void ForEach(Action<T> action)
         {
-            if (action == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(action);
+#else
+            if (action is null)
                 throw new ArgumentNullException(nameof(action));
+#endif
 
             List.ForEach(action);
         }
@@ -577,14 +665,25 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is outside the range of valid indexes for the <see cref="ReadOnlyLargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> and <paramref name="count"/> do not specify a valid section in the <see cref="ReadOnlyLargeList{T}"/>.</para></exception>
         public long LastIndexOf(T item, long index, long count)
         {
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+#else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (index + count > Count)
-                throw new ArgumentOutOfRangeException();
+            {
+                const Exception? InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection.", InnerException);
+            }
 
             return List.LastIndexOf(item, index, count);
         }
@@ -599,8 +698,12 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool TrueForAll(Predicate<T> match)
         {
-            if (match == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(match);
+#else
+            if (match is null)
                 throw new ArgumentNullException(nameof(match));
+#endif
 
             return List.TrueForAll(match);
         }
@@ -618,14 +721,22 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public LargeList<T> GetRange(long index, long count)
         {
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+#else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
+#endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (index + count > Count)
-                throw new ArgumentException();
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
             return List.GetRange(index, count);
         }
@@ -642,101 +753,74 @@
             return List.ToArray();
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="ReadOnlyLargeList{T}"/> is read-only.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="ReadOnlyLargeList{T}"/> is read-only; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
-        bool ILargeCollection<T>.IsReadOnly { get { return true; } }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
-#pragma warning disable SA1600
-        bool ILargeList.IsReadOnly { get { return true; } }
-#pragma warning restore SA1600
+        bool ILargeCollection<T>.IsReadOnly => true;
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="ReadOnlyLargeList{T}"/> has a fixed size.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="ReadOnlyLargeList{T}"/> has a fixed size; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
-        bool ILargeList.IsFixedSize { get { return true; } }
+        bool ILargeList.IsReadOnly => true;
 
-        /// <summary>
-        /// Gets a value indicating whether access to the <see cref="ReadOnlyLargeList{T}"/> is synchronized (thread safe).
-        /// </summary>
-        /// <returns>
-        /// true if access to the <see cref="ReadOnlyLargeList{T}"/> is synchronized (thread safe); otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList.IsFixedSize" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
-        bool ILargeCollection.IsSynchronized { get { return false; } }
+        bool ILargeList.IsFixedSize => true;
 
-        /// <summary>
-        /// Gets an object that can be used to synchronize access to the <see cref="ReadOnlyLargeList{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// An object that can be used to synchronize access to the <see cref="ReadOnlyLargeList{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection.IsSynchronized" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
-        object ILargeCollection.SyncRoot { get { return List; } }
+        bool ILargeCollection.IsSynchronized => false;
 
+        /// <inheritdoc cref="ILargeCollection.SyncRoot" />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as ReadOnlyCollection<T>")]
+        object ILargeCollection.SyncRoot => List;
+
+        /// <inheritdoc cref="ILargeList{T}.Insert(long, T)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeList<T>.Insert(long index, T value)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeList.Insert(long, object)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeList.Insert(long index, object value)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeCollection{T}.Remove(T)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         bool ILargeCollection<T>.Remove(T value)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeList.Remove(object)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeList.Remove(object value)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeList{T}.RemoveAt(long)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeList<T>.RemoveAt(long index)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
+
+        /// <inheritdoc cref="ILargeList.RemoveAt(long)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeList.RemoveAt(long index)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeCollection{T}.Add(T)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
         void ILargeCollection<T>.Add(T item)
-#pragma warning restore SA1600
-        { throw new NotSupportedException(); }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
-        long ILargeList.Add(object item)
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
+        /// <inheritdoc cref="ILargeList.Add(object)" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
-        void ILargeCollection<T>.Clear()
-#pragma warning restore SA1600
+        long ILargeList.Add(object item)
         { throw new NotSupportedException(); }
+
+        /// <inheritdoc cref="ILargeCollection{T}.Clear" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
-#pragma warning disable SA1600
+        void ILargeCollection<T>.Clear()
+        { throw new NotSupportedException(); }
+
+        /// <inheritdoc cref="ILargeList.Clear" />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Mot implemented")]
         void ILargeList.Clear()
-#pragma warning restore SA1600
         { throw new NotSupportedException(); }
 
         private LargeList<T> List;

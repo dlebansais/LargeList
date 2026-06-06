@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -37,7 +37,7 @@
         /// </returns>
         public long BinarySearch(T item, IComparer<T> comparer)
         {
-            if (comparer == null)
+            if (comparer is null)
                 comparer = Comparer<T>.Default;
 
             return BinarySearchItem(0, Count, item, comparer);
@@ -66,30 +66,23 @@
             if (index + count > Count)
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
-            if (comparer == null)
+            if (comparer is null)
                 comparer = Comparer<T>.Default;
 
             return BinarySearchItem(index, count, item, comparer);
         }
 
-        /// <summary>
-        /// Determines whether an element is in the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="LargeList{T}"/>; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.Contains(T)" />
         public bool Contains(T item)
         {
             return Partition.Contains(item);
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.Contains(object)" />
         bool ILargeList.Contains(object item)
         {
             return Contains((T)item);
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Determines whether the <see cref="LargeList{T}"/> contains elements that match the conditions defined by the specified predicate.
@@ -101,7 +94,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool Exists(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             int SegmentIndex = 0;
@@ -127,7 +120,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public T Find(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             int SegmentIndex = 0;
@@ -141,7 +134,8 @@
                 Partition.IncrementPosition(ref SegmentIndex, ref ElementIndex);
             }
 
-            return default(T)!;
+            // ! The interface is not null-aware.
+            return default!;
         }
 
         /// <summary>
@@ -154,7 +148,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public LargeList<T> FindAll(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             LargeList<T> Result = new LargeList<T>();
@@ -183,7 +177,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long FindIndex(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             return FindIndex(0, Count, match);
@@ -204,7 +198,7 @@
             if (startIndex < 0 || startIndex > Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");
 
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             return FindIndex(startIndex, Count - startIndex, match);
@@ -229,7 +223,7 @@
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Count must be positive and count must refer to a location within the string/array/collection.");
 
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             int SegmentIndex;
@@ -258,7 +252,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public T FindLast(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             int SegmentIndex;
@@ -274,7 +268,8 @@
                     return item;
             }
 
-            return default(T)!;
+            // ! The interface is not null-aware.
+            return default!;
         }
 
         /// <summary>
@@ -287,7 +282,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long FindLastIndex(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             if (Count > 0)
@@ -308,7 +303,7 @@
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</exception>
         public long FindLastIndex(long startIndex, Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             if (startIndex < -1 || startIndex >= Count)
@@ -330,7 +325,7 @@
         /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="startIndex"/> is outside the range of valid indexes for the <see cref="LargeList{T}"/>.</para><para>-or-</para><para><paramref name="count"/> is less than 0.</para><para>-or-</para><para><paramref name="startIndex"/> and <paramref name="count"/> do not specify a valid section in the <see cref="LargeList{T}"/>.</para></exception>
         public long FindLastIndex(long startIndex, long count, Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             if (startIndex < -1 || (Count == 0 && startIndex < 0) || startIndex >= Count)
@@ -341,7 +336,7 @@
 
             if (startIndex + 1 < count)
             {
-                Exception? InnerException = null;
+                const Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
             }
 
@@ -361,13 +356,7 @@
             return -1;
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="LargeList{T}"/>, if found; otherwise, –1.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList{T}.IndexOf(T)" />
         public long IndexOf(T item)
         {
             return Partition.IndexOf(item, 0, Count);
@@ -387,7 +376,9 @@
         {
 #if STRICT
             if (index < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("startIndex", "Index was out of range. Must be non-negative and less than the size of the collection.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
@@ -432,7 +423,9 @@
         {
 #if STRICT
             if (index < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("startIndex", "Index was out of range. Must be non-negative and less than the size of the collection.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
@@ -445,10 +438,15 @@
                 throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
 
             if (index + count > Count)
-                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+            {
+                const Exception? InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             return Partition.IndexOf(item, index, count);
         }
+
+        /// <inheritdoc cref="ILargeList.IndexOf(object)" />
         long ILargeList.IndexOf(object item)
         {
             return IndexOf((T)item, 0, Count);
@@ -477,19 +475,18 @@
 
             if (startIndex + count > Count)
             {
-                Exception? InnerException = null;
+                const Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
             }
 
             return Partition.IndexOf(item, startIndex, count);
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.IndexOf(object)" />
         long ILargeList.IndexOf(object item)
         {
             return IndexOf((T)item, 0, Count);
         }
-#pragma warning restore SA1600
 #endif
 
         /// <summary>
@@ -563,7 +560,10 @@
                 throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
 
             if (index + 1 < count)
-                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+            {
+                const Exception? InnerException = null;
+                throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", InnerException);
+            }
 
             return Partition.LastIndexOf(item, index, count);
         }
@@ -591,7 +591,7 @@
 
             if (startIndex + 1 < count)
             {
-                Exception? InnerException = null;
+                const Exception? InnerException = null;
                 throw new ArgumentOutOfRangeException("Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection.", InnerException);
             }
 
@@ -609,7 +609,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public bool TrueForAll(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             int SegmentIndex = 0;

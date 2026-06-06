@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -15,14 +15,7 @@
     [DebuggerTypeProxy(typeof(LargeCollectionDebugView<>))]
     public partial class LargeList<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
-        /// <summary>
-        /// Gets or sets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>
-        /// The element at the specified index.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeList{T}.Count"/>.</para></exception>
+        /// <inheritdoc cref="ILargeList{T}.this[long]" />
         public T this[long index]
         {
             get
@@ -49,13 +42,13 @@
             }
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.this[long]" />
         object ILargeList.this[long index]
         {
-            get { return this[index]!; }
-            set { this[index] = (T)value; }
+            // ! The interface is not null-aware.
+            get => this[index]!;
+            set => this[index] = (T)value;
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Gets or sets the total number of elements the internal data structure can hold without resizing.
@@ -67,7 +60,7 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public long Capacity
         {
-            get { return Partition.Capacity; }
+            get => Partition.Capacity;
             set
             {
                 if (value < Count)
@@ -84,12 +77,7 @@
             }
         }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="LargeList{T}"/>.
-        /// </returns>
-        public long Count { get { return Partition.Count; } }
+        /// <inheritdoc cref="ILargeCollection{T}.Count" />
+        public long Count => Partition.Count;
     }
 }

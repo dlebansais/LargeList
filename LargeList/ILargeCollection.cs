@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;

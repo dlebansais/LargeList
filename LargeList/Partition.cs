@@ -1,8 +1,9 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using Contracts;
 
 #pragma warning disable CS1710
@@ -71,7 +72,7 @@
             Debug.Assert(!IsValidPosition(0, 0, false) || IsValidPosition(0, 0, true));
             Debug.Assert(!IsValidPosition(0, SegmentTable[0].Count + 1, true));
             Debug.Assert(SegmentTable.Count > 0);
-            Debug.Assert(SegmentTable[0].ToString() != null); // For code coverage.
+            Debug.Assert(SegmentTable[0].ToString() is not null); // For code coverage.
 
 #if DEBUG
             AssertInvariant();
@@ -80,39 +81,18 @@
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Gets the maximum capacity allowed for segments. This number can vary from partition to partition but remains constant in a given <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// The maximum capacity allowed for segments.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.MaxSegmentCapacity" />
         public int MaxSegmentCapacity { get; private set; }
 
-        /// <summary>
-        /// Gets the total number of elements the <see cref="Partition{T}"/> can hold without resizing.
-        /// </summary>
-        /// <returns>
-        /// The total number of elements the <see cref="Partition{T}"/> can hold without resizing.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.Capacity" />
         public long Capacity { get; private set; }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="Partition{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.Count" />
         public long Count { get; private set; }
         #endregion
 
         #region Queries
-        /// <summary>
-        /// Gets the position of an element in the <see cref="Partition{T}"/> from its virtual index in a linear list.
-        /// </summary>
-        /// <param name="index">The virtual index of the element.</param>
-        /// <param name="segmentIndex">Upon return, the segment index of the element.</param>
-        /// <param name="elementIndex">Upon return, the element index of the element.</param>
-        /// <param name="cacheIndex">Upon return, the cache index of the element.</param>
+        /// <inheritdoc cref="IPartition{T}.GetPosition(long, out int, out int, out int)" />
         public void GetPosition(long index, out int segmentIndex, out int elementIndex, out int cacheIndex)
         {
             Debug.Assert(index >= 0 && index <= Count);
@@ -126,15 +106,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Check that the specified position in the <see cref="Partition{T}"/> is valid. Calling this method is reserved to debugging.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position to check.</param>
-        /// <param name="elementIndex">The element index of the position to check.</param>
-        /// <param name="allowEnd">True to allow the <see cref="Partition{T}"/>.End position; False to only allow position of existing elements.</param>
-        /// <returns>
-        /// True if the position in the <see cref="Partition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> is valid.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.IsValidPosition(int, int, bool)" />
         public bool IsValidPosition(int segmentIndex, int elementIndex, bool allowEnd)
         {
             BreakIfNotDebugging();
@@ -154,13 +126,7 @@
             return false;
         }
 
-        /// <summary>
-        /// Gets the previous position in the <see cref="Partition{T}"/>. The returned position may be invalid if <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> specify the first element. In that case, the caller should not use the returned position in subsequent calls to methods of this interface.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
-        /// <param name="elementIndex">The element index of the position used as starting point.</param>
-        /// <param name="segmentIndexPrevious">Upon return, the segment index of the previous position.</param>
-        /// <param name="elementIndexPrevious">Upon return, the element index of the previous position.</param>
+        /// <inheritdoc cref="IPartition{T}.GetPreviousPosition(int, int, out int, out int)" />
         public void GetPreviousPosition(int segmentIndex, int elementIndex, out int segmentIndexPrevious, out int elementIndexPrevious)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -194,13 +160,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Gets the next position in the <see cref="Partition{T}"/>. <paramref name="segmentIndex"/> and <paramref name="elementIndex"/> must specify the position of an existing element, or the position that is before the first element.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position used as starting point.</param>
-        /// <param name="elementIndex">The element index of the position used as starting point.</param>
-        /// <param name="segmentIndexNext">Upon return, the segment index of the next position.</param>
-        /// <param name="elementIndexNext">Upon return, the element index of the next position.</param>
+        /// <inheritdoc cref="IPartition{T}.GetNextPosition(int, int, out int, out int)" />
         public void GetNextPosition(int segmentIndex, int elementIndex, out int segmentIndexNext, out int elementIndexNext)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -223,17 +183,15 @@
 #endif
         }
 
-        /// <summary>
-        /// Updates a position in the <see cref="Partition{T}"/> to the previous element.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position.</param>
-        /// <param name="elementIndex">The element index of the position.</param>
+        /// <inheritdoc cref="IPartition{T}.DecrementPosition(ref int, ref int)" />
         public void DecrementPosition(ref int segmentIndex, ref int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
             if (elementIndex > 0)
+            {
                 elementIndex--;
+            }
             else
             {
                 segmentIndex--;
@@ -244,7 +202,9 @@
                     elementIndex = SegmentTable[segmentIndex].Count - 1;
                 }
                 else
+                {
                     elementIndex = 0;
+                }
             }
 
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false) || (segmentIndex == -1 && elementIndex == 0));
@@ -254,17 +214,15 @@
 #endif
         }
 
-        /// <summary>
-        /// Updates a position in the <see cref="Partition{T}"/> to the next element.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position.</param>
-        /// <param name="elementIndex">The element index of the position.</param>
+        /// <inheritdoc cref="IPartition{T}.IncrementPosition(ref int, ref int)" />
         public void IncrementPosition(ref int segmentIndex, ref int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
 
             if (elementIndex + 1 < SegmentTable[segmentIndex].Count || segmentIndex + 1 >= SegmentTable.Count || SegmentTable[segmentIndex + 1].Count == 0)
+            {
                 elementIndex++;
+            }
             else
             {
                 segmentIndex++;
@@ -278,14 +236,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Gets the element in the <see cref="Partition{T}"/> at the specified position.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of the element.</param>
-        /// <param name="elementIndex">The element index of the position of the element.</param>
-        /// <returns>
-        /// The element in the <see cref="Partition{T}"/> specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.GetItem(int, int)" />
         public T GetItem(int segmentIndex, int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -299,14 +250,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Returns an enumerator for the <see cref="Partition{T}"/>, starting from the specified position.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
-        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
-        /// <returns>
-        /// An enumerator that can iterate through the <see cref="Partition{T}"/>, starting from the element specified by <paramref name="segmentIndex"/> and <paramref name="elementIndex"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.GetEnumerator(int, int)" />
         public IPartitionEnumerator<T> GetEnumerator(int segmentIndex, int elementIndex)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
@@ -320,15 +264,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the specified <see cref="ISegment{T}"/>.
-        /// </summary>
-        /// <param name="segmentIndex">The segment index of the position of the first element to enumerate.</param>
-        /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
-        /// <param name="remainingCount">Upon return, the remaining number of elements that can be enumerated in the <see cref="ISegment{T}"/>.</param>
-        /// <returns>
-        /// An enumerator for the <see cref="ISegment{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.GetSegmentEnumerator(int, int, out int)" />
         public IEnumerator<T> GetSegmentEnumerator(int segmentIndex, int elementIndex, out int remainingCount)
         {
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -341,13 +277,7 @@
             return Segment.GetEnumerator(elementIndex);
         }
 
-        /// <summary>
-        /// Gets the next segment in the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="segmentIndex">Index of the segment used as starting point.</param>
-        /// <returns>
-        /// The index of the segment in the <see cref="Partition{T}"/> that follows <paramref name="segmentIndex"/>, -1 if <paramref name="segmentIndex"/> specified the last one in the <see cref="Partition{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.NextSegmentIndex(int)" />
         public int NextSegmentIndex(int segmentIndex)
         {
             Debug.Assert(segmentIndex >= 0 && segmentIndex < SegmentTable.Count);
@@ -411,7 +341,9 @@
             Debug.Assert(IsValidPosition(segmentIndex, elementIndex, true));
 
             if (elementIndex >= SegmentTable[segmentIndex].Count)
+            {
                 return new PartitionEnumerator<T>();
+            }
             else
             {
                 Debug.Assert(IsValidPosition(segmentIndex, elementIndex, false));
@@ -442,7 +374,7 @@
 
             public override string ToString()
             {
-                return SegmentIndex.ToString() + "," + Min;
+                return SegmentIndex.ToString(CultureInfo.InvariantCulture) + "," + Min;
             }
         }
 
@@ -467,7 +399,7 @@
 
             Cache[0].SegmentIndex = 0;
             Cache[0].Min = 0;
-            Debug.Assert(Cache[0].ToString() != null); // For code coverage.
+            Debug.Assert(Cache[0].ToString() is not null); // For code coverage.
 
             RebuildCacheFrom(0);
         }
@@ -476,7 +408,7 @@
         {
             CacheLineCount = (int)(Count / CacheLineLength) + 1;
 
-            if (Cache == null || CacheLineCount > Cache.Length)
+            if (Cache is null || CacheLineCount > Cache.Length)
                 Array.Resize(ref Cache, CacheLineCount);
         }
 
@@ -511,7 +443,7 @@
             }
         }
 
-        private int HighestExponentAbove(long n)
+        private static int HighestExponentAbove(long n)
         {
             Debug.Assert(n >= 0);
 
@@ -593,7 +525,9 @@
             foreach (ISegment<T> Segment in SegmentTable)
             {
                 if (Segment.Capacity == 0)
+                {
                     IsPreviousSegmentVoid = true;
+                }
                 else
                 {
                     Debug.Assert(!IsPreviousSegmentVoid);
@@ -601,7 +535,9 @@
                 }
 
                 if (Segment.Count == 0)
+                {
                     IsPreviousSegmentEmpty = true;
+                }
                 else
                 {
                     Debug.Assert(!IsPreviousSegmentVoid);
@@ -656,7 +592,7 @@
             int CacheIndex;
             GetPosition(index, out SegmentIndex, out ElementIndex, out CacheIndex);
 
-            return GetItem(SegmentIndex, ElementIndex) == null;
+            return GetItem(SegmentIndex, ElementIndex) is null;
         }
 
         private bool IsPositionEqual(long index, int segmentIndex, int elementIndex)
@@ -671,7 +607,7 @@
             return SegmentIndex == segmentIndex && ElementIndex == elementIndex;
         }
 
-        private void BreakIfNotDebugging()
+        private static void BreakIfNotDebugging()
         {
 #if DEBUG
 #else

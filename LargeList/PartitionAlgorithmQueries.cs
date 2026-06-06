@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections.Generic;
@@ -18,13 +18,7 @@
     partial class Partition<T> : IPartition<T>
     {
         #region Queries
-        /// <summary>
-        /// Determines whether an element is in the <see cref="Partition{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="Partition{T}"/>; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.Contains(T)" />
         public bool Contains(T item)
         {
             bool Result = false;
@@ -43,15 +37,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based virtual index of the first occurrence in a linear list that starts at the specified index and contains the specified number of elements.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
-        /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty partition.</param>
-        /// <param name="count">The number of elements in the section to search.</param>
-        /// <returns>
-        /// The zero-based virtual index of the first occurrence of <paramref name="item"/> within the range of elements in a linear list that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.IndexOf(T, long, long)" />
         public long IndexOf(T item, long startIndex, long count)
         {
             Debug.Assert(startIndex >= 0 && startIndex <= Count);
@@ -98,15 +84,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based virtual index of the last occurrence within the range of elements in a linear list that contains the specified number of elements and ends at the specified index.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Partition{T}"/>. The value can be null for reference types.</param>
-        /// <param name="startIndex">The zero-based starting index of the backward search.</param>
-        /// <param name="count">The number of elements in the section to search.</param>
-        /// <returns>
-        /// The zero-based virtual index of the last occurrence of <paramref name="item"/> within the range of elements in the linear list that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.LastIndexOf(T, long, long)" />
         public long LastIndexOf(T item, long startIndex, long count)
         {
             Debug.Assert(startIndex >= 0 && startIndex < Count);
@@ -134,7 +112,7 @@
             }
 
             Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item == null && IsItemNull(Result)) || (item != null && IsItemEqual(Result, item)))));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item is null && IsItemNull(Result)) || (item is null && IsItemEqual(Result, item)))));
 
 #if DEBUG
             AssertInvariant();
@@ -168,16 +146,7 @@
             return false;
         }
 
-        /// <summary>
-        /// Searches a range of elements in the sorted <see cref="Partition{T}"/> for an element using the specified comparer and returns the zero-based index of the element.
-        /// </summary>
-        /// <param name="index">The zero-based starting index of the range to search.</param>
-        /// <param name="count">The length of the range to search.</param>
-        /// <param name="item">The object to locate. The value can be null for reference types.</param>
-        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
-        /// <returns>
-        /// The zero-based index of <paramref name="item"/> in the sorted <see cref="Partition{T}"/>, if <paramref name="item"/> is found; otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than <paramref name="item"/> or, if there is no larger element, the bitwise complement of <see cref="Partition{T}"/>.Count.
-        /// </returns>
+        /// <inheritdoc cref="IPartition{T}.BinarySearch(long, long, T, IComparer{T})" />
         public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
         {
             Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
@@ -216,7 +185,9 @@
                 long comparisonResult = Comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
 
                 if (comparisonResult == 0)
+                {
                     return indexMiddle;
+                }
                 else if (comparisonResult < 0)
                 {
                     GetPreviousPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexUpper, out ElementIndexUpper);
@@ -358,7 +329,9 @@
                 QuickSortRange RangeLow = new QuickSortRange() { SegmentIndexFirst = SegmentIndexLow, ElementIndexFirst = ElementIndexLow, SegmentIndexLast = SegmentIndexMiddle, ElementIndexLast = ElementIndexMiddle };
 
                 if (ElementIndexMiddle + 1 < SegmentTable[SegmentIndexMiddle].Count)
+                {
                     ElementIndexMiddle++;
+                }
                 else
                 {
                     SegmentIndexMiddle++;
@@ -421,9 +394,13 @@
             int PivotElementIndex;
 
             if (PivotSegmentIndex == segmentIndexLow && PivotSegmentIndex < segmentIndexHigh)
+            {
                 PivotElementIndex = SegmentTable[PivotSegmentIndex].Count - 1;
+            }
             else if (PivotSegmentIndex == segmentIndexHigh && PivotSegmentIndex > segmentIndexLow)
+            {
                 PivotElementIndex = 0;
+            }
             else
             {
                 Debug.Assert((PivotSegmentIndex > segmentIndexLow && PivotSegmentIndex < segmentIndexHigh) || (segmentIndexLow == segmentIndexHigh));
@@ -445,7 +422,9 @@
                 else
                 {
                     if (elementIndexUp + 1 < SegmentTable[segmentIndexUp].Count)
+                    {
                         elementIndexUp++;
+                    }
                     else
                     {
                         segmentIndexUp++;
@@ -462,7 +441,9 @@
             do
             {
                 if (elementIndexDown > 0)
+                {
                     elementIndexDown--;
+                }
                 else
                 {
                     segmentIndexDown--;

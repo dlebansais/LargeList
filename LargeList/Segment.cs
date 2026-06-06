@@ -1,8 +1,9 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using Contracts;
 
     /// <summary>
@@ -10,7 +11,7 @@
     /// </summary>
     /// <typeparam name="T">The type of stored elements.</typeparam>
 #if STRICT
-    internal
+    internal sealed
 #else
     public
 #endif
@@ -52,32 +53,13 @@
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Gets the total number of elements the <see cref="Segment{T}"/> can hold without resizing.
-        /// </summary>
-        /// <returns>
-        /// The number of elements that the <see cref="Segment{T}"/> can contain before resizing is required.
-        /// </returns>
-        public int Capacity
-        {
-            get { return Content.Length; }
-        }
+        /// <inheritdoc cref="ISegment{T}.Capacity" />
+        public int Capacity => Content.Length;
 
-        /// <summary>
-        /// Gets or sets the number of elements contained in the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="Segment{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.Count" />
         public int Count { get; set; }
 
-        /// <summary>
-        /// Gets or sets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>
-        /// The element at the specified index.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.this[int]" />
         public T this[int index]
         {
             get
@@ -94,37 +76,15 @@
             }
         }
 
-        /// <summary>
-        /// Gets the number of elements that can be substracted to <see cref="Segment{T}"/>.Capacity.
-        /// </summary>
-        /// <returns>
-        /// The number of elements that can be substracted to <see cref="Segment{T}"/>.Capacity.
-        /// </returns>
-        public int Trimmable
-        {
-            get { return Capacity - Count; }
-        }
+        /// <inheritdoc cref="ISegment{T}.Trimmable" />
+        public int Trimmable => Capacity - Count;
 
-        /// <summary>
-        /// Gets the number of elements that can be added before reaching the maximum allowed value for <see cref="Segment{T}"/>.Capacity.
-        /// </summary>
-        /// <returns>
-        /// The number of elements that can be added before reaching the maximum allowed value for <see cref="Segment{T}"/>.Capacity.
-        /// </returns>
-        public int Extendable
-        {
-            get { return MaxCapacity - Count; }
-        }
+        /// <inheritdoc cref="ISegment{T}.Extendable" />
+        public int Extendable => MaxCapacity - Count;
         #endregion
 
         #region Queries
-        /// <summary>
-        /// Determines whether an element is in the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="Segment{T}"/>; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.Contains(T)" />
         public bool Contains(T item)
         {
             bool Result = false;
@@ -141,15 +101,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the range of elements in the <see cref="Segment{T}"/> that starts at the specified index and contains the specified number of elements.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
-        /// <param name="startIndex">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
-        /// <param name="count">The number of elements in the section to search.</param>
-        /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the range of elements in the <see cref="Segment{T}"/> that starts at <paramref name="startIndex"/> and contains <paramref name="count"/> number of elements, if found; otherwise, –1.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.IndexOf(T, int, int)" />
         public int IndexOf(T item, int startIndex, int count)
         {
             Debug.Assert(startIndex >= 0 && startIndex <= Count);
@@ -170,15 +122,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the last occurrence within the range of elements in the <see cref="Segment{T}"/> that contains the specified number of elements and ends at the specified index.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
-        /// <param name="startIndex">The zero-based starting index of the backward search.</param>
-        /// <param name="count">The number of elements in the section to search.</param>
-        /// <returns>
-        /// The zero-based index of the last occurrence of <paramref name="item"/> within the range of elements in the <see cref="Segment{T}"/> that contains <paramref name="count"/> number of elements and ends at <paramref name="startIndex"/>, if found; otherwise, –1.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.LastIndexOf(T, int, int)" />
         public int LastIndexOf(T item, int startIndex, int count)
         {
             Debug.Assert(startIndex >= 0 && startIndex < Count);
@@ -199,50 +143,36 @@
             return Result;
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <param name="index">Index of the segment.</param>
-        /// <returns>
-        /// An enumerator for the <see cref="Segment{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.GetEnumerator(long)" />
         public IEnumerator<T> GetEnumerator(long index)
         {
             Debug.Assert(index >= 0 && index <= Count);
 
-            IEnumerator<T> enumerator = GetEnumerable(Content).GetEnumerator();
+            IEnumerator<T> enumerator = ((IEnumerable<T>)Content).GetEnumerator();
 
             for (int i = 0; i < index; i++)
                 enumerator.MoveNext();
 
             return enumerator;
         }
-
-        private static IEnumerable<T> GetEnumerable(T[] content)
-        {
-            return content;
-        }
         #endregion
 
         #region Commands
-        /// <summary>
-        /// Removes all elements from the <see cref="Segment{T}"/>. Sets the <see cref="Segment{T}"/>.Count to zero.
-        /// </summary>
+        /// <inheritdoc cref="ISegment{T}.Clear" />
         public void Clear()
         {
             for (int i = 0; i < Capacity; i++)
-                Content[i] = default(T)!;
+            {
+                // ! We don't want T to be nullable, but we want to clear the content of the segment, so we set it to default anyway.
+                Content[i] = default!;
+            }
 
             Count = 0;
 
             AssertInvariant();
         }
 
-        /// <summary>
-        /// Extends the number of stored elements by the <see cref="Segment{T}"/> and leave them uninitialized.
-        /// </summary>
-        /// <param name="extended">The number of elements added to this <see cref="Segment{T}"/>.</param>
-        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        /// <inheritdoc cref="ISegment{T}.Extend(int, out int)" />
         public void Extend(int extended, out int effectiveExtended)
         {
             Debug.Assert(extended >= 0);
@@ -254,15 +184,14 @@
                 Array.Resize(ref Content, Count + extended);
             }
             else
+            {
                 effectiveExtended = 0;
+            }
 
             AssertInvariant();
         }
 
-        /// <summary>
-        /// Reduces the maximum number of elements this <see cref="Segment{T}"/> can store.
-        /// </summary>
-        /// <param name="trimmed">The number of elements that this <see cref="Segment{T}"/> can no longer store and is substracted to <see cref="Segment{T}"/>.Capacity.</param>
+        /// <inheritdoc cref="ISegment{T}.Trim(int)" />
         public void Trim(int trimmed)
         {
             Debug.Assert(trimmed >= 0);
@@ -273,12 +202,7 @@
             AssertInvariant();
         }
 
-        /// <summary>
-        /// Makes room for a number of elements at the specified index. Elements already the specified position and beyond are moved toward the end of the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <param name="index">The zero-based index at which uninitialized elements should be inserted.</param>
-        /// <param name="count">The number of elements to insert.</param>
-        /// <param name="effectiveExtended">The amount of extended capacity this operation generated.</param>
+        /// <inheritdoc cref="ISegment{T}.MakeRoom(int, int, out int)" />
         public void MakeRoom(int index, int count, out int effectiveExtended)
         {
             Debug.Assert(index >= 0 && index <= Count);
@@ -292,21 +216,15 @@
                 Content[l - 1] = Content[l - 1 - count];
         }
 
-        /// <summary>
-        /// Moves elements from this <see cref="Segment{T}"/> to another from and to the specified indexes. Moved elements are replaced by default values in the source, and override existing elements in the destination.
-        /// </summary>
-        /// <param name="destination">The destination <see cref="Segment{T}"/> object.</param>
-        /// <param name="toIndex">The zero-based index at which the new elements should be moved in the destination.</param>
-        /// <param name="fromIndex">The zero-based index in the source from which elements should be moved.</param>
-        /// <param name="count">The number of elements to move.</param>
+        /// <inheritdoc cref="ISegment{T}.MoveTo(ISegment{T}, int, int, int)" />
         public void MoveTo(ISegment<T> destination, int toIndex, int fromIndex, int count)
         {
             Contract.RequireNotNull(destination, out Segment<T> Destination);
 
-            Debug.Assert(toIndex >= 0 && toIndex <= destination.Count);
+            Debug.Assert(toIndex >= 0 && toIndex <= Destination.Count);
             Debug.Assert(fromIndex >= 0 && fromIndex <= Count);
             Debug.Assert(count >= 0);
-            Debug.Assert(toIndex + count <= destination.Count);
+            Debug.Assert(toIndex + count <= Destination.Count);
             Debug.Assert(fromIndex + count <= Count);
 
             for (int i = 0; i < count; i++)
@@ -316,7 +234,10 @@
                 Content[i] = Content[i + count];
 
             for (int i = Count - count; i < Count; i++)
-                Content[i] = default(T)!;
+            {
+                // ! We don't want T to be nullable, but we want to clear the content of the segment, so we set it to default anyway.
+                Content[i] = default!;
+            }
 
             Count -= count;
 
@@ -324,13 +245,7 @@
             Destination.AssertInvariant();
         }
 
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="Segment{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="Segment{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.Remove(T)" />
         public bool Remove(T item)
         {
             bool Result = false;
@@ -341,7 +256,8 @@
                     for (; l + 1 < Count; l++)
                         Content[l] = Content[l + 1];
 
-                    Content[Count - 1] = default(T)!;
+                    // ! We don't want T to be nullable, but we want to clear the content of the segment, so we set it to default anyway.
+                    Content[Count - 1] = default!;
                     Count--;
                     Result = true;
                     break;
@@ -352,11 +268,7 @@
             return Result;
         }
 
-        /// <summary>
-        /// Removes a range of elements from the <see cref="Segment{T}"/>.
-        /// </summary>
-        /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
-        /// <param name="count">The number of elements to remove.</param>
+        /// <inheritdoc cref="ISegment{T}.RemoveRange(int, int)" />
         public void RemoveRange(int index, int count)
         {
             Debug.Assert(index >= 0 && index <= Count);
@@ -369,18 +281,15 @@
                 Content[l] = Content[l + count];
 
             for (; l < Count; l++)
-                Content[l] = default(T)!;
+            {
+                // ! We don't want T to be nullable, but we want to clear the content of the segment, so we set it to default anyway.
+                Content[l] = default!;
+            }
 
             Count -= count;
         }
 
-        /// <summary>
-        /// Removes all the elements that match the conditions defined by the specified predicate.
-        /// </summary>
-        /// <param name="match">The <see cref="System.Predicate{T}"/> delegate that defines the conditions of the elements to remove.</param>
-        /// <returns>
-        /// The number of elements removed from the <see cref="Segment{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ISegment{T}.RemoveAll(Predicate{T})" />
         public int RemoveAll(Predicate<T> match)
         {
             Contract.RequireNotNull(match, out Predicate<T> Match);
@@ -393,7 +302,8 @@
                     for (int n = l; n + 1 < Count; n++)
                         Content[n] = Content[n + 1];
 
-                    Content[Count - 1] = default(T)!;
+                    // ! We don't want T to be nullable, but we want to clear the content of the segment, so we set it to default anyway.
+                    Content[Count - 1] = default!;
                     Count--;
 
                     l--;
@@ -405,12 +315,7 @@
             return RemovedCount;
         }
 
-        /// <summary>
-        /// Sorts the elements in a range of elements in <see cref="Segment{T}"/> using the specified comparer.
-        /// </summary>
-        /// <param name="low">The position of the first item in the range.</param>
-        /// <param name="high">The position of the last item in the range.</param>
-        /// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}"/> implementation to use when comparing elements.</param>
+        /// <inheritdoc cref="ISegment{T}.Sort(int, int, IComparer{T})" />
         public void Sort(int low, int high, IComparer<T> comparer)
         {
             Debug.Assert(low >= 0 && low < Content.Length);
@@ -425,15 +330,10 @@
         private int MaxCapacity;
 
         #region Debugging
-        /// <summary>
-        /// Converts this instance to its equivalent string representation.
-        /// </summary>
-        /// <returns>
-        /// The string representation of the value of this instance.
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
-            return Count.ToString() + " / " + Capacity.ToString();
+            return Count.ToString(CultureInfo.InvariantCulture) + " / " + Capacity.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
 

@@ -1,5 +1,20 @@
 ﻿[*.cs]
 
+# CA1010: Generic interface should also be implemented
+dotnet_diagnostic.CA1010.severity = none
+
+# CA1710: Identifiers should have correct suffix
+dotnet_diagnostic.CA1710.severity = none
+
+# CA1852: Seal internal types
+dotnet_diagnostic.CA1852.severity = none
+
+# IDE0011: Add braces
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.CSL1007.severity = warning
+dotnet_diagnostic.CSL1008.severity = warning
+csharp_prefer_braces = recursive
+
 # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = none
 

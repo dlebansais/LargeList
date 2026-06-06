@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -70,7 +70,7 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
         public LargeList(IEnumerable<T> collection)
         {
-            if (collection == null)
+            if (collection is null)
                 throw new ArgumentNullException(nameof(collection), "Value cannot be null.");
 
 #if STRICT
@@ -105,7 +105,7 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Totally on purpose, see the documentation of LargeList<T>.Initialize and LargeList<T>.CreatePartition")]
 #if STRICT
-        internal 
+        internal
 #else
         public
 #endif
@@ -114,13 +114,13 @@
             if (capacity < 0)
                 throw new ArgumentOutOfRangeException(nameof(capacity), "Non-negative number required.");
 
-            if (count < 0 && collection == null)
+            if (count < 0 && collection is null)
                 throw new ArgumentException(nameof(count) + " must be greater than or equal to zero, or " + nameof(collection) + " must not be null.");
 
-            if (count >= 0 && collection != null)
+            if (count >= 0 && collection is not null)
                 throw new ArgumentException(nameof(count) + " can't be greater than or equal to zero if " + nameof(collection) + " is not null.");
 
-            Debug.Assert((count >= 0 && collection == null) || (count < 0 && collection != null));
+            Debug.Assert((count >= 0 && collection is null) || (count < 0 && collection is not null));
             Debug.Assert(maxSegmentCapacity > 0);
             Debug.Assert(count <= capacity);
 
@@ -174,7 +174,7 @@
 #endif
 
 #if STRICT
-            Partition = new Partition<T>(capacity, count, maxSegmentCapacity);
+            Partition = new Partition<T>(count, count, maxSegmentCapacity);
 #else
             Partition = CreatePartition(count, count, maxSegmentCapacity);
 #endif

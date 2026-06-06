@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections.Generic;
@@ -34,6 +34,13 @@
         /// <param name="elementIndex">The element index of the position of the first element to enumerate.</param>
         public PartitionEnumerator(IPartition<T> partition, int segmentIndex, int elementIndex)
         {
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(partition);
+#else
+            if (partition is null)
+                throw new ArgumentNullException(nameof(partition));
+#endif
+
             Debug.Assert(partition.IsValidPosition(segmentIndex, elementIndex, false));
 
             Partition = partition;
@@ -42,27 +49,22 @@
             Enumerator = partition.GetSegmentEnumerator(segmentIndex, elementIndex, out SegmentCount);
         }
 
-        /// <summary>
-        /// Gets the element in the <see cref="IPartition{T}"/> at the current position of the enumerator.
-        /// </summary>
+        /// <inheritdoc cref="IEnumerator{T}.Current" />
         public T Current
         {
             get
             {
-                if (Enumerator == null)
+                if (Enumerator is null)
                     throw new InvalidOperationException();
 
                 return Enumerator.Current;
             }
         }
 
-        /// <summary>
-        /// Advances the enumerator to the next element of the <see cref="IPartition{T}"/>. If there are no more elements, does nothing.
-        /// </summary>
-        /// <param name="partition">The <see cref="IPartition{T}"/> object over which this enumerator is iterating.</param>
+        /// <inheritdoc cref="IPartitionEnumerator{T}.MoveNext" />
         public void MoveNext(IPartition<T> partition)
         {
-            if (partition == null || Enumerator == null)
+            if (partition is null || Enumerator is null)
                 return;
 
             if (SegmentCount > 0)
@@ -90,9 +92,7 @@
         }
 
         #region Implementation of IDisposable
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc cref="IDisposable.Dispose" />
         public void Dispose()
         {
             Dispose(true);
@@ -112,6 +112,7 @@
         private void DisposeNow()
         {
             Partition = null;
+            Enumerator?.Dispose();
             Enumerator = null;
         }
         #endregion

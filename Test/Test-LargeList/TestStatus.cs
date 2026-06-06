@@ -2,7 +2,7 @@
 {
     using System.Runtime.CompilerServices;
 
-    public class TestStatus
+    internal sealed class TestStatus
     {
         public static TestStatus Success { get; } = new TestStatus();
 

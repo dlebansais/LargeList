@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
 
@@ -6,7 +6,7 @@
     /// Custom attribute for the assembly.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class LargeListAssemblyAttribute : Attribute
+    public sealed class LargeListAssemblyAttribute : Attribute
     {
 #if SMALL_SEGMENTS
         /// <summary>

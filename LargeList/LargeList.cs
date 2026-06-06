@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -37,7 +37,7 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public LargeList<TOutput> ConvertAll<TOutput>(Converter<T, TOutput> converter)
         {
-            if (converter == null)
+            if (converter is null)
                 throw new ArgumentNullException(nameof(converter), "Value cannot be null.");
 
             LargeList<TOutput> Result = new LargeList<TOutput>(Count, Partition.MaxSegmentCapacity);
@@ -66,37 +66,36 @@
         public void CopyTo(T[] array)
         {
 #if STRICT
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 #endif
 
             CopyTo(0, array, 0, Count);
         }
 
-        /// <summary>
-        /// Copies the entire <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeList{T}"/>. The System.Array must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeList{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.CopyTo(T[], int)" />
         public void CopyTo(T[] array, int arrayIndex)
         {
 #if STRICT
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 #endif
 
 #if STRICT
             if (arrayIndex < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("dstIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Number was less than the array's lower bound in the first dimension.");
@@ -113,20 +112,24 @@
             CopyTo(0, array, arrayIndex, Count);
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeCollection.CopyTo(Array, int)" />
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
         {
 #if STRICT
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 #endif
 
 #if STRICT
             if (arrayIndex < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("dstIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Number was less than the array's lower bound in the first dimension.");
@@ -152,7 +155,6 @@
             AssertInvariant();
 #endif
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Copies a range of elements from the <see cref="LargeList{T}"/> to a compatible one-dimensional array, starting at the specified index of the target array.
@@ -167,16 +169,20 @@
         public void CopyTo(long index, T[] array, int arrayIndex, long count)
         {
 #if STRICT
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 #endif
 
 #if STRICT
             if (index < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("srcIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Number was less than the array's lower bound in the first dimension.");
@@ -184,7 +190,9 @@
 
 #if STRICT
             if (arrayIndex < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("dstIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Number was less than the array's lower bound in the first dimension.");
@@ -192,7 +200,9 @@
 
 #if STRICT
             if (count < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("length", "Non-negative number required.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
@@ -233,10 +243,12 @@
         public void ForEach(Action<T> action)
         {
 #if STRICT
-            if (action == null)
+            if (action is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("match", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (action == null)
+            if (action is null)
                 throw new ArgumentNullException(nameof(action), "Value cannot be null.");
 #endif
 
@@ -264,19 +276,17 @@
             return new LargeEnumerator(Partition, 0, Count);
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator" />
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return GetEnumerator();
         }
-#pragma warning restore SA1600
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="IEnumerable.GetEnumerator" />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Creates a shallow copy of a range of elements in the source <see cref="LargeList{T}"/>.
@@ -332,46 +342,25 @@
 #endif
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="LargeList{T}"/> is read-only.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="LargeList{T}"/> is read-only; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
-        bool ILargeCollection<T>.IsReadOnly { get { return false; } }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
+        bool ILargeCollection<T>.IsReadOnly => false;
 
-#pragma warning disable SA1600
-        bool ILargeList.IsReadOnly { get { return false; } }
-#pragma warning restore SA1600
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="LargeList{T}"/> has a fixed size.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="LargeList{T}"/> has a fixed size; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
-        bool ILargeList.IsFixedSize { get { return false; } }
+        bool ILargeList.IsReadOnly => false;
 
-        /// <summary>
-        /// Gets a value indicating whether access to the <see cref="LargeList{T}"/> is synchronized (thread safe).
-        /// </summary>
-        /// <returns>
-        /// true if access to the <see cref="LargeList{T}"/> is synchronized (thread safe); otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList.IsFixedSize" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
-        bool ILargeCollection.IsSynchronized { get { return false; } }
+        bool ILargeList.IsFixedSize => false;
 
-        /// <summary>
-        /// Gets an object that can be used to synchronize access to the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// An object that can be used to synchronize access to the <see cref="LargeList{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection.IsSynchronized" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
-        object ILargeCollection.SyncRoot { get { return Partition; } }
+        bool ILargeCollection.IsSynchronized => false;
+
+        /// <inheritdoc cref="ILargeCollection.SyncRoot" />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as List<T>")]
+        object ILargeCollection.SyncRoot => Partition;
 
 #if STRICT
 #else
@@ -406,7 +395,7 @@
         /// <returns>
         /// The number of elements in the <see cref="System.Collections.Generic.IEnumerable{T}"/> collection.
         /// </returns>
-        private long GetCollectionCount(IEnumerable<T> collection)
+        private static long GetCollectionCount(IEnumerable<T> collection)
         {
             long CollectionCount = -1;
 
@@ -429,10 +418,12 @@
             return CollectionCount;
         }
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
         private IPartition<T> Partition;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
 #if DEBUG
-        private void AssertInvariant()
+        private static void AssertInvariant()
         {
         }
 #endif
@@ -462,36 +453,21 @@
                 Count = count;
             }
 
-            /// <summary>
-            /// Gets the element at the current position of the enumerator.
-            /// </summary>
-            /// <returns>
-            /// The element in the <see cref="LargeList{T}"/> at the current position of the enumerator.
-            /// </returns>
-            public T Current { get { return Enumerator.Current; } }
+            /// <inheritdoc cref="IEnumerator{T}.Current" />
+            public readonly T Current => Enumerator.Current;
 
-#pragma warning disable SA1600 // Elements should be documented
-            object IEnumerator.Current { get { return Current !; } }
-#pragma warning restore SA1600 // Elements should be documented
+            /// <inheritdoc cref="IEnumerator.Current" />
+            // ! The interface is not null-aware.
+            readonly object IEnumerator.Current => Current!;
 
-            /// <summary>
-            /// Sets the enumerator to its initial position, which is before the first element in the collection.
-            /// Note: this method will always throw System.NotSupportedException.
-            /// </summary>
-            /// <exception cref="NotSupportedException">Always.</exception>
+            /// <inheritdoc cref="IEnumerator.Reset" />
             void IEnumerator.Reset()
             {
                 // Required despite what the doc says.
                 throw new NotSupportedException();
             }
 
-            /// <summary>
-            /// Advances the enumerator to the next element of the <see cref="LargeList{T}"/>.
-            /// </summary>
-            /// <returns>
-            /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
-            /// </returns>
-            /// <exception cref="InvalidOperationException">The collection was modified after the enumerator was created.</exception>
+            /// <inheritdoc cref="IEnumerator.MoveNext" />
             public bool MoveNext()
             {
                 if (Count == 0)
@@ -504,9 +480,7 @@
             }
 
             #region Implementation of IDisposable
-            /// <summary>
-            /// Releases all resources used by the LargeEnumerator.
-            /// </summary>
+            /// <inheritdoc cref="IDisposable.Dispose" />
             public void Dispose()
             {
                 using (Enumerator)

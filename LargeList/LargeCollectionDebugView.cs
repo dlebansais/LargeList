@@ -1,7 +1,8 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
 
     /// <summary>
     /// Provides a debugging class to display the content of generic large collections.
@@ -19,8 +20,13 @@
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
         public LargeCollectionDebugView(ILargeCollection<T> collection)
         {
-            if (collection == null)
+#if NET10_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(collection);
+#else
+            if (collection is null)
                 throw new ArgumentNullException(nameof(collection));
+#endif
+
             this.collection = collection;
         }
 
@@ -31,7 +37,7 @@
         /// A <see cref="System.Array"/> proxy for the <see cref="ILargeCollection{T}"/>.
         /// </returns>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public T[] Items
+        public ReadOnlySpan<T> Items
         {
             get
             {

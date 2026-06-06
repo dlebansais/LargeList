@@ -1,9 +1,11 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.Threading;
 
     /// <summary>
     /// Provides the base class for a generic large collection.
@@ -39,11 +41,13 @@
         public LargeCollection(ILargeList<T> list)
         {
 #if STRICT
-            if (list == null)
+            if (list is null)
                 throw new ArgumentNullException(nameof(list), "Value cannot be null.");
 #else
-            if (list == null)
+            if (list is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("collection", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #endif
 
 #if STRICT
@@ -54,14 +58,7 @@
             List = list;
         }
 
-        /// <summary>
-        /// Gets or sets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>
-        /// The element at the specified index.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
+        /// <inheritdoc cref="ILargeList{T}.this[long]" />
         public T this[long index]
         {
             get
@@ -79,21 +76,17 @@
                 SetItem(index, value);
             }
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.this[long]" />
         object ILargeList.this[long index]
-#pragma warning restore SA1600
         {
-            get { return this[index]!; }
-            set { this[index] = (T)value; }
+            // ! The interface is not null-aware.
+            get => this[index]!;
+            set => this[index] = (T)value;
         }
 
-        /// <summary>
-        /// Gets the number of elements actually contained in the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// The number of elements actually contained in the <see cref="LargeCollection{T}"/>.
-        /// </returns>
-        public long Count { get { return List.Count; } }
+        /// <inheritdoc cref="ILargeCollection{T}.Count" />
+        public long Count => List.Count;
 
         /// <summary>
         /// Gets a <see cref="ILargeList{T}"/> wrapper around the <see cref="LargeCollection{T}"/>.
@@ -101,100 +94,84 @@
         /// <returns>
         /// A <see cref="ILargeList{T}"/> wrapper around the <see cref="LargeCollection{T}"/>.
         /// </returns>
-        protected virtual ILargeList<T> Items { get { return List; } }
+        protected virtual ILargeList<T> Items => List;
 
-        /// <summary>
-        /// Adds an object to the end of the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to be added to the end of the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
-        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.Add(T)" />
         public void Add(T item)
         {
             InsertItem(Count, item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.Add(object)" />
         long ILargeList.Add(object value)
-#pragma warning restore SA1600
         {
             long index = Count;
             InsertItem(index, (T)value);
             return index;
         }
 
-        /// <summary>
-        /// Removes all elements from the <see cref="LargeCollection{T}"/>.
-        /// </summary>
+        /// <inheritdoc cref="ILargeCollection{T}.Clear" />
         public void Clear()
         {
             ClearItems();
         }
 
-        /// <summary>
-        /// Determines whether an element is in the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="LargeCollection{T}"/>; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.Contains(T)" />
         public bool Contains(T item)
         {
             return List.Contains(item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.Contains(object)" />
         bool ILargeList.Contains(object item)
-#pragma warning restore SA1600
         {
             return Contains((T)item);
         }
 
 #if STRICT
-        /// <summary>
-        /// Copies the entire <see cref="LargeCollection{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
-        /// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeCollection{T}"/> is greater than the available space from <paramref name="index"/> to the end of the destination array.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.CopyTo(T[], int)" />
         public void CopyTo(T[] array, int index)
         {
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (index < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("dstIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (index + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds.");
 
             List.CopyTo(array, index);
         }
+
+        /// <inheritdoc cref="ILargeCollection.CopyTo(Array, int)" />
         void ILargeCollection.CopyTo(Array array, int index)
         {
-            if (array == null)
+            if (array is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("dest", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (index < 0)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentOutOfRangeException("dstIndex", "Number was less than the array's lower bound in the first dimension.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (index + Count > array.Length)
                 throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds.");
 
-            ILargeCollection AsCollection = Items as ILargeCollection;
+            ILargeCollection AsCollection = (ILargeCollection)Items;
             AsCollection.CopyTo(array, index);
         }
 #else
-        /// <summary>
-        /// Copies the entire <see cref="LargeCollection{T}"/> to a compatible one-dimensional System.Array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="LargeCollection{T}"/>. The System.Array must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than zero.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="LargeCollection{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.CopyTo(T[], int)" />
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 
             if (arrayIndex < 0)
@@ -205,11 +182,11 @@
 
             List.CopyTo(array, arrayIndex);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeCollection.CopyTo(Array, int)" />
         void ILargeCollection.CopyTo(Array array, int arrayIndex)
-#pragma warning restore SA1600
         {
-            if (array == null)
+            if (array is null)
                 throw new ArgumentNullException(nameof(array), "Value cannot be null.");
 
             if (arrayIndex < 0)
@@ -223,48 +200,31 @@
         }
 #endif
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}"/> for the <see cref="LargeCollection{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator" />
         public IEnumerator<T> GetEnumerator()
         {
             return List.GetEnumerator();
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="IEnumerable.GetEnumerator" />
         IEnumerator IEnumerable.GetEnumerator()
-#pragma warning restore SA1600
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// The zero-based index of the first occurrence of <paramref name="item"/> within the entire <see cref="LargeCollection{T}"/>, if found; otherwise, -1.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList{T}.IndexOf(T)" />
         public long IndexOf(T item)
         {
             return List.IndexOf(item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.IndexOf(object)" />
         long ILargeList.IndexOf(object item)
-#pragma warning restore SA1600
         {
             return IndexOf((T)item);
         }
 
-        /// <summary>
-        /// Inserts an element into the <see cref="LargeCollection{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert. The value can be null for reference types.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
-        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
+        /// <inheritdoc cref="ILargeList{T}.Insert(long, T)" />
         public void Insert(long index, T item)
         {
             if (index < 0 || index > Count)
@@ -272,20 +232,14 @@
 
             InsertItem(index, item);
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.Insert(long, object)" />
         void ILargeList.Insert(long index, object item)
-#pragma warning restore SA1600
         {
             Insert(index, (T)item);
         }
 
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="LargeCollection{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the original <see cref="LargeCollection{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.Remove(T)" />
         public bool Remove(T item)
         {
             long index = IndexOf(item);
@@ -295,18 +249,14 @@
             RemoveItem(index);
             return true;
         }
-#pragma warning disable SA1600
+
+        /// <inheritdoc cref="ILargeList.Remove(object)" />
         void ILargeList.Remove(object item)
-#pragma warning restore SA1600
         {
             Remove((T)item);
         }
 
-        /// <summary>
-        /// Removes the element at the specified index of the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than zero.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeCollection{T}"/>.Count.</para></exception>
+        /// <inheritdoc cref="ILargeList{T}.RemoveAt(long)" />
         public void RemoveAt(long index)
         {
             if (index < 0 || index >= Count)
@@ -353,45 +303,25 @@
             List[index] = item;
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="LargeCollection{T}"/> is read-only.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="LargeCollection{T}"/> is read-only; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
-        bool ILargeCollection<T>.IsReadOnly { get { return List.IsReadOnly; } }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
-#pragma warning disable SA1600
-        bool ILargeList.IsReadOnly { get { return List.IsReadOnly; } }
-#pragma warning restore SA1600
+        bool ILargeCollection<T>.IsReadOnly => List.IsReadOnly;
 
-        /// <summary>
-        /// Gets a value indicating whether access to the <see cref="LargeCollection{T}"/> is synchronized (thread safe).
-        /// </summary>
-        /// <returns>
-        /// true if access to the <see cref="LargeCollection{T}"/> is synchronized (thread safe); otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeList.IsReadOnly" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
-        bool ILargeCollection.IsSynchronized { get { return false; } }
+        bool ILargeList.IsReadOnly => List.IsReadOnly;
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="LargeCollection{T}"/> has a fixed size.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="LargeCollection{T}"/> has a fixed size; otherwise, false.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection.IsSynchronized" />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
+        bool ILargeCollection.IsSynchronized => false;
+
+        /// <inheritdoc cref="ILargeList.IsFixedSize" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification="Same as Collection<T>")]
-        bool ILargeList.IsFixedSize { get { return List.IsReadOnly; } }
+        bool ILargeList.IsFixedSize => List.IsReadOnly;
 
-        /// <summary>
-        /// Gets an object that can be used to synchronize access to the <see cref="LargeCollection{T}"/>.
-        /// </summary>
-        /// <returns>
-        /// An object that can be used to synchronize access to the <see cref="LargeCollection{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection.SyncRoot" />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Same as Collection<T>")]
-        object ILargeCollection.SyncRoot { get { return List; } }
+        object ILargeCollection.SyncRoot => List;
 
 #if STRICT
 #else

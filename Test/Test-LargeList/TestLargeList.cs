@@ -1,18 +1,23 @@
-﻿namespace TestLargeList
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+#pragma warning disable CA5394 // Do not use insecure randomness
+
+namespace TestLargeList
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using LargeList;
+    using System.Globalization;
+    using LargeCollections;
 
-    public delegate T CreationHandler<T>(Random rand, int maxIntValue);
+    internal delegate T CreationHandler<T>(Random rand, int maxIntValue);
 
-    public class TestLargeList<T>
+    internal static class TestLargeList<T>
         where T : IComparable
     {
-        public static bool IsStrict { get; set; } = false;
+        public static bool IsStrict { get; set; }
 
         #region LargeCollection
         public static TestStatus Test_collection()
@@ -41,51 +46,58 @@
             {
                 collection = new LargeCollection<T>();
                 if (collection.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
-                    ILargeCollection<T> AsILargeCollectionG = collection as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+                    ILargeCollection<T> AsILargeCollectionG = collection;
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = collection;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = collection as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = collection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == AsILargeCollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeCollectionLimits(collection);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = collection as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == AsILargeCollection)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeCollectionLimits(collection);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            AsILargeList.Add(default(T));
-                                            AsILargeList.Remove(default(T));
+                                    AsILargeList.Add(default(T));
+                                    AsILargeList.Remove(default(T));
 
-                                            return TestStatus.Success;
-                                        }
-                                    }
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -109,47 +121,52 @@
                 ILargeList<T> initlist = new LargeList<T>();
                 collection = new LargeCollection<T>(initlist);
                 if (collection.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = collection as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = collection as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = collection as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = collection as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == AsILargeCollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeCollectionLimits(collection);
+                                if (!Status.Succeeded)
+                                    return Status;
                                 else
-                                {
-                                    ILargeCollection AsILargeCollection = collection as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == AsILargeCollection)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeCollectionLimits(collection);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                            return TestStatus.Success;
-                                    }
-                                }
+                                    return TestStatus.Success;
                             }
                         }
                     }
@@ -169,7 +186,7 @@
             TestName = "collection simple init with null list";
             try
             {
-                ILargeList<T> initlist = null;
+                const ILargeList<T> initlist = null;
                 collection = new LargeCollection<T>(initlist);
                 return TestStatus.Failed(TestName);
             }
@@ -204,7 +221,8 @@
             TestName = "collection simple init with small list";
             try
             {
-                ILargeList<T> initlist = new LargeList<T>();
+                LargeList<T> newList = new();
+                ILargeList<T> initlist = newList;
                 initlist.Add(default(T));
                 initlist.Add(default(T));
                 initlist.Add(default(T));
@@ -215,70 +233,77 @@
 
                 collection = new LargeCollection<T>(initlist);
                 if (collection.Count != 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = collection as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = collection as ILargeList;
+
+                        object Item = AsILargeList[0];
+                        AsILargeList[0] = Item;
+                        AsILargeList.Add(default(T));
+                        AsILargeList.Insert(0, default(T));
+                        AsILargeList.Remove(default(T));
+                        if (!AsILargeList.Contains(default(T)))
                             return TestStatus.Failed(TestName);
+
+                        if (AsILargeList.IsFixedSize)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = collection as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = collection as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == AsILargeCollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                object Item = AsILargeList[0];
-                                AsILargeList[0] = Item;
-                                AsILargeList.Add(default(T));
-                                AsILargeList.Insert(0, default(T));
-                                AsILargeList.Remove(default(T));
-                                if (!AsILargeList.Contains(default(T)))
-                                    return TestStatus.Failed(TestName);
-
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeCollectionLimits(collection);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = collection as ILargeCollection;
-                                    if (AsILargeCollection == null)
+                                    IEnumerator<T> Enumerator = collection.GetEnumerator();
+                                    if (Enumerator is null)
                                         return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
+
+                                    IEnumerable AsIEnumerable = collection;
+                                    IEnumerator AsIEnumerableEnumerator = AsIEnumerable.GetEnumerator();
+                                    if (AsIEnumerableEnumerator is null)
                                         return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == null)
+
+                                    if (AsILargeList.IndexOf(default(T)) < 0)
                                         return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == AsILargeCollection)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeCollectionLimits(collection);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            IEnumerator<T> Enumerator = collection.GetEnumerator();
-                                            if (Enumerator == null)
-                                                return TestStatus.Failed(TestName);
 
-                                            IEnumerable AsIEnumerable = collection;
-                                            IEnumerator AsIEnumerableEnumerator = AsIEnumerable.GetEnumerator();
-                                            if (AsIEnumerableEnumerator == null)
-                                                return TestStatus.Failed(TestName);
+                                    collection.Clear();
 
-                                            if (AsILargeList.IndexOf(default(T)) < 0)
-                                                return TestStatus.Failed(TestName);
-
-                                            collection.Clear();
-
-                                            return TestStatus.Success;
-                                        }
-                                    }
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -818,107 +843,114 @@
             {
                 list = new LargeList<T>();
                 if (list.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
+                                    IEnumerable AsIEnumerable = list;
+                                    if (AsIEnumerable.GetEnumerator() is null)
                                         return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
+
+                                    list.Sort();
+
+                                    try
                                     {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            IEnumerable AsIEnumerable = list;
-                                            if (AsIEnumerable.GetEnumerator() == null)
-                                                return TestStatus.Failed(TestName);
-
-                                            list.Sort();
-
-                                            try
-                                            {
-                                                Predicate<T> match = (item) => { return (ItemToInt(item) & 0xF) == 0; };
-                                                list.RemoveAll(match);
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                return TestStatus.Failed("RemoveAll(null) unknown exception: " + e.GetType() + " - " + e.Message);
-                                            }
-
-                                            list.Clear();
-
-                                            EnumerableSegmentTable<T> SegmentEnumerator = new EnumerableSegmentTable<T>(new Partition<T>(10, 0, 10), 0, 10);
-                                            IEnumerable AsEnumerableSegment = SegmentEnumerator;
-                                            if (AsEnumerableSegment.GetEnumerator() == null)
-                                                return TestStatus.Failed(TestName);
-
-                                            using (PartitionEnumerator<T> PartitionEnumerator = new PartitionEnumerator<T>())
-                                            {
-                                                PartitionEnumerator.MoveNext(null);
-                                            }
-
-                                            Partition<T> Partition = new Partition<T>(10, 1, 10);
-                                            using (PartitionEnumerator<T> PartitionEnumerator = new PartitionEnumerator<T>(Partition, 0, 0))
-                                            {
-                                                PartitionEnumerator.MoveNext(Partition);
-                                                PartitionEnumerator.MoveNext(Partition);
-                                            }
-
-                                            Partition.MakeRoom(0, 0, 0, 200);
-                                            string PartitionName = Partition.ToString();
-
-                                            Partition.ExtendCapacity(11);
-
-                                            Partition = new Partition<T>(20, 20, 10);
-
-                                            Partition.Reverse(0, 9, 1, 2, 2);
-
-                                            Partition.Remove(default(T));
-                                            Partition.TrimCapacity(1);
-
-                                            if (Partition.Capacity != 19)
-                                                return TestStatus.Failed(TestName);
-
-                                            Partition.Reverse(0, 0, 1, 0, 9);
-                                            Partition.Sort(0, 0, 1, 0, 9, Comparer<T>.Default);
-
-                                            Partition = new Partition<T>(1, 1, 10);
-                                            Partition.Remove(default(T));
-
-                                            if (Partition.Count != 0)
-                                                return TestStatus.Failed(TestName);
-
-                                            return TestStatus.Success;
-                                        }
+                                        Predicate<T> match = (item) => { return (ItemToInt(item) & 0xF) == 0; };
+                                        list.RemoveAll(match);
                                     }
+                                    catch (Exception e)
+                                    {
+                                        return TestStatus.Failed("RemoveAll(null) unknown exception: " + e.GetType() + " - " + e.Message);
+                                    }
+
+                                    list.Clear();
+
+                                    EnumerableSegmentTable<T> SegmentEnumerator = new EnumerableSegmentTable<T>(new Partition<T>(10, 0, 10), 0, 10);
+                                    IEnumerable AsEnumerableSegment = SegmentEnumerator;
+                                    if (AsEnumerableSegment.GetEnumerator() is null)
+                                        return TestStatus.Failed(TestName);
+
+                                    using (PartitionEnumerator<T> PartitionEnumerator = new PartitionEnumerator<T>())
+                                    {
+                                        PartitionEnumerator.MoveNext(null);
+                                    }
+
+                                    Partition<T> Partition = new Partition<T>(10, 1, 10);
+                                    using (PartitionEnumerator<T> PartitionEnumerator = new PartitionEnumerator<T>(Partition, 0, 0))
+                                    {
+                                        PartitionEnumerator.MoveNext(Partition);
+                                        PartitionEnumerator.MoveNext(Partition);
+                                    }
+
+                                    Partition.MakeRoom(0, 0, 0, 200);
+                                    string PartitionName = Partition.ToString();
+
+                                    Partition.ExtendCapacity(11);
+
+                                    Partition = new Partition<T>(20, 20, 10);
+
+                                    Partition.Reverse(0, 9, 1, 2, 2);
+
+                                    Partition.Remove(default(T));
+                                    Partition.TrimCapacity(1);
+
+                                    if (Partition.Capacity != 19)
+                                        return TestStatus.Failed(TestName);
+
+                                    Partition.Reverse(0, 0, 1, 0, 9);
+                                    Partition.Sort(0, 0, 1, 0, 9, Comparer<T>.Default);
+
+                                    Partition = new Partition<T>(1, 1, 10);
+                                    Partition.Remove(default(T));
+
+                                    if (Partition.Count != 0)
+                                        return TestStatus.Failed(TestName);
+
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -941,47 +973,52 @@
             {
                 list = new LargeList<T>(0);
                 if (list.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                    return Status;
                                 else
-                                {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                            return TestStatus.Success;
-                                    }
-                                }
+                                    return TestStatus.Success;
                             }
                         }
                     }
@@ -1027,47 +1064,52 @@
             {
                 list = new LargeList<T>(139);
                 if (list.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != 139)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                    return Status;
                                 else
-                                {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                            return TestStatus.Success;
-                                    }
-                                }
+                                    return TestStatus.Success;
                             }
                         }
                     }
@@ -1090,47 +1132,52 @@
                 ILargeList<T> initlist = new LargeList<T>();
                 list = new LargeList<T>(initlist);
                 if (list.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                    return Status;
                                 else
-                                {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                            return TestStatus.Success;
-                                    }
-                                }
+                                    return TestStatus.Success;
                             }
                         }
                     }
@@ -1150,7 +1197,7 @@
             TestName = "list simple init with null list";
             try
             {
-                ILargeList<T> initlist = null;
+                const ILargeList<T> initlist = null;
                 list = new LargeList<T>(initlist);
                 return TestStatus.Failed(TestName);
             }
@@ -1186,66 +1233,74 @@
                 initlist.Add(default(T));
                 initlist.Add(default(T));
                 list = new LargeList<T>(initlist);
+
                 if (list.Count != 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
+                                    AsILargeList.Remove(default(T));
+
+                                    LargeList<T>.LargeEnumerator AsLargeEnumerator = list.GetEnumerator();
+                                    AsLargeEnumerator.MoveNext();
+
+                                    IEnumerator AsEnumerator = AsLargeEnumerator;
+                                    object Item = AsEnumerator.Current;
+
+                                    try
                                     {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            AsILargeList.Remove(default(T));
-
-                                            LargeList<T>.LargeEnumerator AsLargeEnumerator = list.GetEnumerator();
-                                            AsLargeEnumerator.MoveNext();
-
-                                            IEnumerator AsEnumerator = AsLargeEnumerator;
-                                            object Item = AsEnumerator.Current;
-
-                                            try
-                                            {
-                                                AsEnumerator.Reset();
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            return TestStatus.Success;
-                                        }
+                                        AsEnumerator.Reset();
+                                        return TestStatus.Failed(TestName);
                                     }
+                                    catch
+                                    {
+                                    }
+
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -1376,47 +1431,52 @@
                 list.AddRange(new List<T>());
 
                 if (list.Count != BaseCount + 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else if (list.Capacity != BaseCount + 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = list as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = list as ILargeList;
+
+                        if (AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = list as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = list as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == list)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckLargeListLimits(list);
+                                if (!Status.Succeeded)
+                                    return Status;
                                 else
-                                {
-                                    ILargeCollection AsILargeCollection = list as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == list)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckLargeListLimits(list);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                            return TestStatus.Success;
-                                    }
-                                }
+                                    return TestStatus.Success;
                             }
                         }
                     }
@@ -4010,52 +4070,59 @@
                 ILargeList<T> initlist = new LargeList<T>();
                 rcollection = new ReadOnlyLargeCollection<T>(initlist);
                 if (rcollection.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = rcollection as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (!AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (!AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = rcollection as ILargeList;
+
+                        if (!AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (!AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = rcollection as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = rcollection as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == AsILargeCollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (!AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (!AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckReadOnlyLargeCollectionLimits(rcollection);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = rcollection as ILargeCollection;
-                                    if (AsILargeCollection == null)
+                                    ReadOnlyLargeCollection<T> AsReadOnlyInterface = ((LargeList<T>)initlist).AsReadOnly();
+                                    if (AsReadOnlyInterface is null)
                                         return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == AsILargeCollection)
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        TestStatus Status = CheckReadOnlyLargeCollectionLimits(rcollection);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            ReadOnlyLargeCollection<T> AsReadOnlyInterface = ((LargeList<T>)initlist).AsReadOnly();
-                                            if (AsReadOnlyInterface == null)
-                                                return TestStatus.Failed(TestName);
 
-                                            return TestStatus.Success;
-                                        }
-                                    }
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -4076,7 +4143,7 @@
             TestName = "readonly collection simple init with null list";
             try
             {
-                ILargeList<T> initlist = null;
+                const ILargeList<T> initlist = null;
                 rcollection = new ReadOnlyLargeCollection<T>(initlist);
                 return TestStatus.Failed(TestName);
             }
@@ -4111,189 +4178,196 @@
                 initlist.Add(default(T));
                 rcollection = new ReadOnlyLargeCollection<T>(initlist);
                 if (rcollection.Count != 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsILargeCollectionG = rcollection as ILargeCollection<T>;
-                    if (AsILargeCollectionG == null)
+
+                    if (!AsILargeCollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (!AsILargeCollectionG.IsReadOnly)
+                        ILargeList AsILargeList = rcollection as ILargeList;
+
+                        if (!AsILargeList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (!AsILargeList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsILargeList = rcollection as ILargeList;
-                            if (AsILargeList == null)
+                            ILargeCollection AsILargeCollection = rcollection as ILargeCollection;
+
+                            if (AsILargeCollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsILargeCollection.SyncRoot == AsILargeCollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (!AsILargeList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (!AsILargeList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
+                                TestStatus Status = CheckReadOnlyLargeCollectionLimits(rcollection);
+                                if (!Status.Succeeded)
+                                {
+                                    return Status;
+                                }
                                 else
                                 {
-                                    ILargeCollection AsILargeCollection = rcollection as ILargeCollection;
-                                    if (AsILargeCollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsILargeCollection.SyncRoot == AsILargeCollection)
-                                        return TestStatus.Failed(TestName);
-                                    else
+                                    T t = rcollection[0];
+
+                                    ILargeList<T> AsLargeList = rcollection;
+                                    t = AsLargeList[0];
+
+                                    try
                                     {
-                                        TestStatus Status = CheckReadOnlyLargeCollectionLimits(rcollection);
-                                        if (!Status.Succeeded)
-                                            return Status;
-                                        else
-                                        {
-                                            T t = rcollection[0];
-
-                                            ILargeList<T> AsLargeList = rcollection;
-                                            t = AsLargeList[0];
-
-                                            try
-                                            {
-                                                AsLargeList[0] = t;
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            ILargeList AsInterface = rcollection;
-                                            object Item = AsInterface[0];
-
-                                            try
-                                            {
-                                                AsInterface[0] = Item;
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            if (!rcollection.Contains(default(T)))
-                                                return TestStatus.Failed(TestName);
-
-                                            if (!AsILargeList.Contains(default(T)))
-                                                return TestStatus.Failed(TestName);
-
-                                            if (rcollection.IndexOf(default(T)) < 0)
-                                                return TestStatus.Failed(TestName);
-
-                                            if (AsILargeList.IndexOf(default(T)) < 0)
-                                                return TestStatus.Failed(TestName);
-
-                                            rcollection.CopyTo(new T[10], 0);
-                                            AsILargeList.CopyTo(new T[10], 0);
-                                            AsILargeCollection.CopyTo(new T[10], 0);
-
-                                            IEnumerator<T> CollectionEnumerator = rcollection.GetEnumerator();
-                                            if (CollectionEnumerator == null)
-                                                return TestStatus.Failed(TestName);
-
-                                            IEnumerable AsEnumerable = rcollection;
-                                            IEnumerator Enumerator = AsEnumerable.GetEnumerator();
-                                            if (Enumerator == null)
-                                                return TestStatus.Failed(TestName);
-
-                                            try
-                                            {
-                                                AsLargeList.Insert(0, default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsILargeList.Insert(0, default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsLargeList.Remove(default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsILargeList.Remove(default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsLargeList.RemoveAt(0);
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsILargeList.RemoveAt(0);
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsLargeList.Add(default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsILargeList.Add(default(T));
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsLargeList.Clear();
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            try
-                                            {
-                                                AsILargeList.Clear();
-                                                return TestStatus.Failed(TestName);
-                                            }
-                                            catch
-                                            {
-                                            }
-
-                                            return TestStatus.Success;
-                                        }
+                                        AsLargeList[0] = t;
+                                        return TestStatus.Failed(TestName);
                                     }
+                                    catch
+                                    {
+                                    }
+
+                                    ILargeList AsInterface = rcollection;
+                                    object Item = AsInterface[0];
+
+                                    try
+                                    {
+                                        AsInterface[0] = Item;
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    if (!rcollection.Contains(default(T)))
+                                        return TestStatus.Failed(TestName);
+
+                                    if (!AsILargeList.Contains(default(T)))
+                                        return TestStatus.Failed(TestName);
+
+                                    if (rcollection.IndexOf(default(T)) < 0)
+                                        return TestStatus.Failed(TestName);
+
+                                    if (AsILargeList.IndexOf(default(T)) < 0)
+                                        return TestStatus.Failed(TestName);
+
+                                    rcollection.CopyTo(new T[10], 0);
+                                    AsILargeList.CopyTo(new T[10], 0);
+                                    AsILargeCollection.CopyTo(new T[10], 0);
+
+                                    IEnumerator<T> CollectionEnumerator = rcollection.GetEnumerator();
+                                    if (CollectionEnumerator is null)
+                                        return TestStatus.Failed(TestName);
+
+                                    IEnumerable AsEnumerable = rcollection;
+                                    IEnumerator Enumerator = AsEnumerable.GetEnumerator();
+                                    if (Enumerator is null)
+                                        return TestStatus.Failed(TestName);
+
+                                    try
+                                    {
+                                        AsLargeList.Insert(0, default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsILargeList.Insert(0, default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsLargeList.Remove(default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsILargeList.Remove(default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsLargeList.RemoveAt(0);
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsILargeList.RemoveAt(0);
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsLargeList.Add(default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsILargeList.Add(default(T));
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsLargeList.Clear();
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    try
+                                    {
+                                        AsILargeList.Clear();
+                                        return TestStatus.Failed(TestName);
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    return TestStatus.Success;
                                 }
                             }
                         }
@@ -4511,140 +4585,146 @@
                 LargeList<T> initlist = new LargeList<T>();
                 rlist = new ReadOnlyLargeList<T>(initlist);
                 if (rlist.Count != 0)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsICollectionG = rlist as ILargeCollection<T>;
-                    if (AsICollectionG == null)
+                    if (!AsICollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (!AsICollectionG.IsReadOnly)
+                        ILargeList AsIList = rlist as ILargeList;
+
+                        if (!AsIList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (!AsIList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsIList = rlist as ILargeList;
-                            if (AsIList == null)
+                            ILargeCollection AsICollection = rlist as ILargeCollection;
+
+                            if (AsICollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsICollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsICollection.SyncRoot == AsICollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (!CheckReadOnlyListLimits(rlist))
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (!AsIList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (!AsIList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
-                                else
+                                T[] rlistArray = rlist.ToArray();
+
+                                ILargeList<T> AsInterface = rlist;
+                                ILargeList AsLargeList = rlist;
+
+                                try
                                 {
-                                    ILargeCollection AsICollection = rlist as ILargeCollection;
-                                    if (AsICollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.SyncRoot == AsICollection)
-                                        return TestStatus.Failed(TestName);
-                                    else if (!CheckReadOnlyListLimits(rlist))
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        T[] rlistArray = rlist.ToArray();
-
-                                        ILargeList<T> AsInterface = rlist;
-                                        ILargeList AsLargeList = rlist;
-
-                                        try
-                                        {
-                                            AsInterface.Insert(0, default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsLargeList.Insert(0, default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsInterface.Remove(default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsLargeList.Remove(default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsInterface.RemoveAt(0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsLargeList.RemoveAt(0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsInterface.Add(default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsLargeList.Add(default(T));
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsInterface.Clear();
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsLargeList.Clear();
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        return TestStatus.Success;
-                                    }
+                                    AsInterface.Insert(0, default(T));
+                                    return TestStatus.Failed(TestName);
                                 }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsLargeList.Insert(0, default(T));
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsInterface.Remove(default(T));
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsLargeList.Remove(default(T));
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsInterface.RemoveAt(0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsLargeList.RemoveAt(0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsInterface.Add(default(T));
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsLargeList.Add(default(T));
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsInterface.Clear();
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsLargeList.Clear();
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                return TestStatus.Success;
                             }
                         }
                     }
@@ -4664,7 +4744,7 @@
             TestName = "readonly list simple init with null list";
             try
             {
-                LargeList<T> initlist = null;
+                const LargeList<T> initlist = null;
                 rlist = new ReadOnlyLargeList<T>(initlist);
                 return TestStatus.Failed(TestName);
             }
@@ -4698,271 +4778,279 @@
                 initlist.Add(default(T));
                 initlist.Add(default(T));
                 rlist = new ReadOnlyLargeList<T>(initlist);
+
                 if (rlist.Count != 7)
+                {
                     return TestStatus.Failed(TestName);
+                }
                 else
                 {
                     ILargeCollection<T> AsICollectionG = rlist as ILargeCollection<T>;
-                    if (AsICollectionG == null)
+
+                    if (!AsICollectionG.IsReadOnly)
+                    {
                         return TestStatus.Failed(TestName);
+                    }
                     else
                     {
-                        if (!AsICollectionG.IsReadOnly)
+                        ILargeList AsIList = rlist as ILargeList;
+
+                        if (!AsIList.IsFixedSize)
+                        {
                             return TestStatus.Failed(TestName);
+                        }
+                        else if (!AsIList.IsReadOnly)
+                        {
+                            return TestStatus.Failed(TestName);
+                        }
                         else
                         {
-                            ILargeList AsIList = rlist as ILargeList;
-                            if (AsIList == null)
+                            ILargeCollection AsICollection = rlist as ILargeCollection;
+
+                            if (AsICollection.IsSynchronized)
+                            {
                                 return TestStatus.Failed(TestName);
+                            }
+                            else if (AsICollection.SyncRoot is null)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (AsICollection.SyncRoot == AsICollection)
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
+                            else if (!CheckReadOnlyListLimits(rlist))
+                            {
+                                return TestStatus.Failed(TestName);
+                            }
                             else
                             {
-                                if (!AsIList.IsFixedSize)
-                                    return TestStatus.Failed(TestName);
-                                else if (!AsIList.IsReadOnly)
-                                    return TestStatus.Failed(TestName);
-                                else
+                                ILargeList<T> AsInterface = rlist;
+
+                                T t = rlist[0];
+
+                                try
                                 {
-                                    ILargeCollection AsICollection = rlist as ILargeCollection;
-                                    if (AsICollection == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.IsSynchronized)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.SyncRoot == null)
-                                        return TestStatus.Failed(TestName);
-                                    else if (AsICollection.SyncRoot == AsICollection)
-                                        return TestStatus.Failed(TestName);
-                                    else if (!CheckReadOnlyListLimits(rlist))
-                                        return TestStatus.Failed(TestName);
-                                    else
-                                    {
-                                        ILargeList<T> AsInterface = rlist;
-
-                                        T t = rlist[0];
-
-                                        try
-                                        {
-                                            t = rlist[-1];
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        object Item = AsIList[0];
-                                        try
-                                        {
-                                            AsIList[0] = Item;
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        t = AsInterface[0];
-                                        try
-                                        {
-                                            AsInterface[0] = t;
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        if (!rlist.Contains(default(T)))
-                                            return TestStatus.Failed(TestName);
-
-                                        if (!AsInterface.Contains(default(T)))
-                                            return TestStatus.Failed(TestName);
-
-                                        if (!AsIList.Contains(default(T)))
-                                            return TestStatus.Failed(TestName);
-
-                                        try
-                                        {
-                                            rlist.CopyTo(null);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(null, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(0, null, 0, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsICollection.CopyTo(null, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(new T[0]);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(new T[0], -1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(0, new T[0], -1, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsICollection.CopyTo(new T[0], -1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(new T[0], 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(0, new T[0], 0, -1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            AsICollection.CopyTo(new T[0], 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.CopyTo(0, new T[0], 0, 1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        rlist.CopyTo(new T[10]);
-                                        rlist.CopyTo(new T[10], 1);
-                                        AsICollection.CopyTo(new T[10], 1);
-                                        rlist.CopyTo(0, new T[10], 0, 1);
-
-                                        LargeList<T>.LargeEnumerator LargeEnumerator = rlist.GetEnumerator();
-                                        IEnumerable<T> AsEnumerableT = rlist;
-                                        IEnumerator<T> EnumeratorT = AsEnumerableT.GetEnumerator();
-                                        IEnumerable AsEnumerable = rlist;
-                                        IEnumerator Enumerator = AsEnumerable.GetEnumerator();
-
-                                        if (rlist.IndexOf(default(T)) < 0)
-                                            return TestStatus.Failed(TestName);
-
-                                        if (AsInterface.IndexOf(default(T)) < 0)
-                                            return TestStatus.Failed(TestName);
-
-                                        if (AsIList.IndexOf(default(T)) < 0)
-                                            return TestStatus.Failed(TestName);
-
-                                        if (rlist.IndexOf(default(T), 0) < 0)
-                                            return TestStatus.Failed(TestName);
-
-                                        if (rlist.IndexOf(default(T), 0, 1) < 0)
-                                            return TestStatus.Failed(TestName);
-
-                                        try
-                                        {
-                                            rlist.IndexOf(default(T), -1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.IndexOf(default(T), 100);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.IndexOf(default(T), -1, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.IndexOf(default(T), 0, -1);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        try
-                                        {
-                                            rlist.IndexOf(default(T), 100, 0);
-                                            return TestStatus.Failed(TestName);
-                                        }
-                                        catch
-                                        {
-                                        }
-
-                                        Predicate<T> match = (item) => { return (ItemToInt(item) & 0xF) == 1000; };
-                                        if (rlist.FindLastIndex(0, match) != -1)
-                                            return TestStatus.Failed(TestName);
-
-                                        return TestStatus.Success;
-                                    }
+                                    t = rlist[-1];
+                                    return TestStatus.Failed(TestName);
                                 }
+                                catch
+                                {
+                                }
+
+                                object Item = AsIList[0];
+                                try
+                                {
+                                    AsIList[0] = Item;
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                t = AsInterface[0];
+                                try
+                                {
+                                    AsInterface[0] = t;
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                if (!rlist.Contains(default(T)))
+                                    return TestStatus.Failed(TestName);
+
+                                if (!AsInterface.Contains(default(T)))
+                                    return TestStatus.Failed(TestName);
+
+                                if (!AsIList.Contains(default(T)))
+                                    return TestStatus.Failed(TestName);
+
+                                try
+                                {
+                                    rlist.CopyTo(null);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(null, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(0, null, 0, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsICollection.CopyTo(null, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(Array.Empty<T>());
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(Array.Empty<T>(), -1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(0, Array.Empty<T>(), -1, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsICollection.CopyTo(Array.Empty<T>(), -1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(Array.Empty<T>(), 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(0, Array.Empty<T>(), 0, -1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsICollection.CopyTo(Array.Empty<T>(), 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(0, Array.Empty<T>(), 0, 1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                rlist.CopyTo(Array.Empty<T>());
+                                rlist.CopyTo(Array.Empty<T>(), 1);
+                                AsICollection.CopyTo(Array.Empty<T>(), 1);
+                                rlist.CopyTo(0, Array.Empty<T>(), 0, 1);
+
+                                LargeList<T>.LargeEnumerator LargeEnumerator = rlist.GetEnumerator();
+                                IEnumerable<T> AsEnumerableT = rlist;
+                                IEnumerator<T> EnumeratorT = AsEnumerableT.GetEnumerator();
+                                IEnumerable AsEnumerable = rlist;
+                                IEnumerator Enumerator = AsEnumerable.GetEnumerator();
+
+                                if (rlist.IndexOf(default(T)) < 0)
+                                    return TestStatus.Failed(TestName);
+
+                                if (AsInterface.IndexOf(default(T)) < 0)
+                                    return TestStatus.Failed(TestName);
+
+                                if (AsIList.IndexOf(default(T)) < 0)
+                                    return TestStatus.Failed(TestName);
+
+                                if (rlist.IndexOf(default(T), 0) < 0)
+                                    return TestStatus.Failed(TestName);
+
+                                if (rlist.IndexOf(default(T), 0, 1) < 0)
+                                    return TestStatus.Failed(TestName);
+
+                                try
+                                {
+                                    rlist.IndexOf(default(T), -1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.IndexOf(default(T), 100);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.IndexOf(default(T), -1, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.IndexOf(default(T), 0, -1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.IndexOf(default(T), 100, 0);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                Predicate<T> match = (item) => { return (ItemToInt(item) & 0xF) == 1000; };
+                                if (rlist.FindLastIndex(0, match) != -1)
+                                    return TestStatus.Failed(TestName);
+
+                                return TestStatus.Success;
                             }
                         }
                     }
@@ -4999,7 +5087,11 @@
 
         private static bool IsExceptionEqual(Exception e, string message)
         {
+#if NETFRAMEWORK
             return e.Message.Replace("\r\n", "\n") == message;
+#else
+            return e.Message.Replace("\r\n", "\n", StringComparison.InvariantCulture) == message;
+#endif
         }
 
         public static void Init(bool assemblyIsStrict, int defaultMaxSegmentCapacity)
@@ -5044,11 +5136,11 @@
 
         private static int CompareTwoObjects(T o1, T o2)
         {
-            if (o1 == null && o2 == null)
+            if (o1 is null && o2 is null)
                 return 0;
-            else if (o1 == null && o2 != null)
+            else if (o1 is null && o2 is not null)
                 return 1;
-            else if (o1 != null && o2 == null)
+            else if (o1 is not null && o2 is null)
                 return -1;
             else
                 return o1.CompareTo(o2);
@@ -5056,9 +5148,9 @@
 
         private static int ItemToInt(T item)
         {
-            string s = item != null ? item.ToString() : "-1";
+            string s = item is not null ? item.ToString() : "-1";
 
-            int n = int.Parse(s);
+            int n = int.Parse(s, CultureInfo.InvariantCulture);
 
             return n;
         }
@@ -5068,7 +5160,7 @@
         private const int ClearOperationOdds = 10;
         private const int ReverseOperationOdds = 3;
         private const int SortOperationOdds = 3;
-        #endregion
+#endregion
 
         #region Collection Comparison
         private enum CollectionOperation
@@ -5096,10 +5188,10 @@
         public static TestStatus SimultaneousTest_collections(int loop, int maxLoops, CreationHandler<T> handler)
         {
             TestStatus Status;
-            int MaxSteps = 50;
+            const int MaxSteps = 50;
             int Executed = 0;
             int OldExecuted = 0;
-            int ExpectedExecuted = 0x3F;
+            const int ExpectedExecuted = 0x3F;
 
             if (maxLoops > 0)
                 PrintDiagnostic("Loop #" + (loop + 1) + "/" + maxLoops);
@@ -5292,13 +5384,13 @@
         public static TestStatus SimultaneousTest_lists(int loop, int maxLoops, CreationHandler<T> handler)
         {
             TestStatus Status;
-            int MaxSteps = 1;
+            const int MaxSteps = 1;
             int Executed = 0;
             int OldExecuted = 0;
 #if DEBUG
-            int ExpectedExecuted = 0;
+            const int ExpectedExecuted = 0;
 #else
-            int ExpectedExecuted = 0x3FFF;
+            const int ExpectedExecuted = 0x3FFF;
 #endif
 
             if (maxLoops > 0)
@@ -5695,7 +5787,7 @@
 
             for (int i = 0; i < MaxIntValue; i++)
             {
-                match = (item) => { return item != null && (ItemToInt(item) % MaxIntValue) == i; };
+                match = (item) => { return item is not null && (ItemToInt(item) % MaxIntValue) == i; };
                 if (CompareTwoObjects(small_list.Find(match), large_list.Find(match)) != 0)
                     return TestStatus.Failed("List<" + typeof(T).Name + ">, compare Find, " + "Loop#" + loop + ", Step#" + step);
             }
@@ -5707,7 +5799,9 @@
                 LargeList<T> large_find = large_list.FindAll(match);
 
                 if (small_find.Count != large_find.Count)
+                {
                     return TestStatus.Failed("List<" + typeof(T).Name + ">, compare FindAll, " + "Loop#" + loop + ", Step#" + step);
+                }
                 else
                 {
                     int FindCount = small_find.Count;
@@ -5794,7 +5888,9 @@
                     LargeList<T> large_range = large_list.GetRange(j, k);
 
                     if (small_range.Count != large_range.Count)
+                    {
                         return TestStatus.Failed("List<" + typeof(T).Name + ">, compare GetRange, " + "Loop#" + loop + ", Step#" + step);
+                    }
                     else
                     {
                         int FindCount = small_range.Count;
@@ -5861,7 +5957,9 @@
             small_array = small_list.ToArray();
             large_array = large_list.ToArray();
             if (small_array.Length != large_array.Length)
+            {
                 return TestStatus.Failed("List<" + typeof(T).Name + ">, compare ToArray, " + "Loop#" + loop + ", Step#" + step);
+            }
             else
             {
                 int ArrayLength = small_array.Length;

@@ -1,4 +1,4 @@
-﻿namespace LargeList
+﻿namespace LargeCollections
 {
     using System;
     using System.Collections;
@@ -15,9 +15,7 @@
     [DebuggerTypeProxy(typeof(LargeCollectionDebugView<>))]
     public partial class LargeList<T> : ILargeList<T>, ILargeCollection<T>, ILargeList, ILargeCollection, IReadOnlyLargeList<T>, IReadOnlyLargeCollection<T>, IEnumerable<T>, IEnumerable
     {
-        /// <summary>
-        /// Removes all elements from the <see cref="LargeList{T}"/>.
-        /// </summary>
+        /// <inheritdoc cref="ILargeCollection{T}.Clear" />
         public void Clear()
         {
             Partition.Clear();
@@ -27,11 +25,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Adds an object to the end of the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to be added to the end of the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
-        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
+        /// <inheritdoc cref="ILargeCollection{T}.Add(T)" />
         public void Add(T item)
         {
             long Index = Count;
@@ -51,14 +45,13 @@
 #endif
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.Add(object)" />
         long ILargeList.Add(object value)
         {
             long Index = Count;
             Add((T)value);
             return Index;
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Adds the elements of the specified collection to the end of the <see cref="LargeList{T}"/>.
@@ -68,7 +61,7 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void AddRange(IEnumerable<T> collection)
         {
-            if (collection == null)
+            if (collection is null)
                 throw new ArgumentNullException(nameof(collection), "Value cannot be null.");
 
             long CollectionCount = GetCollectionCount(collection);
@@ -89,13 +82,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Inserts an element into the <see cref="LargeList{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert. The value can be null for reference types.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is greater than <see cref="LargeList{T}.Count"/>.</para></exception>
-        /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
+        /// <inheritdoc cref="ILargeList{T}.Insert(long, T)" />
         public void Insert(long index, T item)
         {
             if (index < 0 || index > Count)
@@ -116,12 +103,11 @@
 #endif
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.Insert(long, object)" />
         void ILargeList.Insert(long index, object item)
         {
             Insert(index, (T)item);
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Inserts the elements of a collection into the <see cref="LargeList{T}"/> at the specified index.
@@ -133,7 +119,7 @@
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system.</exception>
         public void InsertRange(long index, IEnumerable<T> collection)
         {
-            if (collection == null)
+            if (collection is null)
                 throw new ArgumentNullException(nameof(collection), "Value cannot be null.");
 
             if (index < 0 || index > Count)
@@ -156,13 +142,7 @@
 #endif
         }
 
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="LargeList{T}"/>. The value can be null for reference types.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is successfully removed; otherwise, false. This method also returns false if <paramref name="item"/> was not found in the <see cref="LargeList{T}"/>.
-        /// </returns>
+        /// <inheritdoc cref="ILargeCollection{T}.Remove(T)" />
         public bool Remove(T item)
         {
             bool Result = false;
@@ -177,12 +157,11 @@
             return Result;
         }
 
-#pragma warning disable SA1600
+        /// <inheritdoc cref="ILargeList.Remove(object)" />
         void ILargeList.Remove(object item)
         {
             Remove((T)item);
         }
-#pragma warning restore SA1600
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -194,7 +173,7 @@
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
         public long RemoveAll(Predicate<T> match)
         {
-            if (match == null)
+            if (match is null)
                 throw new ArgumentNullException(nameof(match), "Value cannot be null.");
 
             long RemovedCount = Partition.RemoveAll(match);
@@ -206,11 +185,7 @@
             return RemovedCount;
         }
 
-        /// <summary>
-        /// Removes the element at the specified index of the <see cref="LargeList{T}"/>.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><para><paramref name="index"/> is less than 0.</para><para>-or-</para><para><paramref name="index"/> is equal to or greater than <see cref="LargeList{T}.Count"/>.</para></exception>
+        /// <inheritdoc cref="ILargeList{T}.RemoveAt(long)" />
         public void RemoveAt(long index)
         {
             if (index < 0 || index >= Count)
@@ -318,10 +293,12 @@
         public void Sort(Comparison<T> comparison)
         {
 #if STRICT
-            if (comparison == null)
+            if (comparison is null)
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly: the argument name is forced on us by a bug in Collection<T>.
                 throw new ArgumentNullException("match", "Value cannot be null.");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 #else
-            if (comparison == null)
+            if (comparison is null)
                 throw new ArgumentNullException(nameof(comparison), "Value cannot be null.");
 #endif
 
@@ -335,7 +312,7 @@
         /// <exception cref="ArgumentException">The implementation of <paramref name="comparer"/> caused an error during the sort. For example, <paramref name="comparer"/> might not return 0 when comparing an item with itself.</exception>
         public void Sort(IComparer<T> comparer)
         {
-            if (comparer == null)
+            if (comparer is null)
                 comparer = Comparer<T>.Default;
 
             SortItems(0, Count, comparer);
@@ -360,7 +337,7 @@
             if (index + count > Count)
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
 
-            if (comparer == null)
+            if (comparer is null)
                 comparer = Comparer<T>.Default;
 
             SortItems(index, count, comparer);
