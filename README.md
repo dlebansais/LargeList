@@ -79,7 +79,7 @@ The implementation, interface and documentation of classes and interfaces in the
 If backward compatibility is an issue, the code can be recompiled in STRICT mode. In this mode, everything is the same as .NET except the type of indexes. Note that you must recompile yourself, downloaded binaries do *not* use STRICT mode.
 
 ## STRICT mode
-To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), open the project properties, select the "Build" tab and replace "CODE_ANALYSIS" with "CODE_ANALYSIS;STRICT" in the conditional compilation symbols.
+To recompile in STRICT mode (as close as possible to .NET for compatibility with existing code), set the environment variable ENABLE_STRICT to true (and restart Visual Studio).
 To know if the version you use was recompiled in STRICT mode or not, include the following excerpt in your code:
 
 ```csharp

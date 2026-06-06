@@ -30,11 +30,9 @@
         <PackageReadmeFile>README-short.md</PackageReadmeFile>
     </PropertyGroup>
 
-    <!-- 
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(ENABLE_STRICT)'=='true'">
         <DefineConstants>$(DefineConstants);STRICT</DefineConstants>
     </PropertyGroup>
-    -->
     
     <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
@@ -84,7 +82,7 @@
         </ItemGroup>
     </Target>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionDir)'!='*Undefined*'">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionDir)'!='*Undefined*' And '$(ENABLE_STRICT)'==''">
         <Exec Command="if exist &quot;$(SolutionDir)updatecommit.bat&quot; call &quot;$(SolutionDir)updatecommit.bat&quot; &quot;$(SolutionDir)&quot; &quot;$(TargetPath)&quot;" />
         <Exec Command="if exist &quot;$(SolutionDir)signfile.bat&quot; call &quot;$(SolutionDir)signfile.bat&quot; &quot;$(SolutionDir)&quot; &quot;$(Configuration)-$(Platform)&quot; &quot;$(TargetPath)&quot;" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
 
