@@ -21,7 +21,6 @@ init:
 
 environment:
   PACKAGE_PREFIX: dlebansais
-  ENABLE_STRICT: true
 
   matrix:
     - job_name: Debug
