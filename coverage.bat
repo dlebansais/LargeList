@@ -11,7 +11,7 @@ set NUINT_CONSOLE_VERSION=3.11.1
 set NUINT_CONSOLE=NUnit.ConsoleRunner.%NUINT_CONSOLE_VERSION%
 
 set RESULTFILENAME=Coverage-%PROJECTNAME%.xml
-set FRAMEWORK=net48
+set FRAMEWORK=net481
 
 nuget install OpenCover -Version %OPENCOVER_VERSION% -OutputDirectory packages
 if not exist ".\packages\%OPENCOVER%\tools\OpenCover.Console.exe" goto error_console1
