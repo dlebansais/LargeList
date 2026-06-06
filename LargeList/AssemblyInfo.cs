@@ -5,7 +5,6 @@ using LargeCollections;
 #if STRICT
 [assembly: LargeListAssembly(IsStrict = true)]
 [assembly: InternalsVisibleTo("Test-LargeList")]
-test
 #else
 [assembly: LargeListAssembly(IsStrict = false, DefaultMaxSegmentCapacity = LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity)]
 #endif
