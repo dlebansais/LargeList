@@ -4,7 +4,8 @@ using LargeCollections;
 
 #if STRICT
 [assembly: LargeListAssembly(IsStrict = true)]
-[assembly: InternalsVisibleTo("Test-LargeList")]
+[assembly: InternalsVisibleTo("LargeList.Test")]
+[assembly: InternalsVisibleTo("LargeList.Test.DotNetFramework")]
 #else
 [assembly: LargeListAssembly(IsStrict = false, DefaultMaxSegmentCapacity = LargeListAssemblyAttribute.GlobalDefaultMaxSegmentCapacity)]
 #endif

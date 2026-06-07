@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net481;net10.0-windows7.0</TargetFrameworks>
+        <TargetFrameworks>net10.0</TargetFrameworks>
         <LangVersion>14</LangVersion>
         <Nullable>disable</Nullable>
         <Platforms>x64</Platforms>
         <RootNamespace>Test</RootNamespace>
-        <AssemblyName>Test-LargeList</AssemblyName>
         <RootNamespace>TestLargeList</RootNamespace>
         <NeutralLanguage>en-US</NeutralLanguage>
         <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
@@ -27,7 +26,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\.editorconfig" Link=".editorconfig" />
+        <None Include="..\..\.editorconfig" Link=".editorconfig" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\LargeList.Common\*.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -44,10 +47,8 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
 
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
         <PackageReference Include="NUnit" Version="4.6.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
-        <PackageReference Include="System.Memory" Version="4.6.3" />
     </ItemGroup>
 
     <ItemGroup>

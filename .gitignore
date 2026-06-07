@@ -24,6 +24,7 @@ bld/
 [Oo]bj/
 /nuget
 /nuget-debug
+/CoverageReports
 cov-int/
 cov-int.zip
 firstbuild.bat

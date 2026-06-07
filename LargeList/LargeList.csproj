@@ -12,8 +12,8 @@
         <Product />
         <Description>An implementation of Collection&lt;&gt; and List&lt;&gt; that can hold a number of elements limited only by the available memory, tested up to 8 billions</Description>
         <Copyright>Copyright © 2026 David Le Bansais</Copyright>
-        <AssemblyVersion>1.2.0.371</AssemblyVersion>
-        <FileVersion>1.2.0.370</FileVersion>
+        <AssemblyVersion>1.2.0.372</AssemblyVersion>
+        <FileVersion>1.2.0.372</FileVersion>
         <RepositoryUrl>https://github.com/dlebansais/LargeList</RepositoryUrl>
         <RootNamespace>LargeList</RootNamespace>
         <NeutralLanguage>en-US</NeutralLanguage>

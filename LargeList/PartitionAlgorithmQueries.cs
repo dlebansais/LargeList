@@ -112,7 +112,7 @@
             }
 
             Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item is null && IsItemNull(Result)) || (item is null && IsItemEqual(Result, item)))));
+            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item is null && IsItemNull(Result)) || (item is not null && IsItemEqual(Result, item)))));
 
 #if DEBUG
             AssertInvariant();

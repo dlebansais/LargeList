@@ -490,8 +490,12 @@
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 #endif
 
+#if NET10_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+#else
             if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count must be positive and count must refer to a location within the string/array/collection.");
+                throw new ArgumentOutOfRangeException(nameof(count));
+#endif
 
             if (startIndex + count > Count)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Index was out of range. Must be non-negative and less than the size of the collection.");

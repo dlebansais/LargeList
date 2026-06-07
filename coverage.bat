@@ -1,59 +1,46 @@
 @echo off
 
-set PROJECTNAME=LargeList
-set TESTPROJECTNAME=Test-%PROJECTNAME%
+setlocal
 
-set OPENCOVER_VERSION=4.7.1221
-set OPENCOVER=OpenCover.%OPENCOVER_VERSION%
-set CODECOV_VERSION=0.2.4
-set CODECOV=CodecovUploader.%CODECOV_VERSION%
-set NUINT_CONSOLE_VERSION=3.11.1
-set NUINT_CONSOLE=NUnit.ConsoleRunner.%NUINT_CONSOLE_VERSION%
-
-set RESULTFILENAME=Coverage-%PROJECTNAME%.xml
-set FRAMEWORK=net481
-
-nuget install OpenCover -Version %OPENCOVER_VERSION% -OutputDirectory packages
-if not exist ".\packages\%OPENCOVER%\tools\OpenCover.Console.exe" goto error_console1
-nuget install CodecovUploader -Version %CODECOV_VERSION% -OutputDirectory packages
-if not exist ".\packages\%CODECOV%\tools\codecov.exe" goto error_console2
-nuget install NUnit.ConsoleRunner -Version %NUINT_CONSOLE_VERSION% -OutputDirectory packages
-if not exist ".\packages\%NUINT_CONSOLE%\tools\nunit3-console.exe" goto error_console3
-
-dotnet publish Test\%TESTPROJECTNAME% -c Debug -f %FRAMEWORK% /p:Platform=x64 -o ./Test/%TESTPROJECTNAME%/bin/x64/Debug/publish
-dotnet publish Test\%TESTPROJECTNAME% -c Release -f %FRAMEWORK% /p:Platform=x64 -o ./Test/%TESTPROJECTNAME%/bin/x64/Release/publish
-if not exist ".\Test\%TESTPROJECTNAME%\bin\x64\Debug\publish\%TESTPROJECTNAME%.dll" goto error_not_built
-if not exist ".\Test\%TESTPROJECTNAME%\bin\x64\Release\publish\%TESTPROJECTNAME%.dll" goto error_not_built
-
-if exist .\Test\%TESTPROJECTNAME%\*.log del .\Test\%TESTPROJECTNAME%\*.log
-if exist .\Test\%TESTPROJECTNAME%\obj\x64\Debug\%RESULTFILENAME% del .\Test\%TESTPROJECTNAME%\obj\x64\Debug\%RESULTFILENAME%
-if exist .\Test\%TESTPROJECTNAME%\obj\x64\Release\%RESULTFILENAME% del .\Test\%TESTPROJECTNAME%\obj\x64\Release\%RESULTFILENAME%
-
-".\packages\%OPENCOVER%\tools\OpenCover.Console.exe" -register:user -target:".\packages\%NUINT_CONSOLE%\tools\nunit3-console.exe" -targetargs:".\Test\%TESTPROJECTNAME%\bin\x64\Debug\publish\%TESTPROJECTNAME%.dll --trace=Debug --labels=Before" -filter:"+[%PROJECTNAME%*]* -[%TESTPROJECTNAME%*]*" -output:".\Test\%TESTPROJECTNAME%\obj\x64\Debug\%RESULTFILENAME%"
-".\packages\%OPENCOVER%\tools\OpenCover.Console.exe" -register:user -target:".\packages\%NUINT_CONSOLE%\tools\nunit3-console.exe" -targetargs:".\Test\%TESTPROJECTNAME%\bin\x64\Release\publish\%TESTPROJECTNAME%.dll --trace=Debug --labels=Before" -filter:"+[%PROJECTNAME%*]* -[%TESTPROJECTNAME%*]*" -output:".\Test\%TESTPROJECTNAME%\obj\x64\Release\%RESULTFILENAME%"
-
-:done
 call ..\Certification\set_tokens.bat
-if exist .\Test\%TESTPROJECTNAME%\obj\x64\Debug\%RESULTFILENAME% .\packages\%CODECOV%\tools\codecov -f ".\Test\%TESTPROJECTNAME%\obj\x64\Debug\%RESULTFILENAME%" -t %LARGELIST_CODECOV_TOKEN%
-if exist .\Test\%TESTPROJECTNAME%\obj\x64\Release\%RESULTFILENAME% .\packages\%CODECOV%\tools\codecov -f ".\Test\%TESTPROJECTNAME%\obj\x64\Release\%RESULTFILENAME%" -t %LARGELIST_CODECOV_TOKEN%
+
+set PROJECTNAME=LargeList
+set TOKEN=%LARGELIST_CODECOV_TOKEN%
+set PLATFORM=x64
+set CONFIGURATION=%1
+set FRAMEWORK=%2
+
+if /I NOT "%~3" == "slow" (
+    set FILTER=--filter TestCategory!=SlowTest
+)
+
+if /I "%~3" == "strict" (
+    set ENABLE_STRICT=true
+)
+
+if /I "%FRAMEWORK%" == "net10.0" (
+    cd .\Test\%PROJECTNAME%.Test
+
+    dotnet build /p:Platform=%PLATFORM% -c %CONFIGURATION% -f %FRAMEWORK%
+    if %ERRORLEVEL% NEQ 0 goto error
+
+    rem Execute tests within OpenCover.
+    ..\..\%OPENCOVER_EXE% -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test /p:Platform=%PLATFORM% -c %CONFIGURATION% -f %FRAMEWORK% --output:detailed %FILTER%" -output:%RESULTFILEPATH% -returntargetcode -mergeoutput
+    if %ERRORLEVEL% NEQ 0 goto error
+)
+
+if /I "%FRAMEWORK%" == "net481" (
+    dotnet build ./Test/%PROJECTNAME%.Test.DotNetFramework /p:Platform=%PLATFORM% -c %CONFIGURATION% -f %FRAMEWORK%
+    if %ERRORLEVEL% NEQ 0 goto error
+
+    rem Execute tests within OpenCover.
+    %OPENCOVER_EXE% -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test ./Test/%PROJECTNAME%.Test.DotNetFramework/bin/%PLATFORM%/%CONFIGURATION%/%FRAMEWORK%/%PROJECTNAME%.Test.DotNetFramework.dll -l console;verbosity=detailed %FILTER%" -output:%RESULTFILEPATH% -returntargetcode -mergeoutput
+    if %ERRORLEVEL% NEQ 0 goto error
+)
 
 goto end
 
-:error_console1
-echo ERROR: OpenCover.Console not found.
-goto end
-
-:error_console2
-echo ERROR: Codecov not found.
-goto end
-
-:error_console3
-echo ERROR: nunit3-console not found.
-goto end
-
-:error_not_built
-echo ERROR: Test-LargeList.dll not built (both Debug and Release are required).
-goto end
+:error
+if exist %RESULTFILEPATH% del %RESULTFILEPATH%
 
 :end
-del *.log

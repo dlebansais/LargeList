@@ -1789,8 +1789,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index") &&
+                    !IsExceptionEqual(e, "index ('-1') must be a non-negative value. (Parameter 'index')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> BinarySearch(-1, 0, 0, null) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -1804,8 +1807,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "count ('-1') must be a non-negative value. (Parameter 'count')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> BinarySearch(0, -1, 0, null) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -1819,7 +1825,7 @@ namespace TestLargeList
             }
             catch (ArgumentException e)
             {
-                if (!IsExceptionEqual(e, "Value does not fall within the expected range."))
+                if (!IsExceptionEqual(e, "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection."))
                     return TestStatus.Failed("ReadOnlyLargeList<T> BinarySearch(1000, 1000, 0, null) exception: " + e.Message);
             }
             catch (Exception e)
@@ -2025,18 +2031,21 @@ namespace TestLargeList
             {
                 if (IsStrict)
                 {
-                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds.") &&
+                        !IsExceptionEqual(e, "Index was out of range. Must be non-negative and less than the size of the collection.\nParameter name: index"))
+                    {
+                        return TestStatus.Failed("(list) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    }
                 }
                 else
                 {
                     if (!IsExceptionEqual(e, "Destination array was not long enough. Check arrayIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                        return TestStatus.Failed("(list) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
                 }
             }
             catch (Exception e)
             {
-                return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
+                return TestStatus.Failed("(list) CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
             }
 
             try
@@ -2048,18 +2057,21 @@ namespace TestLargeList
             {
                 if (IsStrict)
                 {
-                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds.") &&
+                        !IsExceptionEqual(e, "Destination array was not long enough. Check index and length, and the array's lower bounds."))
+                    {
+                        return TestStatus.Failed("(AsCollectionInterface) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    }
                 }
                 else
                 {
                     if (!IsExceptionEqual(e, "Destination array was not long enough. Check arrayIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                        return TestStatus.Failed("(AsCollectionInterface) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
                 }
             }
             catch (Exception e)
             {
-                return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
+                return TestStatus.Failed("(AsCollectionInterface) CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
             }
 
             try
@@ -2770,8 +2782,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Non-negative number required.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Non-negative number required.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "Index was out of range. Must be non-negative and less than the size of the collection.\nParameter name: index"))
+                {
                     return TestStatus.Failed("IndexOf(T, 0, -1) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3611,8 +3626,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: startIndex"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: startIndex") &&
+                    !IsExceptionEqual(e, "startIndex ('-1') must be a non-negative value. (Parameter 'startIndex')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindIndex(-1, 0, match) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3626,8 +3644,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "count ('-1') must be a non-negative value. (Parameter 'count')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindIndex(0, -1, match) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3641,7 +3662,7 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values."))
+                if (!IsExceptionEqual(e, "Index was out of range. Must be non-negative and less than the size of the collection.\nParameter name: startIndex"))
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindIndex(1000, 1000, match) exception: " + e.Message);
             }
             catch (Exception e)
@@ -3785,8 +3806,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: startIndex"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: startIndex") &&
+                    !IsExceptionEqual(e, "startIndex ('-1') must be a non-negative value. (Parameter 'startIndex')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindLastIndex(-1, 0, null) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3800,8 +3824,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "count ('-1') must be a non-negative value. (Parameter 'count')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindLastIndex(0, -1, null) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3815,7 +3842,7 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values."))
+                if (!IsExceptionEqual(e, "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection."))
                     return TestStatus.Failed("ReadOnlyLargeList<T> FindLastIndex(1000, 1000, null) exception: " + e.Message);
             }
             catch (Exception e)
@@ -3911,8 +3938,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index") &&
+                    !IsExceptionEqual(e, "index ('-1') must be a non-negative value. (Parameter 'index')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> LastIndexOf(T, -1, 0) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3926,8 +3956,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "count ('-1') must be a non-negative value. (Parameter 'count')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> LastIndexOf(T, 0, -1) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -3941,7 +3974,7 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values."))
+                if (!IsExceptionEqual(e, "Offset and length were out of bounds for the array or count is greater than the number of elements from startIndex to the end of the source collection."))
                     return TestStatus.Failed("ReadOnlyLargeList<T> LastIndexOf(T, 1000, 1000) exception: " + e.Message);
             }
             catch (Exception e)
@@ -3993,8 +4026,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: index") &&
+                    !IsExceptionEqual(e, "index ('-1') must be a non-negative value. (Parameter 'index')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> GetRange(-1, 0) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -4008,8 +4044,11 @@ namespace TestLargeList
             }
             catch (ArgumentOutOfRangeException e)
             {
-                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count"))
+                if (!IsExceptionEqual(e, "Specified argument was out of the range of valid values.\nParameter name: count") &&
+                    !IsExceptionEqual(e, "count ('-1') must be a non-negative value. (Parameter 'count')\nActual value was -1."))
+                {
                     return TestStatus.Failed("ReadOnlyLargeList<T> GetRange(0, -1) exception: " + e.Message);
+                }
             }
             catch (Exception e)
             {
@@ -4023,7 +4062,7 @@ namespace TestLargeList
             }
             catch (ArgumentException e)
             {
-                if (!IsExceptionEqual(e, "Value does not fall within the expected range."))
+                if (!IsExceptionEqual(e, "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection."))
                     return TestStatus.Failed("ReadOnlyLargeList<T> GetRange(1000, 1000) exception: " + e.Message);
             }
             catch (Exception e)
@@ -4519,17 +4558,17 @@ namespace TestLargeList
                 if (IsStrict)
                 {
                     if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                        return TestStatus.Failed("(collection) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
                 }
                 else
                 {
                     if (!IsExceptionEqual(e, "Destination array was not long enough. Check index and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                        return TestStatus.Failed("(collection) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
                 }
             }
             catch (Exception e)
             {
-                return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
+                return TestStatus.Failed("(collection) CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
             }
 
             try
@@ -4541,18 +4580,21 @@ namespace TestLargeList
             {
                 if (IsStrict)
                 {
-                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    if (!IsExceptionEqual(e, "Destination array was not long enough. Check destIndex and length, and the array's lower bounds.") &&
+                        !IsExceptionEqual(e, "Destination array was not long enough. Check index and length, and the array's lower bounds."))
+                    {
+                        return TestStatus.Failed("(AsLargeCollection) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                    }
                 }
                 else
                 {
                     if (!IsExceptionEqual(e, "Destination array was not long enough. Check index and length, and the array's lower bounds."))
-                        return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
+                        return TestStatus.Failed("(AsLargeCollection) CopyTo(TestArray, TestArray.Length + 1) exception: " + e.Message);
                 }
             }
             catch (Exception e)
             {
-                return TestStatus.Failed("CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
+                return TestStatus.Failed("(AsLargeCollection) CopyTo(TestArray, TestArray.Length + 1) unknown exception: " + e.GetType() + " - " + e.Message);
             }
 
             return TestStatus.Success;
@@ -4750,7 +4792,7 @@ namespace TestLargeList
             }
             catch (ArgumentNullException e)
             {
-                if (IsExceptionEqual(e, "Value cannot be null.\nParameter name: list"))
+                if (IsExceptionEqual(e, "Value cannot be null. (Parameter 'list')") || IsExceptionEqual(e, "Value cannot be null.\nParameter name: list"))
                     return TestStatus.Success;
                 else
                     return TestStatus.Failed(TestName);
@@ -4975,10 +5017,32 @@ namespace TestLargeList
                                 {
                                 }
 
-                                rlist.CopyTo(Array.Empty<T>());
-                                rlist.CopyTo(Array.Empty<T>(), 1);
-                                AsICollection.CopyTo(Array.Empty<T>(), 1);
-                                rlist.CopyTo(0, Array.Empty<T>(), 0, 1);
+                                try
+                                {
+                                    rlist.CopyTo(Array.Empty<T>(), 1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    AsICollection.CopyTo(Array.Empty<T>(), 1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
+
+                                try
+                                {
+                                    rlist.CopyTo(0, Array.Empty<T>(), 0, 1);
+                                    return TestStatus.Failed(TestName);
+                                }
+                                catch
+                                {
+                                }
 
                                 LargeList<T>.LargeEnumerator LargeEnumerator = rlist.GetEnumerator();
                                 IEnumerable<T> AsEnumerableT = rlist;
@@ -5087,10 +5151,22 @@ namespace TestLargeList
 
         private static bool IsExceptionEqual(Exception e, string message)
         {
+            string exceptionMessage = e.Message;
+
 #if NETFRAMEWORK
-            return e.Message.Replace("\r\n", "\n") == message;
+            if (exceptionMessage.Contains(". (Parameter '", StringComparison.InvariantCulture) && exceptionMessage.EndsWith("')", StringComparison.InvariantCulture))
+            {
+                exceptionMessage = e.Message.Replace(". (Parameter '", ".\nParameter name: ").Replace("')", "");
+            }
+
+            return exceptionMessage.Replace("\r\n", "\n") == message;
 #else
-            return e.Message.Replace("\r\n", "\n", StringComparison.InvariantCulture) == message;
+            if (exceptionMessage.Contains(". (Parameter '", StringComparison.InvariantCulture) && exceptionMessage.EndsWith("')", StringComparison.InvariantCulture))
+            {
+                exceptionMessage = e.Message.Replace(". (Parameter '", ".\nParameter name: ", StringComparison.InvariantCulture).Replace("')", "", StringComparison.InvariantCulture);
+            }
+
+            return exceptionMessage.Replace("\r\n", "\n", StringComparison.InvariantCulture) == message;
 #endif
         }
 
