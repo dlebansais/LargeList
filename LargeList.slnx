@@ -1,0 +1,21 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="LargeList/LargeList.csproj">
+    <BuildDependency Project="PreBuild/PreBuild.csproj" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="PreBuild/PreBuild.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Test/LargeList.Test.DotNetFramework/LargeList.Test.DotNetFramework.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Test/LargeList.Test/LargeList.Test.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>
