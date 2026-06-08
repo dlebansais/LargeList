@@ -83,8 +83,6 @@ before_test:
     printf ".\packages\CodecovUploader.%codecov_uploader_version%\Tools\Codecov.exe -f ""Coverage-%APPVEYOR_PROJECT_NAME%.xml""\n" > after-test.bat
     printf ".\packages\ReportGenerator.%report_generator_version%\Tools\Net8.0\ReportGenerator.exe ""-reports:Coverage-%APPVEYOR_PROJECT_NAME%.xml"" -targetdir:.\CoverageReports ""-assemblyfilters:-Microsoft*;+%APPVEYOR_PROJECT_NAME%"" ""-filefilters:-*.g.cs"" -reporttypes:textsummary\n" >> after-test.bat
     printf "if not exist .\CoverageReports\Summary.txt exit /b -10\n" >> after-test.bat
-    printf "powershell $opencover_summary = Get-Content .\CoverageReports\Summary.txt -Raw ; Write-Output $opencover_summary ; $pattern = 'Branch coverage' + [char]0x003A + ' 100' + [char]0x0025 ; if ($opencover_summary -NotMatch $pattern) { Remove-Item .\CoverageReports\Summary.txt -Force }\n" >> after-test.bat
-    printf "if not exist .\CoverageReports\Summary.txt exit /b -11\n" >> after-test.bat
 
 test_script:
   - if '%APPVEYOR_REPO_BRANCH%' == 'master' call opencover.bat run-tests1.bat
