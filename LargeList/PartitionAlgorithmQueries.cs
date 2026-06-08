@@ -1,458 +1,457 @@
-﻿namespace LargeCollections
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
+﻿namespace LargeCollections;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 #pragma warning disable CS1710
-    /// <summary>
-    /// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the partition.</typeparam>
+/// <summary>
+/// Represents a set of segments of varying (but limited) capacity that together virtualize a large list of generic objects.
+/// </summary>
+/// <typeparam name="T">The type of elements in the partition.</typeparam>
 #pragma warning restore CS1710
 #if STRICT
-    internal
+internal
 #else
-    public
+public
 #endif
-    partial class Partition<T> : IPartition<T>
+partial class Partition<T> : IPartition<T>
+{
+    #region Queries
+    /// <inheritdoc cref="IPartition{T}.Contains(T)" />
+    public bool Contains(T item)
     {
-        #region Queries
-        /// <inheritdoc cref="IPartition{T}.Contains(T)" />
-        public bool Contains(T item)
-        {
-            bool Result = false;
+        bool Result = false;
 
-            foreach (ISegment<T> Segment in SegmentTable)
-                if (Segment.Contains(item))
-                {
-                    Result = true;
-                    break;
-                }
-
-#if DEBUG
-            AssertInvariant();
-#endif
-
-            return Result;
-        }
-
-        /// <inheritdoc cref="IPartition{T}.IndexOf(T, long, long)" />
-        public long IndexOf(T item, long startIndex, long count)
-        {
-            Debug.Assert(startIndex >= 0 && startIndex <= Count);
-            Debug.Assert(count >= 0);
-            Debug.Assert(startIndex + count <= Count);
-
-            long Result = -1;
-
-            int SegmentIndex;
-            int ElementStartIndex;
-            int CacheIndex;
-            GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
-
-            long ItemIndex = startIndex - ElementStartIndex;
-            long RemainingCount = count;
-
-            while (SegmentIndex < SegmentTable.Count && RemainingCount > 0)
+        foreach (ISegment<T> Segment in SegmentTable)
+            if (Segment.Contains(item))
             {
-                ISegment<T> Segment = SegmentTable[SegmentIndex];
-                if (Segment.Count == 0)
-                    break;
-
-                int CompareCount = (Segment.Count - ElementStartIndex <= RemainingCount) ? Segment.Count - ElementStartIndex : (int)RemainingCount;
-                int ElementIndex = Segment.IndexOf(item, ElementStartIndex, CompareCount);
-                if (ElementIndex >= 0)
-                {
-                    Result = ItemIndex + ElementIndex;
-                    break;
-                }
-
-                ElementStartIndex = 0;
-                RemainingCount -= CompareCount;
-                ItemIndex += Segment.Count;
-                SegmentIndex++;
+                Result = true;
+                break;
             }
 
-            Debug.Assert(RemainingCount >= 0);
-            Debug.Assert(Result == -1 || (Result >= startIndex && Result < startIndex + count && IsItemEqual(Result, item)));
-
 #if DEBUG
-            AssertInvariant();
+        AssertInvariant();
 #endif
 
-            return Result;
-        }
+        return Result;
+    }
 
-        /// <inheritdoc cref="IPartition{T}.LastIndexOf(T, long, long)" />
-        public long LastIndexOf(T item, long startIndex, long count)
+    /// <inheritdoc cref="IPartition{T}.IndexOf(T, long, long)" />
+    public long IndexOf(T item, long startIndex, long count)
+    {
+        Debug.Assert(startIndex >= 0 && startIndex <= Count);
+        Debug.Assert(count >= 0);
+        Debug.Assert(startIndex + count <= Count);
+
+        long Result = -1;
+
+        int SegmentIndex;
+        int ElementStartIndex;
+        int CacheIndex;
+        GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+
+        long ItemIndex = startIndex - ElementStartIndex;
+        long RemainingCount = count;
+
+        while (SegmentIndex < SegmentTable.Count && RemainingCount > 0)
         {
-            Debug.Assert(startIndex >= 0 && startIndex < Count);
-            Debug.Assert(count >= 0);
-            Debug.Assert(startIndex + 1 >= count);
-
-            long Result = -1;
-
-            int SegmentIndex;
-            int ElementStartIndex;
-            int CacheIndex;
-            GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
-
-            long ItemIndex = startIndex;
             ISegment<T> Segment = SegmentTable[SegmentIndex];
+            if (Segment.Count == 0)
+                break;
 
-            while (true)
-            {
-                Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
-                Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
-                Debug.Assert(count >= 0);
-
-                if (LastIndexOfLoop(item, ref count, ref Segment, ref SegmentIndex, ref ElementStartIndex, ref ItemIndex, ref Result))
-                    break;
-            }
-
-            Debug.Assert(count >= 0);
-            Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item is null && IsItemNull(Result)) || (item is not null && IsItemEqual(Result, item)))));
-
-#if DEBUG
-            AssertInvariant();
-#endif
-
-            return Result;
-        }
-
-        private bool LastIndexOfLoop(T item, ref long count, ref ISegment<T> segment, ref int segmentIndex, ref int elementStartIndex, ref long itemIndex, ref long result)
-        {
-            int CompareCount = (elementStartIndex < count) ? elementStartIndex + 1 : (int)count;
-            int ElementIndex = segment.LastIndexOf(item, elementStartIndex, CompareCount);
+            int CompareCount = (Segment.Count - ElementStartIndex <= RemainingCount) ? Segment.Count - ElementStartIndex : (int)RemainingCount;
+            int ElementIndex = Segment.IndexOf(item, ElementStartIndex, CompareCount);
             if (ElementIndex >= 0)
             {
-                result = itemIndex - elementStartIndex + ElementIndex;
-                return true;
+                Result = ItemIndex + ElementIndex;
+                break;
             }
 
-            count -= CompareCount;
-            itemIndex -= CompareCount;
-            segmentIndex--;
-
-            Debug.Assert(segmentIndex < 0 || SegmentTable[segmentIndex].Count > 0);
-
-            if (segmentIndex < 0 || count == 0)
-                return true;
-
-            segment = SegmentTable[segmentIndex];
-            elementStartIndex = segment.Count - 1;
-
-            return false;
+            ElementStartIndex = 0;
+            RemainingCount -= CompareCount;
+            ItemIndex += Segment.Count;
+            SegmentIndex++;
         }
 
-        /// <inheritdoc cref="IPartition{T}.BinarySearch(long, long, T, IComparer{T})" />
-        public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
-        {
-            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+        Debug.Assert(RemainingCount >= 0);
+        Debug.Assert(Result == -1 || (Result >= startIndex && Result < startIndex + count && IsItemEqual(Result, item)));
 
-            Debug.Assert(index >= 0);
+#if DEBUG
+        AssertInvariant();
+#endif
+
+        return Result;
+    }
+
+    /// <inheritdoc cref="IPartition{T}.LastIndexOf(T, long, long)" />
+    public long LastIndexOf(T item, long startIndex, long count)
+    {
+        Debug.Assert(startIndex >= 0 && startIndex < Count);
+        Debug.Assert(count >= 0);
+        Debug.Assert(startIndex + 1 >= count);
+
+        long Result = -1;
+
+        int SegmentIndex;
+        int ElementStartIndex;
+        int CacheIndex;
+        GetPosition(startIndex, out SegmentIndex, out ElementStartIndex, out CacheIndex);
+
+        long ItemIndex = startIndex;
+        ISegment<T> Segment = SegmentTable[SegmentIndex];
+
+        while (true)
+        {
+            Debug.Assert(SegmentIndex >= 0 && SegmentIndex < SegmentTable.Count && Segment == SegmentTable[SegmentIndex]);
+            Debug.Assert(ElementStartIndex >= 0 && ElementStartIndex < Segment.Count);
             Debug.Assert(count >= 0);
-            Debug.Assert(index + count <= Count);
 
-            if (count == 0)
-                return -(index + 1);
-
-            long indexLower = index;
-            int SegmentIndexLower;
-            int ElementIndexLower;
-            int CacheIndexLower;
-            GetPosition(indexLower, out SegmentIndexLower, out ElementIndexLower, out CacheIndexLower);
-
-            long indexUpper = index + count - 1;
-            int SegmentIndexUpper;
-            int ElementIndexUpper;
-            int CacheIndexUpper;
-            GetPosition(indexUpper, out SegmentIndexUpper, out ElementIndexUpper, out CacheIndexUpper);
-
-            while (SegmentIndexLower < SegmentIndexUpper || (SegmentIndexLower == SegmentIndexUpper && ElementIndexLower <= ElementIndexUpper))
-            {
-                long indexMiddle;
-                int SegmentIndexMiddle;
-                int ElementIndexMiddle;
-                GetMiddleOf(SegmentIndexLower, ElementIndexLower, indexLower, SegmentIndexUpper, ElementIndexUpper, indexUpper, out SegmentIndexMiddle, out ElementIndexMiddle, out indexMiddle);
-
-                Debug.Assert(SegmentIndexLower < SegmentIndexMiddle || (SegmentIndexLower == SegmentIndexMiddle && ElementIndexLower <= ElementIndexMiddle));
-                Debug.Assert(indexLower <= indexMiddle);
-                Debug.Assert(SegmentIndexUpper > SegmentIndexMiddle || (SegmentIndexUpper == SegmentIndexMiddle && ElementIndexUpper >= ElementIndexMiddle));
-                Debug.Assert(indexUpper >= indexMiddle);
-
-                long comparisonResult = Comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
-
-                if (comparisonResult == 0)
-                {
-                    return indexMiddle;
-                }
-                else if (comparisonResult < 0)
-                {
-                    GetPreviousPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexUpper, out ElementIndexUpper);
-                    indexUpper = indexMiddle - 1;
-                }
-                else
-                {
-                    GetNextPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexLower, out ElementIndexLower);
-                    indexLower = indexMiddle + 1;
-                }
-            }
-
-            return -(indexLower + 1);
+            if (LastIndexOfLoop(item, ref count, ref Segment, ref SegmentIndex, ref ElementStartIndex, ref ItemIndex, ref Result))
+                break;
         }
 
-        /// <summary>
-        /// Gets the middle of two positions.
-        /// </summary>
-        /// <param name="segmentIndexLower">Segment index of the lower position.</param>
-        /// <param name="elementIndexLower">Element index of the lower position.</param>
-        /// <param name="indexLower">The virtual index corresponding to the lower position.</param>
-        /// <param name="segmentIndexUpper">Segment index of the upper position.</param>
-        /// <param name="elementIndexUpper">Element index of the upper position.</param>
-        /// <param name="indexUpper">The virtual index corresponding to the upper position.</param>
-        /// <param name="segmentIndexMiddle">Upon return, the segment index of the middle position.</param>
-        /// <param name="elementIndexMiddle">Upon return, the element index of the middle position.</param>
-        /// <param name="indexMiddle">Upon return, he resulting middle position as virtual index.</param>
-        private void GetMiddleOf(int segmentIndexLower, int elementIndexLower, long indexLower, int segmentIndexUpper, int elementIndexUpper, long indexUpper, out int segmentIndexMiddle, out int elementIndexMiddle, out long indexMiddle)
+        Debug.Assert(count >= 0);
+        Debug.Assert(Result == -1 || (Result >= 0 && Result < Count && ((item is null && IsItemNull(Result)) || (item is not null && IsItemEqual(Result, item)))));
+
+#if DEBUG
+        AssertInvariant();
+#endif
+
+        return Result;
+    }
+
+    private bool LastIndexOfLoop(T item, ref long count, ref ISegment<T> segment, ref int segmentIndex, ref int elementStartIndex, ref long itemIndex, ref long result)
+    {
+        int CompareCount = (elementStartIndex < count) ? elementStartIndex + 1 : (int)count;
+        int ElementIndex = segment.LastIndexOf(item, elementStartIndex, CompareCount);
+        if (ElementIndex >= 0)
         {
-            Debug.Assert(segmentIndexLower < segmentIndexUpper || (segmentIndexLower == segmentIndexUpper && elementIndexLower <= elementIndexUpper));
-            Debug.Assert(indexLower <= indexUpper);
+            result = itemIndex - elementStartIndex + ElementIndex;
+            return true;
+        }
 
-            while (segmentIndexLower < segmentIndexUpper)
+        count -= CompareCount;
+        itemIndex -= CompareCount;
+        segmentIndex--;
+
+        Debug.Assert(segmentIndex < 0 || SegmentTable[segmentIndex].Count > 0);
+
+        if (segmentIndex < 0 || count == 0)
+            return true;
+
+        segment = SegmentTable[segmentIndex];
+        elementStartIndex = segment.Count - 1;
+
+        return false;
+    }
+
+    /// <inheritdoc cref="IPartition{T}.BinarySearch(long, long, T, IComparer{T})" />
+    public long BinarySearch(long index, long count, T item, IComparer<T> comparer)
+    {
+        Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
+        Debug.Assert(index >= 0);
+        Debug.Assert(count >= 0);
+        Debug.Assert(index + count <= Count);
+
+        if (count == 0)
+            return -(index + 1);
+
+        long indexLower = index;
+        int SegmentIndexLower;
+        int ElementIndexLower;
+        int CacheIndexLower;
+        GetPosition(indexLower, out SegmentIndexLower, out ElementIndexLower, out CacheIndexLower);
+
+        long indexUpper = index + count - 1;
+        int SegmentIndexUpper;
+        int ElementIndexUpper;
+        int CacheIndexUpper;
+        GetPosition(indexUpper, out SegmentIndexUpper, out ElementIndexUpper, out CacheIndexUpper);
+
+        while (SegmentIndexLower < SegmentIndexUpper || (SegmentIndexLower == SegmentIndexUpper && ElementIndexLower <= ElementIndexUpper))
+        {
+            long indexMiddle;
+            int SegmentIndexMiddle;
+            int ElementIndexMiddle;
+            GetMiddleOf(SegmentIndexLower, ElementIndexLower, indexLower, SegmentIndexUpper, ElementIndexUpper, indexUpper, out SegmentIndexMiddle, out ElementIndexMiddle, out indexMiddle);
+
+            Debug.Assert(SegmentIndexLower < SegmentIndexMiddle || (SegmentIndexLower == SegmentIndexMiddle && ElementIndexLower <= ElementIndexMiddle));
+            Debug.Assert(indexLower <= indexMiddle);
+            Debug.Assert(SegmentIndexUpper > SegmentIndexMiddle || (SegmentIndexUpper == SegmentIndexMiddle && ElementIndexUpper >= ElementIndexMiddle));
+            Debug.Assert(indexUpper >= indexMiddle);
+
+            long comparisonResult = Comparer.Compare(item, SegmentTable[SegmentIndexMiddle][ElementIndexMiddle]);
+
+            if (comparisonResult == 0)
             {
-                int AboveLower = SegmentTable[segmentIndexLower].Count - elementIndexLower - 1;
-                int BelowUpper = elementIndexUpper;
-                int Difference = BelowUpper - AboveLower;
-
-                if (Difference > 0)
-                {
-                    Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
-
-                    indexLower += AboveLower + 1;
-                    indexUpper -= AboveLower + 1;
-                    segmentIndexLower++;
-                    elementIndexLower = 0;
-                    elementIndexUpper = Difference - 1;
-                }
-                else if (Difference < 0)
-                {
-                    Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
-
-                    indexLower += BelowUpper + 1;
-                    indexUpper -= BelowUpper + 1;
-                    elementIndexLower += BelowUpper + 1;
-                    segmentIndexUpper--;
-                    elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
-                }
-                else
-                {
-                    int LowerSegmentIndex = segmentIndexLower + 1;
-                    int UpperSegmentIndex = segmentIndexUpper - 1;
-
-                    Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
-                    Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
-
-                    indexLower += BelowUpper + 1;
-                    indexUpper -= BelowUpper + 1;
-                    segmentIndexLower++;
-                    elementIndexLower = 0;
-                    segmentIndexUpper--;
-                    elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
-                }
+                return indexMiddle;
             }
-
-            if (segmentIndexLower > segmentIndexUpper)
+            else if (comparisonResult < 0)
             {
-                Debug.Assert(elementIndexLower == 0);
-                Debug.Assert(segmentIndexUpper >= 0 && segmentIndexUpper < SegmentTable.Count);
-                Debug.Assert(elementIndexUpper == SegmentTable[segmentIndexUpper].Count - 1);
-                Debug.Assert(indexUpper + 1 == indexLower);
-                Debug.Assert(IsPositionEqual(indexUpper, segmentIndexUpper, elementIndexUpper));
-                Debug.Assert(IsPositionEqual(indexLower, segmentIndexLower, elementIndexLower));
-
-                segmentIndexMiddle = segmentIndexUpper;
-                elementIndexMiddle = elementIndexUpper;
-                indexMiddle = indexUpper;
+                GetPreviousPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexUpper, out ElementIndexUpper);
+                indexUpper = indexMiddle - 1;
             }
             else
             {
-                Debug.Assert(segmentIndexLower == segmentIndexUpper);
-                Debug.Assert(elementIndexLower <= elementIndexUpper);
-
-                int Middle = elementIndexLower + ((elementIndexUpper - elementIndexLower) / 2);
-
-                segmentIndexMiddle = segmentIndexLower;
-                elementIndexMiddle = Middle;
-                indexMiddle = indexLower - elementIndexLower + Middle;
-            }
-
-            Debug.Assert(IsPositionEqual(indexMiddle, segmentIndexMiddle, elementIndexMiddle));
-        }
-        #endregion
-
-        #region Sorting
-        private struct QuickSortRange
-        {
-            public int SegmentIndexFirst;
-            public int ElementIndexFirst;
-            public int SegmentIndexLast;
-            public int ElementIndexLast;
-        }
-
-        private void QuickSort(IComparer<T> comparer)
-        {
-            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
-
-            QuickSortRange Range = QuickSortStack.Pop();
-            int SegmentIndexLow = Range.SegmentIndexFirst;
-            int ElementIndexLow = Range.ElementIndexFirst;
-            int SegmentIndexHigh = Range.SegmentIndexLast;
-            int ElementIndexHigh = Range.ElementIndexLast;
-
-            Debug.Assert(IsValidPosition(SegmentIndexLow, ElementIndexLow, false));
-            Debug.Assert(IsValidPosition(SegmentIndexHigh, ElementIndexHigh, false));
-            Debug.Assert(SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow <= ElementIndexHigh));
-
-            if (SegmentIndexLow == SegmentIndexHigh)
-            {
-                ISegment<T> Segment = SegmentTable[SegmentIndexLow];
-                Segment.Sort(ElementIndexLow, ElementIndexHigh, Comparer);
-            }
-            else if (SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow < ElementIndexHigh))
-            {
-                int SegmentIndexMiddle;
-                int ElementIndexMiddle;
-                SplitSortInterval(SegmentIndexLow, ElementIndexLow, SegmentIndexHigh, ElementIndexHigh, Comparer, out SegmentIndexMiddle, out ElementIndexMiddle);
-
-                QuickSortRange RangeLow = new QuickSortRange() { SegmentIndexFirst = SegmentIndexLow, ElementIndexFirst = ElementIndexLow, SegmentIndexLast = SegmentIndexMiddle, ElementIndexLast = ElementIndexMiddle };
-
-                if (ElementIndexMiddle + 1 < SegmentTable[SegmentIndexMiddle].Count)
-                {
-                    ElementIndexMiddle++;
-                }
-                else
-                {
-                    SegmentIndexMiddle++;
-                    Debug.Assert(SegmentIndexMiddle < SegmentTable.Count && SegmentTable[SegmentIndexMiddle].Count > 0);
-                    ElementIndexMiddle = 0;
-                }
-
-                QuickSortRange RangeHigh = new QuickSortRange() { SegmentIndexFirst = SegmentIndexMiddle, ElementIndexFirst = ElementIndexMiddle, SegmentIndexLast = SegmentIndexHigh, ElementIndexLast = ElementIndexHigh };
-
-                QuickSortStack.Push(RangeLow);
-                QuickSortStack.Push(RangeHigh);
+                GetNextPosition(SegmentIndexMiddle, ElementIndexMiddle, out SegmentIndexLower, out ElementIndexLower);
+                indexLower = indexMiddle + 1;
             }
         }
 
-        private void SplitSortInterval(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh, IComparer<T> comparer, out int segmentIndexMiddle, out int elementIndexMiddle)
+        return -(indexLower + 1);
+    }
+
+    /// <summary>
+    /// Gets the middle of two positions.
+    /// </summary>
+    /// <param name="segmentIndexLower">Segment index of the lower position.</param>
+    /// <param name="elementIndexLower">Element index of the lower position.</param>
+    /// <param name="indexLower">The virtual index corresponding to the lower position.</param>
+    /// <param name="segmentIndexUpper">Segment index of the upper position.</param>
+    /// <param name="elementIndexUpper">Element index of the upper position.</param>
+    /// <param name="indexUpper">The virtual index corresponding to the upper position.</param>
+    /// <param name="segmentIndexMiddle">Upon return, the segment index of the middle position.</param>
+    /// <param name="elementIndexMiddle">Upon return, the element index of the middle position.</param>
+    /// <param name="indexMiddle">Upon return, he resulting middle position as virtual index.</param>
+    private void GetMiddleOf(int segmentIndexLower, int elementIndexLower, long indexLower, int segmentIndexUpper, int elementIndexUpper, long indexUpper, out int segmentIndexMiddle, out int elementIndexMiddle, out long indexMiddle)
+    {
+        Debug.Assert(segmentIndexLower < segmentIndexUpper || (segmentIndexLower == segmentIndexUpper && elementIndexLower <= elementIndexUpper));
+        Debug.Assert(indexLower <= indexUpper);
+
+        while (segmentIndexLower < segmentIndexUpper)
         {
-            Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+            int AboveLower = SegmentTable[segmentIndexLower].Count - elementIndexLower - 1;
+            int BelowUpper = elementIndexUpper;
+            int Difference = BelowUpper - AboveLower;
 
-            Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
-            Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
-            Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
-
-            T pivot = SelectPivot(segmentIndexLow, elementIndexLow, segmentIndexHigh, elementIndexHigh);
-
-            int SegmentIndexUp;
-            int ElementIndexUp;
-            int SegmentIndexDown;
-            int ElementIndexDown;
-
-            GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
-            GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
-
-            while (true)
+            if (Difference > 0)
             {
-                SplitSortLoop1(Comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
-                SplitSortLoop2(Comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
+                Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
 
-                if (SegmentIndexUp > SegmentIndexDown || (SegmentIndexUp == SegmentIndexDown && ElementIndexUp >= ElementIndexDown))
-                {
-                    segmentIndexMiddle = SegmentIndexDown;
-                    elementIndexMiddle = ElementIndexDown;
-                    return;
-                }
-
-                T item = SegmentTable[SegmentIndexUp][ElementIndexUp];
-                SegmentTable[SegmentIndexUp][ElementIndexUp] = SegmentTable[SegmentIndexDown][ElementIndexDown];
-                SegmentTable[SegmentIndexDown][ElementIndexDown] = item;
+                indexLower += AboveLower + 1;
+                indexUpper -= AboveLower + 1;
+                segmentIndexLower++;
+                elementIndexLower = 0;
+                elementIndexUpper = Difference - 1;
             }
-        }
-
-        private T SelectPivot(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh)
-        {
-            Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
-            Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
-            Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
-
-            int PivotSegmentIndex = (segmentIndexLow + segmentIndexHigh) / 2;
-            Debug.Assert(PivotSegmentIndex >= segmentIndexLow && PivotSegmentIndex <= segmentIndexHigh && SegmentTable[PivotSegmentIndex].Count > 0);
-
-            int PivotElementIndex;
-
-            if (PivotSegmentIndex == segmentIndexLow && PivotSegmentIndex < segmentIndexHigh)
+            else if (Difference < 0)
             {
-                PivotElementIndex = SegmentTable[PivotSegmentIndex].Count - 1;
-            }
-            else if (PivotSegmentIndex == segmentIndexHigh && PivotSegmentIndex > segmentIndexLow)
-            {
-                PivotElementIndex = 0;
+                Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
+
+                indexLower += BelowUpper + 1;
+                indexUpper -= BelowUpper + 1;
+                elementIndexLower += BelowUpper + 1;
+                segmentIndexUpper--;
+                elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
             }
             else
             {
-                Debug.Assert((PivotSegmentIndex > segmentIndexLow && PivotSegmentIndex < segmentIndexHigh) || (segmentIndexLow == segmentIndexHigh));
-                PivotElementIndex = SegmentTable[PivotSegmentIndex].Count / 2;
-            }
+                int LowerSegmentIndex = segmentIndexLower + 1;
+                int UpperSegmentIndex = segmentIndexUpper - 1;
 
-            return SegmentTable[PivotSegmentIndex][PivotElementIndex];
+                Debug.Assert(SegmentTable[segmentIndexLower + 1].Count > 0);
+                Debug.Assert(SegmentTable[segmentIndexUpper - 1].Count > 0);
+
+                indexLower += BelowUpper + 1;
+                indexUpper -= BelowUpper + 1;
+                segmentIndexLower++;
+                elementIndexLower = 0;
+                segmentIndexUpper--;
+                elementIndexUpper = SegmentTable[segmentIndexUpper].Count - 1;
+            }
         }
 
-        private void SplitSortLoop1(IComparer<T> comparer, T pivot, ref int segmentIndexUp, ref int elementIndexUp)
+        if (segmentIndexLower > segmentIndexUpper)
         {
-            do
+            Debug.Assert(elementIndexLower == 0);
+            Debug.Assert(segmentIndexUpper >= 0 && segmentIndexUpper < SegmentTable.Count);
+            Debug.Assert(elementIndexUpper == SegmentTable[segmentIndexUpper].Count - 1);
+            Debug.Assert(indexUpper + 1 == indexLower);
+            Debug.Assert(IsPositionEqual(indexUpper, segmentIndexUpper, elementIndexUpper));
+            Debug.Assert(IsPositionEqual(indexLower, segmentIndexLower, elementIndexLower));
+
+            segmentIndexMiddle = segmentIndexUpper;
+            elementIndexMiddle = elementIndexUpper;
+            indexMiddle = indexUpper;
+        }
+        else
+        {
+            Debug.Assert(segmentIndexLower == segmentIndexUpper);
+            Debug.Assert(elementIndexLower <= elementIndexUpper);
+
+            int Middle = elementIndexLower + ((elementIndexUpper - elementIndexLower) / 2);
+
+            segmentIndexMiddle = segmentIndexLower;
+            elementIndexMiddle = Middle;
+            indexMiddle = indexLower - elementIndexLower + Middle;
+        }
+
+        Debug.Assert(IsPositionEqual(indexMiddle, segmentIndexMiddle, elementIndexMiddle));
+    }
+    #endregion
+
+    #region Sorting
+    private struct QuickSortRange
+    {
+        public int SegmentIndexFirst;
+        public int ElementIndexFirst;
+        public int SegmentIndexLast;
+        public int ElementIndexLast;
+    }
+
+    private void QuickSort(IComparer<T> comparer)
+    {
+        Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
+        QuickSortRange Range = QuickSortStack.Pop();
+        int SegmentIndexLow = Range.SegmentIndexFirst;
+        int ElementIndexLow = Range.ElementIndexFirst;
+        int SegmentIndexHigh = Range.SegmentIndexLast;
+        int ElementIndexHigh = Range.ElementIndexLast;
+
+        Debug.Assert(IsValidPosition(SegmentIndexLow, ElementIndexLow, false));
+        Debug.Assert(IsValidPosition(SegmentIndexHigh, ElementIndexHigh, false));
+        Debug.Assert(SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow <= ElementIndexHigh));
+
+        if (SegmentIndexLow == SegmentIndexHigh)
+        {
+            ISegment<T> Segment = SegmentTable[SegmentIndexLow];
+            Segment.Sort(ElementIndexLow, ElementIndexHigh, Comparer);
+        }
+        else if (SegmentIndexLow < SegmentIndexHigh || (SegmentIndexLow == SegmentIndexHigh && ElementIndexLow < ElementIndexHigh))
+        {
+            int SegmentIndexMiddle;
+            int ElementIndexMiddle;
+            SplitSortInterval(SegmentIndexLow, ElementIndexLow, SegmentIndexHigh, ElementIndexHigh, Comparer, out SegmentIndexMiddle, out ElementIndexMiddle);
+
+            QuickSortRange RangeLow = new QuickSortRange() { SegmentIndexFirst = SegmentIndexLow, ElementIndexFirst = ElementIndexLow, SegmentIndexLast = SegmentIndexMiddle, ElementIndexLast = ElementIndexMiddle };
+
+            if (ElementIndexMiddle + 1 < SegmentTable[SegmentIndexMiddle].Count)
             {
-                if (segmentIndexUp < 0)
+                ElementIndexMiddle++;
+            }
+            else
+            {
+                SegmentIndexMiddle++;
+                Debug.Assert(SegmentIndexMiddle < SegmentTable.Count && SegmentTable[SegmentIndexMiddle].Count > 0);
+                ElementIndexMiddle = 0;
+            }
+
+            QuickSortRange RangeHigh = new QuickSortRange() { SegmentIndexFirst = SegmentIndexMiddle, ElementIndexFirst = ElementIndexMiddle, SegmentIndexLast = SegmentIndexHigh, ElementIndexLast = ElementIndexHigh };
+
+            QuickSortStack.Push(RangeLow);
+            QuickSortStack.Push(RangeHigh);
+        }
+    }
+
+    private void SplitSortInterval(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh, IComparer<T> comparer, out int segmentIndexMiddle, out int elementIndexMiddle)
+    {
+        Contracts.Contract.RequireNotNull(comparer, out IComparer<T> Comparer);
+
+        Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
+        Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
+        Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
+
+        T pivot = SelectPivot(segmentIndexLow, elementIndexLow, segmentIndexHigh, elementIndexHigh);
+
+        int SegmentIndexUp;
+        int ElementIndexUp;
+        int SegmentIndexDown;
+        int ElementIndexDown;
+
+        GetPreviousPosition(segmentIndexLow, elementIndexLow, out SegmentIndexUp, out ElementIndexUp);
+        GetNextPosition(segmentIndexHigh, elementIndexHigh, out SegmentIndexDown, out ElementIndexDown);
+
+        while (true)
+        {
+            SplitSortLoop1(Comparer, pivot, ref SegmentIndexUp, ref ElementIndexUp);
+            SplitSortLoop2(Comparer, pivot, ref SegmentIndexDown, ref ElementIndexDown);
+
+            if (SegmentIndexUp > SegmentIndexDown || (SegmentIndexUp == SegmentIndexDown && ElementIndexUp >= ElementIndexDown))
+            {
+                segmentIndexMiddle = SegmentIndexDown;
+                elementIndexMiddle = ElementIndexDown;
+                return;
+            }
+
+            T item = SegmentTable[SegmentIndexUp][ElementIndexUp];
+            SegmentTable[SegmentIndexUp][ElementIndexUp] = SegmentTable[SegmentIndexDown][ElementIndexDown];
+            SegmentTable[SegmentIndexDown][ElementIndexDown] = item;
+        }
+    }
+
+    private T SelectPivot(int segmentIndexLow, int elementIndexLow, int segmentIndexHigh, int elementIndexHigh)
+    {
+        Debug.Assert(IsValidPosition(segmentIndexLow, elementIndexLow, false));
+        Debug.Assert(IsValidPosition(segmentIndexHigh, elementIndexHigh, false));
+        Debug.Assert(segmentIndexLow < segmentIndexHigh || (segmentIndexLow == segmentIndexHigh && elementIndexLow < elementIndexHigh));
+
+        int PivotSegmentIndex = (segmentIndexLow + segmentIndexHigh) / 2;
+        Debug.Assert(PivotSegmentIndex >= segmentIndexLow && PivotSegmentIndex <= segmentIndexHigh && SegmentTable[PivotSegmentIndex].Count > 0);
+
+        int PivotElementIndex;
+
+        if (PivotSegmentIndex == segmentIndexLow && PivotSegmentIndex < segmentIndexHigh)
+        {
+            PivotElementIndex = SegmentTable[PivotSegmentIndex].Count - 1;
+        }
+        else if (PivotSegmentIndex == segmentIndexHigh && PivotSegmentIndex > segmentIndexLow)
+        {
+            PivotElementIndex = 0;
+        }
+        else
+        {
+            Debug.Assert((PivotSegmentIndex > segmentIndexLow && PivotSegmentIndex < segmentIndexHigh) || (segmentIndexLow == segmentIndexHigh));
+            PivotElementIndex = SegmentTable[PivotSegmentIndex].Count / 2;
+        }
+
+        return SegmentTable[PivotSegmentIndex][PivotElementIndex];
+    }
+
+    private void SplitSortLoop1(IComparer<T> comparer, T pivot, ref int segmentIndexUp, ref int elementIndexUp)
+    {
+        do
+        {
+            if (segmentIndexUp < 0)
+            {
+                segmentIndexUp = 0;
+                elementIndexUp = 0;
+            }
+            else
+            {
+                if (elementIndexUp + 1 < SegmentTable[segmentIndexUp].Count)
                 {
-                    segmentIndexUp = 0;
+                    elementIndexUp++;
+                }
+                else
+                {
+                    segmentIndexUp++;
+                    Debug.Assert(segmentIndexUp < SegmentTable.Count && SegmentTable[segmentIndexUp].Count > 0);
                     elementIndexUp = 0;
                 }
-                else
-                {
-                    if (elementIndexUp + 1 < SegmentTable[segmentIndexUp].Count)
-                    {
-                        elementIndexUp++;
-                    }
-                    else
-                    {
-                        segmentIndexUp++;
-                        Debug.Assert(segmentIndexUp < SegmentTable.Count && SegmentTable[segmentIndexUp].Count > 0);
-                        elementIndexUp = 0;
-                    }
-                }
             }
-            while (comparer.Compare(SegmentTable[segmentIndexUp][elementIndexUp], pivot) < 0);
         }
-
-        private void SplitSortLoop2(IComparer<T> comparer, T pivot, ref int segmentIndexDown, ref int elementIndexDown)
-        {
-            do
-            {
-                if (elementIndexDown > 0)
-                {
-                    elementIndexDown--;
-                }
-                else
-                {
-                    segmentIndexDown--;
-                    Debug.Assert(segmentIndexDown >= 0 && SegmentTable[segmentIndexDown].Count > 0);
-                    elementIndexDown = SegmentTable[segmentIndexDown].Count - 1;
-                }
-            }
-            while (comparer.Compare(SegmentTable[segmentIndexDown][elementIndexDown], pivot) > 0);
-        }
-        #endregion
+        while (comparer.Compare(SegmentTable[segmentIndexUp][elementIndexUp], pivot) < 0);
     }
+
+    private void SplitSortLoop2(IComparer<T> comparer, T pivot, ref int segmentIndexDown, ref int elementIndexDown)
+    {
+        do
+        {
+            if (elementIndexDown > 0)
+            {
+                elementIndexDown--;
+            }
+            else
+            {
+                segmentIndexDown--;
+                Debug.Assert(segmentIndexDown >= 0 && SegmentTable[segmentIndexDown].Count > 0);
+                elementIndexDown = SegmentTable[segmentIndexDown].Count - 1;
+            }
+        }
+        while (comparer.Compare(SegmentTable[segmentIndexDown][elementIndexDown], pivot) > 0);
+    }
+    #endregion
 }

@@ -1,38 +1,37 @@
-﻿namespace TestLargeList
+﻿namespace TestLargeList;
+
+using System;
+using System.Globalization;
+
+internal sealed class TestClass(int integerValue, string stringValue) : IComparable, IComparable<TestClass>
 {
-    using System;
-    using System.Globalization;
+    public int IntegerValue { get; } = integerValue;
+    public string StringValue { get; } = stringValue;
 
-    internal sealed class TestClass(int integerValue, string stringValue) : IComparable, IComparable<TestClass>
+    public int CompareTo(object obj)
     {
-        public int IntegerValue { get; } = integerValue;
-        public string StringValue { get; } = stringValue;
+        TestClass Other = obj as TestClass;
 
-        public int CompareTo(object obj)
-        {
-            TestClass Other = obj as TestClass;
+        if (Other is null)
+            return 1;
+        else
+            return CompareTo(Other);
+    }
 
-            if (Other is null)
-                return 1;
-            else
-                return CompareTo(Other);
-        }
+    public int CompareTo(TestClass other)
+    {
+        if (other is null)
+            return 1;
+        else if (IntegerValue > other.IntegerValue)
+            return 1;
+        else if (IntegerValue < other.IntegerValue)
+            return -1;
+        else
+            return StringValue.CompareTo(other.StringValue, StringComparison.InvariantCulture);
+    }
 
-        public int CompareTo(TestClass other)
-        {
-            if (other is null)
-                return 1;
-            else if (IntegerValue > other.IntegerValue)
-                return 1;
-            else if (IntegerValue < other.IntegerValue)
-                return -1;
-            else
-                return StringValue.CompareTo(other.StringValue, StringComparison.InvariantCulture);
-        }
-
-        public override string ToString()
-        {
-            return IntegerValue.ToString(CultureInfo.InvariantCulture) + StringValue;
-        }
+    public override string ToString()
+    {
+        return IntegerValue.ToString(CultureInfo.InvariantCulture) + StringValue;
     }
 }
