@@ -21,8 +21,8 @@ init:
 
 environment:
   opencover_version: 4.7.1221
-  codecov_uploader_version: 0.7.1
-  report_generator_version: 5.2.0
+  codecov_uploader_version: 0.8.0
+  report_generator_version: 5.5.10
   PACKAGE_PREFIX: dlebansais
 
   matrix:
